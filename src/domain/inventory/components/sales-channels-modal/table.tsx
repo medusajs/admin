@@ -6,11 +6,11 @@ import Button from "../../../../components/fundamentals/button"
 import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
 import IndeterminateCheckbox from "../../../../components/molecules/indeterminate-checkbox"
 import { LayeredModalContext } from "../../../../components/molecules/modal/layered-modal"
-import Table, { TablePagination } from "../../../../components/molecules/table"
+import Table from "../../../../components/molecules/table"
+import TableContainer from "../../../../components/organisms/table-container"
 import { useAddChannelsModalScreen } from "./add-screen"
 
 type SalesChannelsTableProps = {
-  salesChannels: SalesChannel[]
   count: number
   limit: number
   offset: number
@@ -19,6 +19,7 @@ type SalesChannelsTableProps = {
   setSelectedRowIds?: (selectedRowIds: string[]) => void
   tableAction?: React.ReactNode
   tableState: TableInstance<SalesChannel>
+  isLoading?: boolean
 }
 
 type SalesChannelTableActionProps = {
@@ -65,7 +66,6 @@ export const useSalesChannelsTableColumns = () => {
 }
 
 const SalesChannelTable = ({
-  salesChannels,
   count,
   limit,
   offset,
@@ -74,6 +74,7 @@ const SalesChannelTable = ({
   tableState,
   setSelectedRowIds,
   tableAction,
+  isLoading,
 }: SalesChannelsTableProps) => {
   const {
     getTableProps,
@@ -111,7 +112,23 @@ const SalesChannelTable = ({
   }
 
   return (
-    <div className="min-h-[350px] flex flex-col justify-between">
+    <TableContainer
+      hasPagination
+      pagingState={{
+        count: count,
+        offset: offset,
+        pageSize: offset + rows.length,
+        title: "Sales Channels",
+        currentPage: pageIndex + 1,
+        pageCount: pageCount,
+        nextPage: handleNext,
+        prevPage: handlePrev,
+        hasNext: canNextPage,
+        hasPrev: canPreviousPage,
+      }}
+      numberOfRows={limit}
+      isLoading={isLoading}
+    >
       <Table
         {...getTableProps()}
         enableSearch
@@ -146,20 +163,7 @@ const SalesChannelTable = ({
           })}
         </Table.Body>
       </Table>
-      <TablePagination
-        count={count}
-        limit={limit}
-        offset={offset}
-        pageSize={offset + rows.length}
-        title="Sales Channels"
-        currentPage={pageIndex + 1}
-        pageCount={pageCount}
-        nextPage={handleNext}
-        prevPage={handlePrev}
-        hasNext={canNextPage}
-        hasPrev={canPreviousPage}
-      />
-    </div>
+    </TableContainer>
   )
 }
 

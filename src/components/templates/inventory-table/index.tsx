@@ -9,7 +9,8 @@ import qs from "qs"
 import React, { useEffect, useMemo, useState } from "react"
 import { usePagination, useTable } from "react-table"
 import InventoryFilter from "../../../domain/inventory/filter-dropdown"
-import Table, { TablePagination } from "../../molecules/table"
+import Table from "../../molecules/table"
+import TableContainer from "../../../components/organisms/table-container"
 import { NextSelect } from "../../molecules/select/next-select"
 import useInventoryActions from "./use-inventory-actions"
 import useInventoryTableColumn from "./use-inventory-column"
@@ -203,7 +204,23 @@ const InventoryTable: React.FC<InventoryTableProps> = () => {
   }
 
   return (
-    <div className="w-full h-full overflow-y-auto">
+    <TableContainer
+      hasPagination
+      pagingState={{
+        count: count,
+        offset: offs,
+        pageSize: offs + rows.length,
+        title: "Inventory Items",
+        currentPage: pageIndex + 1,
+        pageCount: pageCount,
+        nextPage: handleNext,
+        prevPage: handlePrev,
+        hasNext: canNextPage,
+        hasPrev: canPreviousPage,
+      }}
+      numberOfRows={limit}
+      isLoading={isLoading}
+    >
       <Table
         filteringOptions={
           <InventoryFilter
@@ -255,20 +272,7 @@ const InventoryTable: React.FC<InventoryTableProps> = () => {
           })}
         </Table.Body>
       </Table>
-      <TablePagination
-        count={count!}
-        limit={limit}
-        offset={offs}
-        pageSize={offs + rows.length}
-        title="Inventory Items"
-        currentPage={pageIndex + 1}
-        pageCount={pageCount}
-        nextPage={handleNext}
-        prevPage={handlePrev}
-        hasNext={canNextPage}
-        hasPrev={canPreviousPage}
-      />
-    </div>
+    </TableContainer>
   )
 }
 
