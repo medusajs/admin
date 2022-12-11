@@ -239,14 +239,20 @@ function Index() {
     closeChannelsModal()
   }
 
+  console.log(selectedChannels, salesChannels)
+
   useEffect(() => {
     if (editKey && salesChannels?.length && isEditChannelsModalVisible) {
       setSelectedChannels(
         salesChannels.reduce((prev, sc) => {
           prev[sc.id] = sc
           return prev
-        })
+        }, {})
       )
+    }
+
+    if (!isEditChannelsModalVisible) {
+      setSelectedChannels({})
     }
   }, [salesChannels, editKey, isEditChannelsModalVisible])
 

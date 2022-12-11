@@ -57,6 +57,7 @@ const COLUMNS = [
 ]
 
 type SalesChannelTableProps = {
+  isEdit: boolean
   query: string
   selectedChannels: Map<string, SalesChannel>
   setSelectedChannels: (
@@ -74,6 +75,7 @@ type SalesChannelTableProps = {
  */
 function SalesChannelTable(props: SalesChannelTableProps) {
   const {
+    isEdit,
     query,
     offset,
     data,
@@ -240,7 +242,7 @@ function ManageSalesChannelsSideModal(
 
         <div className="flex items-center justify-between">
           <h3 className="inter-large-semibold text-xl text-gray-900">
-            Add sales channels
+            {isEdit ? "Edit" : "Add"} sales channels
           </h3>
           <Button variant="ghost" onClick={close}>
             <CrossIcon size={20} className="text-grey-40" />
@@ -249,17 +251,25 @@ function ManageSalesChannelsSideModal(
         {/* === DIVIDER === */}
 
         <div className="flex-grow">
-          <InputField
-            name="name"
-            type="string"
-            value={search}
-            className="my-4"
-            placeholder="Find channels"
-            prefix={<SearchIcon size={16} />}
-            onChange={({ target: { value } }) => setSearch(value)}
-          />
+          <div className="flex justify-between items-center gap-2">
+            <InputField
+              name="name"
+              type="string"
+              value={search}
+              className="my-4 h-[40px]"
+              placeholder="Find channels"
+              prefix={<SearchIcon size={16} />}
+              onChange={({ target: { value } }) => setSearch(value)}
+            />
+            {isEdit && (
+              <Button className="flex-shrink-0 h-[40px]" variant="secondary">
+                Add channels
+              </Button>
+            )}
+          </div>
 
           <SalesChannelTable
+            isEdit
             query={search}
             data={data}
             offset={offset}
