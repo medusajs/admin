@@ -309,7 +309,7 @@ function ManageSalesChannelsSideModal(
             Cancel
           </Button>
           <Button size="small" variant="primary" onClick={onSave} disabled>
-            Save and {isAddNew ? "go back" : "close"}
+            {isAddNew ? "Save and go back" : "Save and close"}
           </Button>
         </div>
       </div>
