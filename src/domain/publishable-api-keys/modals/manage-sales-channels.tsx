@@ -19,6 +19,7 @@ import TableContainer from "../../../components/organisms/table-container"
 import Table from "../../../components/molecules/table"
 import SearchIcon from "../../../components/fundamentals/icons/search-icon"
 import { TablePagination } from "../../../components/organisms/table-container/pagination"
+import BackIcon from "../../../components/fundamentals/icons/back-icon"
 
 /* ************************************* */
 /* *************** TABLE *************** */
@@ -214,6 +215,8 @@ function ManageSalesChannelsSideModal(
 
   const notification = useNotification()
 
+  const [isAddNew, setIsAddNew] = useState(false)
+
   const [offset, setOffset] = useState(0)
   const [search, setSearch] = useState("")
 
@@ -241,8 +244,17 @@ function ManageSalesChannelsSideModal(
         {/* === HEADER === */}
 
         <div className="flex items-center justify-between">
-          <h3 className="inter-large-semibold text-xl text-gray-900">
-            {isEdit ? "Edit" : "Add"} sales channels
+          <h3 className="inter-large-semibold text-xl text-gray-900 flex items-center gap-2">
+            {isAddNew && (
+              <Button
+                className="p-2"
+                variant="secondary"
+                onClick={() => setIsAddNew(false)}
+              >
+                <BackIcon size={20} />
+              </Button>
+            )}
+            {isEdit ? (isAddNew ? "Add new" : "Edit") : "Add"} sales channels
           </h3>
           <Button variant="ghost" onClick={close}>
             <CrossIcon size={20} className="text-grey-40" />
@@ -261,8 +273,12 @@ function ManageSalesChannelsSideModal(
               prefix={<SearchIcon size={16} />}
               onChange={({ target: { value } }) => setSearch(value)}
             />
-            {isEdit && (
-              <Button className="flex-shrink-0 h-[40px]" variant="secondary">
+            {isEdit && !isAddNew && (
+              <Button
+                className="flex-shrink-0 h-[40px]"
+                variant="secondary"
+                onClick={() => setIsAddNew(true)}
+              >
                 Add channels
               </Button>
             )}
@@ -293,7 +309,7 @@ function ManageSalesChannelsSideModal(
             Cancel
           </Button>
           <Button size="small" variant="primary" onClick={onSave} disabled>
-            Save and close
+            Save and {isAddNew ? "go back" : "close"}
           </Button>
         </div>
       </div>
