@@ -40,7 +40,6 @@ const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
     context: { region },
   } = useNewOrderForm()
 
-  console.log(region)
   const PAGE_SIZE = 12
   const { pop } = useContext(LayeredModalContext)
   const [query, setQuery] = useState("")
