@@ -18,7 +18,7 @@ const Taxes = () => {
   const { regions, isLoading } = useAdminRegions()
 
   useEffect(() => {
-    if (!isLoading && regions && !searchParams.get(SEARCH_PARAM)) {
+    if (!isLoading && regions?.length && !searchParams.get(SEARCH_PARAM)) {
       setSearchParams({ [SEARCH_PARAM]: regions[0].id })
     }
   }, [regions, isLoading, searchParams, setSearchParams])
