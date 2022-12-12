@@ -1,6 +1,6 @@
 import { useAdminRegions } from "medusa-react"
-import React, { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useEffect } from "react"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import Spinner from "../../../components/atoms/spinner"
 import GearIcon from "../../../components/fundamentals/icons/gear-icon"
 import BreadCrumb from "../../../components/molecules/breadcrumb"
@@ -9,44 +9,19 @@ import RadioGroup from "../../../components/organisms/radio-group"
 import TwoSplitPane from "../../../components/templates/two-split-pane"
 import TaxDetails from "./details"
 
+const SEARCH_PARAM = "reg_id"
+
 const Taxes = () => {
   const navigate = useNavigate()
-  const { regions, isLoading, refetch } = useAdminRegions()
-  const [selectedRegion, setSelectedRegion] = useState<string | undefined>(
-    undefined
-  )
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const { regions, isLoading } = useAdminRegions()
 
   useEffect(() => {
-    if (!isLoading && regions && selectedRegion === null) {
-      setSelectedRegion(regions[0].id)
+    if (!isLoading && regions?.length && !searchParams.get(SEARCH_PARAM)) {
+      setSearchParams({ [SEARCH_PARAM]: regions[0].id })
     }
-  }, [regions, isLoading, selectedRegion])
-
-  const handleDelete = () => {
-    refetch().then(({ data }) => {
-      const id = data?.regions?.[0]?.id
-
-      if (!id) {
-        return
-      }
-
-      setSelectedRegion(id)
-      document.getElementById(id)?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-        inline: "nearest",
-      })
-    })
-  }
-
-  const handleSelect = (id: string) => {
-    refetch().then(() => {
-      setSelectedRegion(id)
-      document.getElementById(id)?.scrollIntoView({
-        behavior: "smooth",
-      })
-    })
-  }
+  }, [regions, isLoading, searchParams, setSearchParams])
 
   return (
     <>
@@ -75,8 +50,10 @@ const Taxes = () => {
               </div>
             ) : (
               <RadioGroup.Root
-                value={selectedRegion}
-                onValueChange={setSelectedRegion}
+                value={searchParams.get(SEARCH_PARAM) || undefined}
+                onValueChange={(value) =>
+                  setSearchParams({ [SEARCH_PARAM]: value })
+                }
               >
                 {regions.map((r) => {
                   return (
@@ -85,8 +62,8 @@ const Taxes = () => {
                       description={
                         r.countries.length
                           ? `${r.countries
-                            .map((c) => c.display_name)
-                            .join(", ")}`
+                              .map((c) => c.display_name)
+                              .join(", ")}`
                           : undefined
                       }
                       value={r.id}
@@ -98,11 +75,7 @@ const Taxes = () => {
               </RadioGroup.Root>
             )}
           </BodyCard>
-          <TaxDetails
-            id={selectedRegion}
-            onDelete={handleDelete}
-            handleSelect={handleSelect}
-          />
+          <TaxDetails id={searchParams.get(SEARCH_PARAM)} />
         </TwoSplitPane>
       </div>
     </>
