@@ -1606,26 +1606,26 @@
     winston "^3.3.3"
     yargs "^15.3.1"
 
-"@medusajs/medusa-js@1.3.3-dev-1670846754280":
-  version "1.3.3-dev-1670846754280"
-  resolved "http://localhost:4873/@medusajs%2fmedusa-js/-/medusa-js-1.3.3-dev-1670846754280.tgz#c4bf422855093d0f1bee5dc59c0ef4b68b65fd75"
-  integrity sha512-AnM6EYF7u2bCTT4DH95BDO5FxYNXZ45PF7Aqflyc3WFa4vTlSAU0lBroQO8sFsfOAjDjKSiFlnVjjYnYf6uYTA==
+"@medusajs/medusa-js@^1.3.3":
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/@medusajs/medusa-js/-/medusa-js-1.3.3.tgz#53f8f1728dae744a71f4e56050288f447a62e915"
+  integrity sha512-dWxIUMe+sPrcisKkUSjKTh/OnHeMCVx3uONqjj7DYYK2Tp99uaqf8pQsN4vORmpw9DVsJX5+7rh9Cp8CFSdl4w==
   dependencies:
-    "@medusajs/medusa" "1.6.5-dev-1670846754280"
+    "@medusajs/medusa" "^1.6.2"
     axios "^0.24.0"
     form-data "^4.0.0"
     qs "^6.10.3"
     retry-axios "^2.6.0"
 
-"@medusajs/medusa@1.6.5-dev-1670846754280":
-  version "1.6.5-dev-1670846754280"
-  resolved "http://localhost:4873/@medusajs%2fmedusa/-/medusa-1.6.5-dev-1670846754280.tgz#a95f82e907e6b486a17dee9ab1dd44fed1709946"
-  integrity sha512-JpnzQFNP+AYzuHKgXQPt7LZCEjHVX+UHUnpZ7u2xClrt6zlOLl1aqiJBckgV1XeFMWSEJdaWJByQBg0U5vipJA==
+"@medusajs/medusa@^1.6.2", "@medusajs/medusa@^1.6.5":
+  version "1.6.5"
+  resolved "https://registry.yarnpkg.com/@medusajs/medusa/-/medusa-1.6.5.tgz#e6c79b7d53525b5f69326167eebf9e54f514dd4b"
+  integrity sha512-jQj6UHZofcsDQPTPP6s2RA48BCjDVvys/fzYI4LATxqdwNaj0cFE4ugJIfxxzgxB0uC0u7+xxfSF95nvm1yfMw==
   dependencies:
     "@medusajs/medusa-cli" "^1.3.5"
     "@types/ioredis" "^4.28.10"
     "@types/lodash" "^4.14.168"
-    awilix "^8.0.0"
+    awilix "^4.2.3"
     body-parser "^1.19.0"
     bull "^3.12.1"
     chokidar "^3.4.2"
@@ -5448,13 +5448,13 @@ autoprefixer@^9.8.6:
     postcss "^7.0.32"
     postcss-value-parser "^4.1.0"
 
-awilix@^8.0.0:
-  version "8.0.0"
-  resolved "http://localhost:4873/awilix/-/awilix-8.0.0.tgz#556fa20e0f7b52b39479ed6b027ee054efd8f16a"
-  integrity sha512-9y4ejNj2nLu7ET8jtQPiI3Ibvu68iKcLbLy5pGsPy9HWWVyQhTT8YE+Ao7ZawTNXRWjosSy/r4QNmhaUt/ju0A==
+awilix@^4.2.3:
+  version "4.3.4"
+  resolved "https://registry.yarnpkg.com/awilix/-/awilix-4.3.4.tgz#aeecc662efa96256981af3bc6243eb201c8b4a4f"
+  integrity sha512-NgRwUPxUnoK+OTRa2fXcRQVFPOPQXlwCN1FJPkhO3IHKQJHokhdVpDfgz9L3VZTcA1iSaOFE3N/Q/5P7lIDqig==
   dependencies:
     camel-case "^4.1.2"
-    fast-glob "^3.2.12"
+    glob "^7.1.6"
 
 axios-retry@^3.1.9:
   version "3.3.1"
@@ -10506,12 +10506,12 @@ medusa-core-utils@^1.1.35:
     joi "^17.3.0"
     joi-objectid "^3.0.1"
 
-medusa-react@3.0.1-dev-1670846754280:
-  version "3.0.1-dev-1670846754280"
-  resolved "http://localhost:4873/medusa-react/-/medusa-react-3.0.1-dev-1670846754280.tgz#df6191e041f5ee35c608aea8c33aa985a24c6746"
-  integrity sha512-jtaCGT9BbNf0WaXo7N2Y0Q9RATfCZMVu5wGSYeUqPOxlsA5jC1JMwMFfK0b0iwnIe9QqqK11hJTioiVEYsxZlw==
+medusa-react@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/medusa-react/-/medusa-react-3.0.1.tgz#218bb834d595e54ed104317f61c21eddb35de82b"
+  integrity sha512-M5Gibxug4LHiN17g5DJ6I7d6MBjEqhDi6aVawzxp58RFxgNjE75M2U/4+XbbIXRrhDU2YXvkDkC4aa9aPoNCXw==
   dependencies:
-    "@medusajs/medusa-js" "1.3.3-dev-1670846754280"
+    "@medusajs/medusa-js" "^1.3.3"
     lodash "^4.17.21"
     lodash-es "^4.17.21"
     react-query "^3.31.0"
