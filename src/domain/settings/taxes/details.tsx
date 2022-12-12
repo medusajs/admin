@@ -13,7 +13,7 @@ import { RegionTaxForm } from "./region-form"
 import { TaxRateRow } from "./tax-rate-row"
 import useTaxRateColumns from "./use-tax-rate-columns"
 
-type TaxRate = {
+export type TaxRateTableEntries = {
   id: string
   name?: string
   rate: number | null
@@ -29,8 +29,8 @@ const TaxDetails = ({ id }) => {
     offset: 0,
   })
   const [showNew, setShowNew] = useState<boolean>(false)
-  const [editRate, setEditRate] = useState<TaxRate | null>(null)
-  const [tableEntries, setTableEntries] = useState<TaxRate[]>([])
+  const [editRate, setEditRate] = useState<TaxRateTableEntries | null>(null)
+  const [tableEntries, setTableEntries] = useState<TaxRateTableEntries[]>([])
 
   const { tax_rates, isLoading: taxRatesLoading } = useAdminTaxRates(
     {
@@ -102,9 +102,9 @@ const TaxDetails = ({ id }) => {
           className={clsx({ ["relative"]: regionIsLoading })}
         >
           <Table.Head>
-            {headerGroups?.map((headerGroup, index) => (
+            {headerGroups?.map((headerGroup) => (
               <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map((col, headerIndex) => (
+                {headerGroup.headers.map((col) => (
                   <Table.HeadCell {...col.getHeaderProps()}>
                     {col.render("Header")}
                   </Table.HeadCell>

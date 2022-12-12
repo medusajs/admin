@@ -1,12 +1,12 @@
-import React from "react"
 import { useAdminDeleteTaxRate } from "medusa-react"
-import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
-import Table from "../../../components/molecules/table"
 import EditIcon from "../../../components/fundamentals/icons/edit-icon"
+import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
+import { ActionType } from "../../../components/molecules/actionables"
+import Table from "../../../components/molecules/table"
 import useImperativeDialog from "../../../hooks/use-imperative-dialog"
 import useNotification from "../../../hooks/use-notification"
-import { getErrorMessage } from "../../../utils/error-messages"
 import { TaxRateType } from "../../../types/shared"
+import { getErrorMessage } from "../../../utils/error-messages"
 
 type TaxRate = {
   id: string
@@ -45,7 +45,7 @@ export const TaxRateRow = ({ row, onEdit }) => {
       })
   }
 
-  const actions = [
+  const actions: ActionType[] = [
     {
       label: "Edit",
       onClick: () => onEdit(row.original),
@@ -70,8 +70,8 @@ export const TaxRateRow = ({ row, onEdit }) => {
       {...row.getRowProps()}
       className="group"
     >
-      {row.cells.map((cell, index) => {
-        return cell.render("Cell", { index })
+      {row.cells.map((cell) => {
+        return <Table.Cell>{cell.render("Cell")}</Table.Cell>
       })}
     </Table.Row>
   )
