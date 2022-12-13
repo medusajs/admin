@@ -21,6 +21,7 @@ type DiscountFormProps = {
   closeForm?: () => void
 }
 
+
 const DiscountForm = ({ closeForm }: DiscountFormProps) => {
   const navigate = useNavigate()
   const notification = useNotification()
@@ -101,7 +102,7 @@ const DiscountForm = ({ closeForm }: DiscountFormProps) => {
             <h1 className="inter-xlarge-semibold">Create new discount</h1>
             <Accordion
               className="pt-7 text-grey-90"
-              defaultValue={["discount-type"]}
+              defaultValue={["promotion-type"]}
               type="multiple"
             >
               <Accordion.Item
