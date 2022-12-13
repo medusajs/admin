@@ -19,6 +19,7 @@ import Pricing from "../domain/pricing"
 import ProductsRoute from "../domain/products"
 import SalesChannels from "../domain/sales-channels"
 import Settings from "../domain/settings"
+import PublishableApiKeys from "../domain/publishable-api-keys"
 
 const IndexPage = () => {
   const navigate = useNavigate()
@@ -50,6 +51,10 @@ const DashboardRoutes = () => {
             <Route path="pricing/*" element={<Pricing />} />
             <Route path="settings/*" element={<Settings />} />
             <Route path="sales-channels/*" element={<SalesChannels />} />
+            <Route
+              path="publishable-api-keys/*"
+              element={<PublishableApiKeys />}
+            />
           </Routes>
         </Layout>
       </DndProvider>

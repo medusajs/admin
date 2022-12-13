@@ -12,8 +12,6 @@ import App from "./App"
 import { FeatureFlagProvider } from "./context/feature-flag"
 import { SteppedProvider } from "./components/molecules/modal/stepped-modal"
 import { LayeredModalProvider } from "./components/molecules/modal/layered-modal"
-import AnalyticsProvider from "./context/analytics"
-import { WRITE_KEY } from "./components/constants/analytics"
 
 const Page = ({ children }: PropsWithChildren) => {
   return (

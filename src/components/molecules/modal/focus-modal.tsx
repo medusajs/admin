@@ -1,16 +1,18 @@
 import clsx from "clsx"
-import React from "react"
+
 import Button from "../../fundamentals/button"
 import CrossIcon from "../../fundamentals/icons/cross-icon"
+import { ReactFCWithChildren } from "../../../types/utils"
 
 type FocusModalElementProps = {
   className?: string
+  children?: React.ReactNode
 }
 
-type FocusModalProps = React.FC<FocusModalElementProps> & {
-  Header: React.FC<FocusModalElementProps>
-  Main: React.FC<FocusModalElementProps>
-  BasicFocusModal: React.FC<BasicFocusModalProps>
+type IFocusModal = ReactFCWithChildren<FocusModalElementProps> & {
+  Header: ReactFCWithChildren<FocusModalElementProps>
+  Main: ReactFCWithChildren<FocusModalElementProps>
+  BasicFocusModal: ReactFCWithChildren<BasicFocusModalProps>
 }
 
 type BasicFocusModalProps = {
@@ -18,9 +20,10 @@ type BasicFocusModalProps = {
   onSubmit: (e) => void
   cancelText?: string
   submitText?: string
+  children?: React.ReactNode
 }
 
-const FocusModal: FocusModalProps = ({ className, children }) => (
+const FocusModal: IFocusModal = ({ className, children }) => (
   <div
     className={clsx(
       "absolute inset-0 bg-grey-0 z-50 flex flex-col items-center",
