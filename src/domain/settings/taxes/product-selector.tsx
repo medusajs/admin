@@ -1,5 +1,5 @@
 import { useAdminProducts } from "medusa-react"
-import React, { useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import ImagePlaceholder from "../../../components/fundamentals/image-placeholder"
 import { useDebounce } from "../../../hooks/use-debounce"
 import { SelectableTable } from "./selectable-table"
@@ -70,6 +70,7 @@ export const ProductSelector = ({ items, onChange }) => {
       columns={columns}
       isLoading={isLoading}
       onSearch={handleSearch}
+      searchValue={query}
       onChange={onChange}
     />
   )
