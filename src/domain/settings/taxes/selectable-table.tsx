@@ -1,15 +1,15 @@
-import React, { useMemo, useEffect } from "react"
 import { Product, ProductType, ShippingOption } from "@medusajs/medusa"
+import React, { useEffect, useMemo } from "react"
 import {
   ColumnInstance,
   usePagination,
   useRowSelect,
   useTable,
 } from "react-table"
-import Table from "../../../components/molecules/table"
 import IndeterminateCheckbox from "../../../components/molecules/indeterminate-checkbox"
-import { PaginationProps } from "../../../types/shared"
+import Table from "../../../components/molecules/table"
 import TableContainer from "../../../components/organisms/table-container"
+import { PaginationProps } from "../../../types/shared"
 
 type SelectableTableProps = {
   showSearch?: boolean
@@ -24,6 +24,7 @@ type SelectableTableProps = {
   onPaginationChange: (pagination: PaginationProps) => void
   onChange: (items: string[]) => void
   onSearch?: (search: string) => void
+  searchValue?: string
 }
 
 export const SelectableTable: React.FC<SelectableTableProps> = ({
@@ -36,6 +37,7 @@ export const SelectableTable: React.FC<SelectableTableProps> = ({
   totalCount,
   data,
   columns,
+  searchValue,
   onPaginationChange,
   onChange,
   onSearch,
@@ -58,7 +60,6 @@ export const SelectableTable: React.FC<SelectableTableProps> = ({
   const {
     getTableProps,
     getTableBodyProps,
-    headerGroups,
     rows,
     prepareRow,
     canPreviousPage,
@@ -166,6 +167,7 @@ export const SelectableTable: React.FC<SelectableTableProps> = ({
           enableSearch={showSearch}
           searchPlaceholder="Search Products.."
           handleSearch={onSearch}
+          searchValue={searchValue}
           {...getTableProps()}
         >
           <Table.Body {...getTableBodyProps()}>

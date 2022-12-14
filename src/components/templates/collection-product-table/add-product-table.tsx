@@ -180,6 +180,7 @@ const AddProductsTable: React.FC<AddProductsTableProps> = ({
             <Table
               enableSearch
               handleSearch={handleSearch}
+              searchValue={query}
               searchPlaceholder="Search Products"
               {...getTableProps()}
               className="flex-grow"
