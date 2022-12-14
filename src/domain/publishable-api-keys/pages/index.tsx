@@ -282,6 +282,7 @@ function Index() {
 
         <ManageSalesChannelsSideModal
           isEdit
+          keyId={editKey?.id}
           close={_closeChannelsModal}
           isVisible={isEditChannelsModalVisible}
           selectedChannels={selectedChannels}
