@@ -31,6 +31,7 @@ const TransferOrdersModal: React.FC<TransferOrdersModalProps> = ({
   const debouncedCustomersQuery = useDebounce(customersQuery, 400)
   const { customers } = useAdminCustomers({
     q: debouncedCustomersQuery,
+    has_account: true,
     limit: 30,
     offset: 0,
   })
