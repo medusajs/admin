@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 
 import { SalesChannel } from "@medusajs/medusa"
@@ -161,18 +161,12 @@ function EditScreen(props: {
   const notification = useNotification()
 
   const [offset, setOffset] = useState(0)
-  const [search, setSearch] = useState("")
+  const [search, setSearch] = useState("") // TODO: not supported in the backend
 
-  const {
-    sales_channels: data = [],
-    isLoading,
-    count,
-  } = useAdminPublishableApiKeySalesChannels(
-    props.keyId,
-    // { query: search, limit: LIMIT, offset },
-    undefined,
-    { keepPreviousData: true }
-  )
+  const { sales_channels: data = [], isLoading } =
+    useAdminPublishableApiKeySalesChannels(props.keyId, undefined, {
+      keepPreviousData: true,
+    })
 
   const { mutateAsync: removeSalesChannelsToKeyScope } =
     useAdminRemovePublishableKeySalesChannelsBatch(props.keyId)
@@ -206,6 +200,12 @@ function EditScreen(props: {
       setSearch("")
     }
   }, [props.isVisible])
+
+  // virtual pagination
+  const displayData = useMemo(
+    () => data?.slice(offset, offset + LIMIT),
+    [data, offset]
+  )
 
   return (
     <div className="flex flex-col justify-between h-[100%] p-6">
@@ -246,9 +246,9 @@ function EditScreen(props: {
         <SalesChannelTable
           isEdit
           query={search}
-          data={data}
+          data={displayData}
           offset={offset}
-          count={count || 0}
+          count={data.length || 0}
           setOffset={setOffset}
           isLoading={isLoading}
           selectedChannels={selectedChannels}

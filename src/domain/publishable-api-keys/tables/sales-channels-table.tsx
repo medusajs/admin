@@ -7,8 +7,9 @@ import {
   useTable,
 } from "react-table"
 import React, { useEffect } from "react"
-import TableContainer from "../../../components/organisms/table-container"
+
 import Table from "../../../components/molecules/table"
+import TableContainer from "../../../components/organisms/table-container"
 import { TablePagination } from "../../../components/organisms/table-container/pagination"
 
 const LIMIT = 12
