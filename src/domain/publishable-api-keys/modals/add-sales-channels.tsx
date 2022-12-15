@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react"
-import { SalesChannel } from "@medusajs/medusa"
 import { useAdminSalesChannels } from "medusa-react"
 
 import SideModal from "../../../components/molecules/modal/side-modal"
@@ -15,13 +14,14 @@ type AddSalesChannelsSideModalProps = {
   close: () => void
   isVisible: boolean
   setSelectedChannels: (arg: any) => void
-  selectedChannels: Map<string, SalesChannel>
 }
 /**
  * Modal for adding sales channels to a new PK during creation.
  */
 function AddSalesChannelsSideModal(props: AddSalesChannelsSideModalProps) {
-  const { isVisible, close, selectedChannels, setSelectedChannels } = props
+  const { isVisible, close, setSelectedChannels } = props
+
+  const [_selectedChannels, _setSelectedChannels] = useState({})
 
   const [offset, setOffset] = useState(0)
   const [search, setSearch] = useState("")
@@ -42,7 +42,10 @@ function AddSalesChannelsSideModal(props: AddSalesChannelsSideModalProps) {
     }
   }, [props.isVisible])
 
-  const onSave = () => {}
+  const onSave = () => {
+    setSelectedChannels(_selectedChannels)
+    props.close()
+  }
 
   return (
     <SideModal close={close} isVisible={!!isVisible}>
@@ -68,7 +71,7 @@ function AddSalesChannelsSideModal(props: AddSalesChannelsSideModalProps) {
               className="my-4 h-[40px]"
               placeholder="Find channels"
               prefix={<SearchIcon size={16} />}
-              onChange={setSearch}
+              onChange={(ev) => setSearch(ev.target.value)}
             />
           </div>
 
@@ -80,8 +83,8 @@ function AddSalesChannelsSideModal(props: AddSalesChannelsSideModalProps) {
             count={count || 0}
             setOffset={setOffset}
             isLoading={isLoading}
-            selectedChannels={selectedChannels}
-            setSelectedChannels={setSelectedChannels}
+            selectedChannels={_selectedChannels}
+            setSelectedChannels={_setSelectedChannels}
           />
         </div>
         {/* === DIVIDER === */}
@@ -100,7 +103,7 @@ function AddSalesChannelsSideModal(props: AddSalesChannelsSideModalProps) {
             size="small"
             variant="primary"
             onClick={onSave}
-            disabled={!Object.keys(selectedChannels).length}
+            disabled={!Object.keys(_selectedChannels).length}
           >
             Save and close
           </Button>
