@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react"
-import { AnimatePresence, motion } from "framer-motion"
+import { motion } from "framer-motion"
 
 import { SalesChannel } from "@medusajs/medusa"
 import {
@@ -15,8 +15,8 @@ import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
 import useNotification from "../../../hooks/use-notification"
 import InputField from "../../../components/molecules/input"
 import SearchIcon from "../../../components/fundamentals/icons/search-icon"
-import BackIcon from "../../../components/fundamentals/icons/back-icon"
 import SalesChannelTable from "../tables/sales-channels-table"
+import UTurnIcon from "../../../components/fundamentals/icons/u-turn-icon"
 
 const LIMIT = 12
 
@@ -82,7 +82,7 @@ function AddScreen(props: {
       <div className="flex items-center justify-between">
         <h3 className="inter-large-semibold text-xl text-gray-900 flex items-center gap-2">
           <Button className="p-2" variant="secondary" onClick={props.goBack}>
-            <BackIcon size={20} />
+            <UTurnIcon size={20} />
           </Button>
           Add sales channels
         </h3>
