@@ -156,6 +156,7 @@ const TransferOrdersModal: React.FC<TransferOrdersModalProps> = ({
                       order.customer.last_name ??
                       order.billing_address.last_name,
                   })}
+                  truncateOption={true}
                 />
               </div>
             </div>
@@ -178,6 +179,7 @@ const TransferOrdersModal: React.FC<TransferOrdersModalProps> = ({
                   onInputChange={(value) => {
                     setCustomersQuery(value)
                   }}
+                  truncateOption={true}
                 />
               </div>
             </div>

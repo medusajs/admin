@@ -108,20 +108,17 @@ const SelectAllOption = <
 
   const onClick = useCallback(() => {
     if (isAllSelected) {
-      onChange(([] as unknown) as OnChangeValue<Option, IsMulti>, {
+      onChange([] as unknown as OnChangeValue<Option, IsMulti>, {
         action: "deselect-option",
-        option: ([] as unknown) as Option,
+        option: [] as unknown as Option,
       })
     } else {
       const selectableOptions = options.filter((o) => !optionIsDisabled(o))
 
-      onChange(
-        (selectableOptions as unknown) as OnChangeValue<Option, IsMulti>,
-        {
-          action: "select-option",
-          option: (selectableOptions as unknown) as Option,
-        }
-      )
+      onChange(selectableOptions as unknown as OnChangeValue<Option, IsMulti>, {
+        action: "select-option",
+        option: selectableOptions as unknown as Option,
+      })
     }
   }, [isAllSelected, options])
 
@@ -257,7 +254,7 @@ export const Option = <
     className,
     innerProps,
     innerRef,
-    selectProps: { hideSelectedOptions, isMulti, size },
+    selectProps: { hideSelectedOptions, isMulti, size, truncateOption },
   } = props
 
   const prefix = hasPrefix(props.data) ? props.data.prefix : null
@@ -296,7 +293,11 @@ export const Option = <
         {isMulti && (
           <CheckboxAdornment isSelected={isSelected} isDisabled={isDisabled} />
         )}
-        <div className="flex items-center gap-x-xsmall inter-base-regular">
+        <div
+          className={clsx("flex items-center gap-x-xsmall inter-base-regular", {
+            truncate: !!truncateOption,
+          })}
+        >
           {prefix && <span className="inter-base-semibold">{prefix}</span>}
           {children}
         </div>
