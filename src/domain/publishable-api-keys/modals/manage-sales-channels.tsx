@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react"
+import React, { useEffect, useMemo, useRef, useState } from "react"
 import { motion } from "framer-motion"
 
 import {
@@ -29,6 +29,8 @@ function AddScreen(props: {
   goBack: () => void
   isVisible: boolean
 }) {
+  const tableRef = useRef()
+
   const [selectedSalesChannels, setSelectedChannels] = useState({})
   const notification = useNotification()
 
@@ -52,6 +54,7 @@ function AddScreen(props: {
       setOffset(0)
       setSearch("")
       setSelectedChannels({})
+      tableRef.current?.toggleAllRowsSelected(false)
     }
   }, [props.isVisible])
 
@@ -105,7 +108,7 @@ function AddScreen(props: {
         </div>
 
         <SalesChannelTable
-          isEdit
+          ref={tableRef}
           query={search}
           data={data}
           offset={offset}
@@ -164,6 +167,7 @@ function EditScreen(props: {
 }) {
   const { close } = props
 
+  const tableRef = useRef()
   const [selectedChannels, setSelectedChannels] = useState({})
 
   const notification = useNotification()
@@ -212,6 +216,7 @@ function EditScreen(props: {
       setOffset(0)
       setSearch("")
       setSelectedChannels({})
+      tableRef.current?.toggleAllRowsSelected(false)
     }
   }, [props.isVisible])
 
@@ -259,7 +264,7 @@ function EditScreen(props: {
         </div>
 
         <SalesChannelTable
-          isEdit
+          ref={tableRef}
           query={search}
           data={displayData}
           offset={offset}
