@@ -21,6 +21,7 @@ import DetailsModal from "../modals/details"
 import ManageSalesChannelsSideModal from "../modals/manage-sales-channels"
 import ChannelsIcon from "../../../components/fundamentals/icons/channels-icon"
 import SalesChannelsSummary from "../../../components/molecules/sales-channels-summary"
+import AddSalesChannelsSideModal from "../modals/add-sales-channels"
 
 type AddSalesChannelsSectionProps = {
   setSelectedChannels: (arg: any) => void
@@ -82,7 +83,8 @@ function AddSalesChannelsSection(props: AddSalesChannelsSectionProps) {
           </Button>
         </div>
       )}
-      <ManageSalesChannelsSideModal
+
+      <AddSalesChannelsSideModal
         close={hideModal}
         isVisible={isModalVisible}
         selectedChannels={selectedChannels}
