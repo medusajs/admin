@@ -318,46 +318,50 @@ function ManageSalesChannelsSideModal(
 
   const [isAddNew, setIsAddNew] = useState(false)
 
+  useEffect(() => {
+    if (!isVisible) {
+      setIsAddNew(false)
+    }
+  }, [isVisible])
+
   return (
     <SideModal close={close} isVisible={!!isVisible}>
-      <AnimatePresence>
-        {!isAddNew && (
-          <motion.div
-            style={{ height: "100%" }}
-            initial={{ opacity: 1, x: 0 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -520 }}
-          >
-            <EditScreen
-              key="edit"
-              close={close}
-              keyId={keyId}
-              isEdit={isEdit}
-              isVisible={isVisible}
-              goAdd={() => setIsAddNew(true)}
-              selectedChannels={selectedChannels}
-              setSelectedChannels={setSelectedChannels}
-            />
-          </motion.div>
-        )}
-        {isAddNew && (
-          <motion.div
-            key="add"
-            style={{ height: "100%" }}
-            initial={{ opacity: 0, x: 0 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 520 }}
-          >
-            <AddScreen
-              close={close}
-              keyId={keyId}
-              isEdit={isEdit}
-              isVisible={isVisible}
-              goBack={() => setIsAddNew(false)}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <motion.div
+        style={{ width: 560 * 2, display: "flex", height: "100%" }}
+        animate={{ x: isAddNew ? -560 : 0 }}
+        transition={{ ease: "easeInOut" }}
+      >
+        {/*EDIT PANEL*/}
+
+        <motion.div
+          style={{ height: "100%", width: 560 }}
+          animate={{ opacity: isAddNew ? 0 : 1 }}
+        >
+          <EditScreen
+            close={close}
+            keyId={keyId}
+            isEdit={isEdit}
+            isVisible={isVisible}
+            goAdd={() => setIsAddNew(true)}
+            selectedChannels={selectedChannels}
+            setSelectedChannels={setSelectedChannels}
+          />
+        </motion.div>
+        {/*ADD PANEL*/}
+
+        <motion.div
+          style={{ height: "100%", width: 560 }}
+          animate={{ opacity: !isAddNew ? 0 : 1 }}
+        >
+          <AddScreen
+            close={close}
+            keyId={keyId}
+            isEdit={isEdit}
+            isVisible={isVisible}
+            goBack={() => setIsAddNew(false)}
+          />
+        </motion.div>
+      </motion.div>
     </SideModal>
   )
 }
