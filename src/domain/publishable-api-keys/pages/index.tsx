@@ -207,22 +207,11 @@ function CreatePublishableKey(props: CreatePublishableKeyProps) {
  * Index page container for the "Publishable API keys" page
  */
 function Index() {
-  const [selectedChannels, setSelectedChannels] = useState({})
   const [selectedKey, setSelectedKey] = useState<PublishableApiKey>()
   const [editKey, setEditKey] = useState<PublishableApiKey>()
 
   const [isCreateModalVisible, openCreateModal, closeCreateModal] =
     useToggleState(false)
-
-  const [isEditChannelsModalVisible, openChannelsModal, closeChannelsModal] =
-    useToggleState(false)
-
-  const { sales_channels: salesChannels } =
-    useAdminPublishableApiKeySalesChannels(
-      editKey?.id,
-      {},
-      { enabled: !!editKey }
-    )
 
   const actions = [
     {
@@ -233,30 +222,11 @@ function Index() {
 
   const _openChannelsModal = (pubKey: PublishableApiKey) => {
     setEditKey(pubKey)
-    openChannelsModal()
   }
 
   const _closeChannelsModal = () => {
     setEditKey(null)
-    closeChannelsModal()
   }
-
-  console.log(selectedChannels, salesChannels)
-
-  useEffect(() => {
-    if (editKey && salesChannels?.length && isEditChannelsModalVisible) {
-      setSelectedChannels(
-        salesChannels.reduce((prev, sc) => {
-          prev[sc.id] = sc
-          return prev
-        }, {})
-      )
-    }
-
-    if (!isEditChannelsModalVisible) {
-      setSelectedChannels({})
-    }
-  }, [salesChannels, editKey, isEditChannelsModalVisible])
 
   return (
     <div>
@@ -283,12 +253,8 @@ function Index() {
         </Fade>
 
         <ManageSalesChannelsSideModal
-          isEdit
           keyId={editKey?.id}
           close={_closeChannelsModal}
-          isVisible={isEditChannelsModalVisible}
-          selectedChannels={selectedChannels}
-          setSelectedChannels={setSelectedChannels}
         />
       </BodyCard>
     </div>

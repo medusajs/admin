@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react"
 import { motion } from "framer-motion"
 
-import { SalesChannel } from "@medusajs/medusa"
 import {
   useAdminAddPublishableKeySalesChannelsBatch,
   useAdminRemovePublishableKeySalesChannelsBatch,
@@ -25,7 +24,6 @@ const LIMIT = 12
 /* ****************************************** */
 
 function AddScreen(props: {
-  isEdit?: boolean
   keyId: string
   close: () => void
   goBack: () => void
@@ -43,7 +41,7 @@ function AddScreen(props: {
     count,
   } = useAdminSalesChannels(
     { q: search, limit: LIMIT, offset },
-    { keepPreviousData: true }
+    { keepPreviousData: true, enabled: !!props.keyId }
   )
 
   const { mutateAsync: addSalesChannelsToKeyScope } =
@@ -53,6 +51,7 @@ function AddScreen(props: {
     if (!props.isVisible) {
       setOffset(0)
       setSearch("")
+      setSelectedChannels({})
     }
   }, [props.isVisible])
 
@@ -158,13 +157,14 @@ function AddScreen(props: {
  * Edit exiting PK SC list
  */
 function EditScreen(props: {
-  isEdit?: boolean
   keyId: string
   close: () => void
   goAdd: () => void
   isVisible: boolean
 }) {
-  const { setSelectedChannels, selectedChannels, close } = props
+  const { close } = props
+
+  const [selectedChannels, setSelectedChannels] = useState({})
 
   const notification = useNotification()
 
@@ -177,6 +177,7 @@ function EditScreen(props: {
       { q: search },
       {
         keepPreviousData: true,
+        enabled: !!props.keyId,
       }
     )
 
@@ -210,8 +211,11 @@ function EditScreen(props: {
     if (!props.isVisible) {
       setOffset(0)
       setSearch("")
+      setSelectedChannels({})
     }
   }, [props.isVisible])
+
+  console.log("render")
 
   // virtual pagination
   const displayData = useMemo(
@@ -244,15 +248,14 @@ function EditScreen(props: {
             prefix={<SearchIcon size={16} />}
             onChange={(ev) => setSearch(ev.target.value)}
           />
-          {props.isEdit && (
-            <Button
-              className="flex-shrink-0 h-[40px]"
-              variant="secondary"
-              onClick={props.goAdd}
-            >
-              Add channels
-            </Button>
-          )}
+
+          <Button
+            className="flex-shrink-0 h-[40px]"
+            variant="secondary"
+            onClick={props.goAdd}
+          >
+            Add channels
+          </Button>
         </div>
 
         <SalesChannelTable
@@ -299,10 +302,6 @@ function EditScreen(props: {
 type ManageSalesChannelsSideModalProps = {
   keyId?: string
   close: () => void
-  isVisible: boolean
-  setSelectedChannels: (arg: any) => void
-  selectedChannels: Map<string, SalesChannel>
-  isEdit?: boolean
 }
 
 /**
@@ -311,14 +310,9 @@ type ManageSalesChannelsSideModalProps = {
 function ManageSalesChannelsSideModal(
   props: ManageSalesChannelsSideModalProps
 ) {
-  const {
-    isEdit,
-    isVisible,
-    keyId,
-    close,
-    selectedChannels,
-    setSelectedChannels,
-  } = props
+  const { keyId, close } = props
+
+  const isVisible = !!keyId
 
   const [isAddNew, setIsAddNew] = useState(false)
 
@@ -335,7 +329,7 @@ function ManageSalesChannelsSideModal(
         animate={{ x: isAddNew ? -560 : 0 }}
         transition={{ ease: "easeInOut" }}
       >
-        {/*EDIT PANEL*/}
+        {/* EDIT PANEL */}
 
         <motion.div
           style={{ height: "100%", width: 560 }}
@@ -343,15 +337,12 @@ function ManageSalesChannelsSideModal(
         >
           <EditScreen
             close={close}
-            keyId={keyId}
-            isEdit={isEdit}
-            isVisible={isVisible}
+            keyId={keyId!}
+            isVisible={isVisible && !isAddNew}
             goAdd={() => setIsAddNew(true)}
-            selectedChannels={selectedChannels}
-            setSelectedChannels={setSelectedChannels}
           />
         </motion.div>
-        {/*ADD PANEL*/}
+        {/* ADD PANEL */}
 
         <motion.div
           style={{ height: "100%", width: 560 }}
@@ -359,9 +350,8 @@ function ManageSalesChannelsSideModal(
         >
           <AddScreen
             close={close}
-            keyId={keyId}
-            isEdit={isEdit}
-            isVisible={isVisible}
+            keyId={keyId!}
+            isVisible={isVisible && isAddNew}
             goBack={() => setIsAddNew(false)}
           />
         </motion.div>
