@@ -1,5 +1,3 @@
-import IndeterminateCheckbox from "../../../components/molecules/indeterminate-checkbox"
-import { SalesChannel } from "@medusajs/medusa"
 import {
   TableOptions,
   usePagination,
@@ -7,9 +5,11 @@ import {
   useTable,
 } from "react-table"
 import React, { useEffect } from "react"
+import { SalesChannel } from "@medusajs/medusa"
 
 import Table from "../../../components/molecules/table"
 import TableContainer from "../../../components/organisms/table-container"
+import IndeterminateCheckbox from "../../../components/molecules/indeterminate-checkbox"
 import { TablePagination } from "../../../components/organisms/table-container/pagination"
 
 const LIMIT = 12

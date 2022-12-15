@@ -56,7 +56,7 @@ function AddScreen(props: {
     }
   }, [props.isVisible])
 
-  const onSave = () => {
+  const onSave = (callback: () => void) => () => {
     addSalesChannelsToKeyScope({
       sales_channel_ids: Object.keys(selectedSalesChannels).map((id) => ({
         id,
@@ -72,7 +72,7 @@ function AddScreen(props: {
           "success"
         )
       })
-      .finally(props.goBack)
+      .finally(callback)
   }
 
   return (
@@ -132,10 +132,18 @@ function AddScreen(props: {
         <Button
           size="small"
           variant="primary"
-          onClick={onSave}
+          onClick={onSave(props.goBack)}
           disabled={!Object.keys(selectedSalesChannels).length}
         >
-          Save and close
+          Add and go back
+        </Button>
+        <Button
+          size="small"
+          variant="primary"
+          onClick={onSave(props.close)}
+          disabled={!Object.keys(selectedSalesChannels).length}
+        >
+          Add and close
         </Button>
       </div>
     </div>
@@ -213,7 +221,7 @@ function EditScreen(props: {
 
       <div className="flex items-center justify-between">
         <h3 className="inter-large-semibold text-xl text-gray-900 flex items-center gap-2">
-          Remove sales channels
+          Edit sales channels
         </h3>
         <Button variant="ghost" onClick={props.close}>
           <CrossIcon size={20} className="text-grey-40" />
@@ -273,7 +281,7 @@ function EditScreen(props: {
           onClick={onSave}
           disabled={!Object.keys(selectedChannels).length}
         >
-          Save and close
+          Remove and close
         </Button>
       </div>
     </div>
