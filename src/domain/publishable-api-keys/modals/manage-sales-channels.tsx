@@ -169,12 +169,16 @@ function EditScreen(props: {
   const notification = useNotification()
 
   const [offset, setOffset] = useState(0)
-  const [search, setSearch] = useState("") // TODO: not supported in the backend
+  const [search, setSearch] = useState("")
 
   const { sales_channels: data = [], isLoading } =
-    useAdminPublishableApiKeySalesChannels(props.keyId, undefined, {
-      keepPreviousData: true,
-    })
+    useAdminPublishableApiKeySalesChannels(
+      props.keyId,
+      { q: search },
+      {
+        keepPreviousData: true,
+      }
+    )
 
   const { mutateAsync: removeSalesChannelsToKeyScope } =
     useAdminRemovePublishableKeySalesChannelsBatch(props.keyId)
