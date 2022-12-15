@@ -220,8 +220,6 @@ function EditScreen(props: {
     }
   }, [props.isVisible])
 
-  console.log("render")
-
   // virtual pagination
   const displayData = useMemo(
     () => data?.slice(offset, offset + LIMIT),

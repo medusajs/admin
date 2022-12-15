@@ -126,6 +126,7 @@ const SalesChannelTable = forwardRef(
 
     useImperativeHandle(ref, () => ({
       toggleAllRowsSelected: table.toggleAllRowsSelected,
+      toggleRowSelected: table.toggleRowSelected,
     }))
 
     return (

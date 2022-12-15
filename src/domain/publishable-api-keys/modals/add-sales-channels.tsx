@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { useAdminSalesChannels } from "medusa-react"
+import { SalesChannel } from "@medusajs/medusa"
 
 import SideModal from "../../../components/molecules/modal/side-modal"
 import Button from "../../../components/fundamentals/button"
@@ -19,9 +20,12 @@ type AddSalesChannelsSideModalProps = {
  * Modal for adding sales channels to a new PK during creation.
  */
 function AddSalesChannelsSideModal(props: AddSalesChannelsSideModalProps) {
+  const tableRef = useRef()
   const { isVisible, close, setSelectedChannels } = props
 
-  const [_selectedChannels, _setSelectedChannels] = useState({})
+  const [_selectedChannels, _setSelectedChannels] = useState<
+    Record<number, SalesChannel>
+  >({})
 
   const [offset, setOffset] = useState(0)
   const [search, setSearch] = useState("")
@@ -39,6 +43,10 @@ function AddSalesChannelsSideModal(props: AddSalesChannelsSideModalProps) {
     if (!props.isVisible) {
       setOffset(0)
       setSearch("")
+
+      Object.values(_selectedChannels).map((channel) =>
+        tableRef.current?.toggleRowSelected(channel.id, true)
+      )
     }
   }, [props.isVisible])
 
@@ -76,7 +84,7 @@ function AddSalesChannelsSideModal(props: AddSalesChannelsSideModalProps) {
           </div>
 
           <SalesChannelTable
-            isEdit
+            ref={tableRef}
             query={search}
             data={data}
             offset={offset}
@@ -103,6 +111,7 @@ function AddSalesChannelsSideModal(props: AddSalesChannelsSideModalProps) {
             size="small"
             variant="primary"
             onClick={onSave}
+            // TODO: allow for empty as well (case where previous selection needs to be set to null)
             disabled={!Object.keys(_selectedChannels).length}
           >
             Save and close
