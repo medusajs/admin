@@ -1,8 +1,11 @@
+import { Order } from "@medusajs/medusa"
 import { useAdminOrders } from "medusa-react"
 import { useState } from "react"
 import { useTable, usePagination } from "react-table"
+import RefreshIcon from "../../fundamentals/icons/refresh-icon"
 import Table from "../../molecules/table"
 import TableContainer from "../../organisms/table-container"
+import TransferOrdersModal from "../transfer-orders-modal"
 import { useCustomerOrdersColumns } from "./use-customer-orders-columns"
 
 const LIMIT = 15
@@ -12,6 +15,9 @@ type Props = {
 }
 
 const CustomerOrdersTable = ({ id }: Props) => {
+  const [selectedOrderForTransfer, setSelectedOrderForTransfer] =
+    useState<Order | null>(null)
+
   const [offset, setOffset] = useState(0)
   const { orders, isLoading, count } = useAdminOrders(
     {
@@ -71,59 +77,77 @@ const CustomerOrdersTable = ({ id }: Props) => {
   }
 
   return (
-    <TableContainer
-      hasPagination
-      isLoading={isLoading}
-      pagingState={{
-        count: count!,
-        offset,
-        pageSize: offset + rows.length,
-        title: "Orders",
-        currentPage: pageIndex + 1,
-        pageCount: pageCount,
-        nextPage: handleNext,
-        prevPage: handlePrev,
-        hasNext: canNextPage,
-        hasPrev: canPreviousPage,
-      }}
-    >
-      <Table {...getTableProps()}>
-        <Table.Head>
-          {headerGroups.map((headerGroup) => {
-            return (
-              <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map((column) => {
-                  return (
-                    <Table.HeadCell {...column.getHeaderProps()}>
-                      {column.render("Header")}
-                    </Table.HeadCell>
-                  )
-                })}
-              </Table.HeadRow>
-            )
-          })}
-        </Table.Head>
-        <Table.Body {...getTableBodyProps()}>
-          {rows.map((row) => {
-            prepareRow(row)
-            return (
-              <Table.Row
-                {...row.getRowProps()}
-                linkTo={`/a/orders/${row.original.id}`}
-              >
-                {row.cells.map((cell) => {
-                  return (
-                    <Table.Cell {...cell.getCellProps()}>
-                      {cell.render("Cell")}
-                    </Table.Cell>
-                  )
-                })}
-              </Table.Row>
-            )
-          })}
-        </Table.Body>
-      </Table>
-    </TableContainer>
+    <>
+      <TableContainer
+        hasPagination
+        isLoading={isLoading}
+        pagingState={{
+          count: count!,
+          offset,
+          pageSize: offset + rows.length,
+          title: "Orders",
+          currentPage: pageIndex + 1,
+          pageCount: pageCount,
+          nextPage: handleNext,
+          prevPage: handlePrev,
+          hasNext: canNextPage,
+          hasPrev: canPreviousPage,
+        }}
+      >
+        <Table {...getTableProps()}>
+          <Table.Head>
+            {headerGroups.map((headerGroup) => {
+              return (
+                <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
+                  {headerGroup.headers.map((column) => {
+                    return (
+                      <Table.HeadCell {...column.getHeaderProps()}>
+                        {column.render("Header")}
+                      </Table.HeadCell>
+                    )
+                  })}
+                </Table.HeadRow>
+              )
+            })}
+          </Table.Head>
+          <Table.Body {...getTableBodyProps()}>
+            {rows.map((row) => {
+              prepareRow(row)
+              return (
+                <Table.Row
+                  forceDropdown
+                  actions={[
+                    {
+                      label: "View",
+                      icon: <RefreshIcon size={"20"} />,
+                      onClick: () => {
+                        setSelectedOrderForTransfer(row.original as Order)
+                      },
+                    },
+                  ]}
+                  {...row.getRowProps()}
+                  linkTo={`/a/orders/${row.original.id}`}
+                >
+                  {row.cells.map((cell) => {
+                    return (
+                      <Table.Cell {...cell.getCellProps()}>
+                        {cell.render("Cell")}
+                      </Table.Cell>
+                    )
+                  })}
+                </Table.Row>
+              )
+            })}
+          </Table.Body>
+        </Table>
+      </TableContainer>
+      {selectedOrderForTransfer && (
+        <TransferOrdersModal
+          onDismiss={() => setSelectedOrderForTransfer(null)}
+          order={selectedOrderForTransfer}
+        />
+      )}
+    </>
   )
 }
 
