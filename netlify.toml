@@ -3,3 +3,4 @@
 
 [build]
   publish = "public/"
+  NODE_VERSION=14.8
