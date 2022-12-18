@@ -13,7 +13,7 @@ import Modal from "../../../../components/molecules/modal"
 import ProductVariantTree from "../../../../components/organisms/product-variant-tree"
 import AddProductsModal from "../../../../components/templates/add-products-modal"
 import PriceOverrides from "../../../../components/templates/price-overrides"
-import { mergeExistingWithDefault } from "../../details/utils"
+import { mergeExistingWithDefault } from "../../details_old/utils"
 import { usePriceListForm } from "../form/pricing-form-context"
 import { CreatePriceListPricesFormValues } from "../types"
 
@@ -38,10 +38,8 @@ const ProductPrices = ({
   onFileChosen,
 }: ProductPricesProps) => {
   const [showAdd, setShowAdd] = React.useState(false)
-  const [
-    selectedVariant,
-    setSelectedVariant,
-  ] = React.useState<ProductVariant | null>(null)
+  const [selectedVariant, setSelectedVariant] =
+    React.useState<ProductVariant | null>(null)
   const unselect = () => setSelectedVariant(null)
 
   const { prices, setPrices } = usePriceListForm()

@@ -2,7 +2,7 @@ import { Product } from "@medusajs/medusa"
 import { useAdminPriceListProducts } from "medusa-react"
 import * as React from "react"
 import Accordion from "../../../../components/organisms/accordion"
-import { merge } from "../../details/sections/prices-details/utils"
+import { merge } from "../../details_old/sections/prices-details/utils"
 import ProductPrices from "./product-prices"
 
 type PricesSectionProps = {

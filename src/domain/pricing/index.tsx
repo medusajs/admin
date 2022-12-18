@@ -2,7 +2,7 @@ import { Route, Routes, useNavigate } from "react-router-dom"
 import PlusIcon from "../../components/fundamentals/icons/plus-icon"
 import BodyCard from "../../components/organisms/body-card"
 import TableViewHeader from "../../components/organisms/custom-table-header"
-import PricingDetails from "./details"
+import PriceListDetails from "./details"
 import New from "./new"
 import PricingTable from "./pricing-table"
 
@@ -37,7 +37,7 @@ const Pricing = () => {
     <Routes>
       <Route index element={<PricingIndex />} />
       <Route path="/new" element={<New />} />
-      <Route path="/:id" element={<PricingDetails />} />
+      <Route path="/:id" element={<PriceListDetails />} />
     </Routes>
   )
 }
