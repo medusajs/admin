@@ -129,7 +129,7 @@ function AddScreen(props: {
       {/* === FOOTER === */}
 
       <div className="flex justify-end gap-2">
-        <Button size="small" variant="ghost" onClick={close}>
+        <Button size="small" variant="ghost" onClick={props.close}>
           Cancel
         </Button>
         <Button
@@ -208,6 +208,8 @@ function EditScreen(props: {
           "Sales channels removed from the scope",
           "success"
         )
+        setSelectedChannels({})
+        tableRef.current?.toggleAllRowsSelected(false)
       })
       .catch(() => {
         notification(
