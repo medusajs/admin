@@ -15,7 +15,7 @@ export const FulfillmentStatusComponent = ({ status }) => {
     case "requires_action":
       return <StatusDot title="Requires Action" variant="danger" />
     case "not_fulfilled":
-      return <StatusDot title="Awaits fulfillment" variant="danger" />
+      return <StatusDot title="Awaiting fulfillment" variant="danger" />
     default:
       return null
   }

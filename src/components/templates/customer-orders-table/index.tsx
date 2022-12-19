@@ -118,7 +118,7 @@ const CustomerOrdersTable = ({ id }: Props) => {
                   forceDropdown
                   actions={[
                     {
-                      label: "View",
+                      label: "Transfer order",
                       icon: <RefreshIcon size={"20"} />,
                       onClick: () => {
                         setSelectedOrderForTransfer(row.original as Order)
