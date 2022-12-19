@@ -118,7 +118,7 @@ export const VariantCard = ({
       ref={preview}
       data-handler-id={handlerId}
       className={clsx(
-        "grid grid-cols-[32px_1fr_1fr_48px] transition-all rounded-rounded hover:bg-grey-5 focus-within:bg-grey-5 h-16 py-xsmall pl-xsmall pr-base translate-y-0 translate-x-0",
+        "grid grid-cols-[32px_1fr_1fr_48px] transition-all rounded-rounded hover:bg-grey-5 focus-within:bg-grey-5 h-16 py-xsmall pl-xsmall pr-base translate-y-0 translate-x-0 relative z-10",
         {
           "bg-grey-5 opacity-50": isDragging,
         }
