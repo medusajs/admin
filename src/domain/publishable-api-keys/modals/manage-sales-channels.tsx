@@ -78,7 +78,7 @@ function AddScreen(props: {
   }
 
   return (
-    <div className="flex flex-col justify-between h-[100%] p-6">
+    <div className="flex flex-col justify-between h-full p-6">
       {/* === HEADER === */}
 
       <div className="flex items-center justify-between">
@@ -95,12 +95,13 @@ function AddScreen(props: {
       {/* === DIVIDER === */}
 
       <div className="flex-grow">
-        <div className="flex justify-between items-center gap-2">
+        <div className="my-8">
           <InputField
+            small
             name="name"
             type="string"
             value={search}
-            className="my-4 h-[40px]"
+            className="h-[32px]"
             placeholder="Find channels"
             prefix={<SearchIcon size={16} />}
             onChange={(ev) => setSearch(ev.target.value)}
@@ -170,6 +171,8 @@ function EditScreen(props: {
   const tableRef = useRef()
   const [selectedChannels, setSelectedChannels] = useState({})
 
+  const showRemoveControls = !!Object.keys(selectedChannels).length
+
   const notification = useNotification()
 
   const [offset, setOffset] = useState(0)
@@ -188,7 +191,7 @@ function EditScreen(props: {
   const { mutateAsync: removeSalesChannelsToKeyScope } =
     useAdminRemovePublishableKeySalesChannelsBatch(props.keyId)
 
-  const onSave = () => {
+  const onRemove = () => {
     removeSalesChannelsToKeyScope({
       sales_channel_ids: Object.keys(selectedChannels).map((id) => ({
         id,
@@ -227,38 +230,53 @@ function EditScreen(props: {
   )
 
   return (
-    <div className="flex flex-col justify-between h-[100%] p-6">
+    <div className="flex flex-col justify-between h-full p-6">
       {/* === HEADER === */}
 
       <div className="flex items-center justify-between">
         <h3 className="inter-large-semibold text-xl text-gray-900 flex items-center gap-2">
           Edit sales channels
         </h3>
-        <Button variant="ghost" onClick={props.close}>
+        <Button variant="secondary" className="p-2" onClick={props.close}>
           <CrossIcon size={20} className="text-grey-40" />
         </Button>
       </div>
       {/* === DIVIDER === */}
 
       <div className="flex-grow">
-        <div className="flex justify-between items-center gap-2">
+        <div className="flex justify-between items-center gap-2 my-8">
           <InputField
+            small
             name="name"
             type="string"
             value={search}
-            className="my-4 h-[40px]"
+            className="h-[32px]"
             placeholder="Find channels"
-            prefix={<SearchIcon size={16} />}
+            prefix={<SearchIcon size={14} />}
             onChange={(ev) => setSearch(ev.target.value)}
           />
 
-          <Button
-            className="flex-shrink-0 h-[40px]"
-            variant="secondary"
-            onClick={props.goAdd}
-          >
-            Add channels
-          </Button>
+          {showRemoveControls ? (
+            <div className="flex justify-between items-center h-[32px]">
+              <Button
+                size="small"
+                className="flex-shrink-0 h-[32px] text-rose-500"
+                variant="secondary"
+                onClick={onRemove}
+              >
+                Remove
+              </Button>
+            </div>
+          ) : (
+            <Button
+              size="small"
+              className="flex-shrink-0 h-[32px]"
+              variant="secondary"
+              onClick={props.goAdd}
+            >
+              Add channels
+            </Button>
+          )}
         </div>
 
         <SalesChannelTable
@@ -282,16 +300,8 @@ function EditScreen(props: {
       {/* === FOOTER === */}
 
       <div className="flex justify-end gap-2">
-        <Button size="small" variant="ghost" onClick={close}>
-          Cancel
-        </Button>
-        <Button
-          size="small"
-          variant="primary"
-          onClick={onSave}
-          disabled={!Object.keys(selectedChannels).length}
-        >
-          Remove and close
+        <Button size="small" variant="secondary" onClick={close}>
+          Close
         </Button>
       </div>
     </div>

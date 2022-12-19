@@ -57,7 +57,7 @@ function AddSalesChannelsSideModal(props: AddSalesChannelsSideModalProps) {
 
   return (
     <SideModal close={close} isVisible={!!isVisible}>
-      <div className="flex flex-col justify-between h-[100%] p-6">
+      <div className="flex flex-col justify-between h-full p-6">
         {/* === HEADER === */}
 
         <div className="flex items-center justify-between">
@@ -71,12 +71,13 @@ function AddSalesChannelsSideModal(props: AddSalesChannelsSideModalProps) {
         {/* === DIVIDER === */}
 
         <div className="flex-grow">
-          <div className="flex justify-between items-center gap-2">
+          <div className="my-8">
             <InputField
+              small
               name="name"
               type="string"
               value={search}
-              className="my-4 h-[40px]"
+              className="h-[32px]"
               placeholder="Find channels"
               prefix={<SearchIcon size={16} />}
               onChange={(ev) => setSearch(ev.target.value)}
