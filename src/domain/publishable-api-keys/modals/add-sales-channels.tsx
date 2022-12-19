@@ -64,14 +64,18 @@ function AddSalesChannelsSideModal(props: AddSalesChannelsSideModalProps) {
           <h3 className="inter-large-semibold text-xl text-gray-900 flex items-center gap-2">
             Add sales channels
           </h3>
-          <Button variant="secondary" className="p-2" onClick={props.close}>
-            <CrossIcon size={20} className="text-grey-40" />
+          <Button
+            variant="secondary"
+            className="w-8 h-8 p-2"
+            onClick={props.close}
+          >
+            <CrossIcon size={20} className="text-grey-50" />
           </Button>
         </div>
         {/* === DIVIDER === */}
 
         <div className="flex-grow">
-          <div className="my-8">
+          <div className="my-6">
             <InputField
               small
               name="name"

@@ -83,19 +83,27 @@ function AddScreen(props: {
 
       <div className="flex items-center justify-between">
         <h3 className="inter-large-semibold text-xl text-gray-900 flex items-center gap-2">
-          <Button className="p-2" variant="secondary" onClick={props.goBack}>
-            <UTurnIcon size={20} />
+          <Button
+            variant="secondary"
+            className="w-8 h-8 p-2 text-grey-50"
+            onClick={props.goBack}
+          >
+            <UTurnIcon size={18} />
           </Button>
           Add sales channels
         </h3>
-        <Button variant="secondary" className="p-2" onClick={props.close}>
-          <CrossIcon size={20} className="text-grey-40" />
+        <Button
+          variant="secondary"
+          className="w-8 h-8 p-2"
+          onClick={props.close}
+        >
+          <CrossIcon size={20} className="text-grey-50" />
         </Button>
       </div>
       {/* === DIVIDER === */}
 
       <div className="flex-grow">
-        <div className="my-8">
+        <div className="my-6">
           <InputField
             small
             name="name"
@@ -243,14 +251,18 @@ function EditScreen(props: {
         <h3 className="inter-large-semibold text-xl text-gray-900 flex items-center gap-2">
           Edit sales channels
         </h3>
-        <Button variant="secondary" className="p-2" onClick={props.close}>
-          <CrossIcon size={20} className="text-grey-40" />
+        <Button
+          variant="secondary"
+          className="w-8 h-8 p-2"
+          onClick={props.close}
+        >
+          <CrossIcon size={20} className="text-grey-50" />
         </Button>
       </div>
       {/* === DIVIDER === */}
 
       <div className="flex-grow">
-        <div className="flex justify-between items-center gap-2 my-8">
+        <div className="flex justify-between items-center gap-2 my-6">
           <InputField
             small
             name="name"
