@@ -43,10 +43,10 @@ const COLUMNS = [
     Cell: ({ row }) => {
       return (
         <span
-          title={row.original.description}
+          title={row.original.name}
           className="truncate block max-w-[160px]"
         >
-          {row.original.description}
+          {row.original.name}
         </span>
       )
     },
