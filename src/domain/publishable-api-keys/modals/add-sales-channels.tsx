@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react"
+import React, { useRef, useState } from "react"
 import { useAdminSalesChannels } from "medusa-react"
 import { SalesChannel } from "@medusajs/medusa"
 
@@ -11,17 +11,28 @@ import SalesChannelTable from "../tables/sales-channels-table"
 
 const LIMIT = 12
 
+const containsIdenticalKeys = (
+  a: Record<string, any>,
+  b: Record<string, any>
+) => {
+  a = Object.keys(a)
+  b = Object.keys(b)
+  return a.length === b.length && a.every((value) => b.includes(value))
+}
+
 type AddSalesChannelsSideModalProps = {
   close: () => void
   isVisible: boolean
+  selectedChannels: Record<string, SalesChannel>
   setSelectedChannels: (arg: any) => void
 }
+
 /**
  * Modal for adding sales channels to a new PK during creation.
  */
 function AddSalesChannelsSideModal(props: AddSalesChannelsSideModalProps) {
   const tableRef = useRef()
-  const { isVisible, close, setSelectedChannels } = props
+  const { isVisible, close, selectedChannels, setSelectedChannels } = props
 
   const [_selectedChannels, _setSelectedChannels] = useState<
     Record<number, SalesChannel>
@@ -39,24 +50,28 @@ function AddSalesChannelsSideModal(props: AddSalesChannelsSideModalProps) {
     { keepPreviousData: true }
   )
 
-  useEffect(() => {
-    if (!props.isVisible) {
-      setOffset(0)
-      setSearch("")
-
-      Object.values(_selectedChannels).map((channel) =>
-        tableRef.current?.toggleRowSelected(channel.id, true)
-      )
-    }
-  }, [props.isVisible])
-
   const onSave = () => {
     setSelectedChannels(_selectedChannels)
-    props.close()
+    setOffset(0)
+    setSearch("")
+    close()
+  }
+
+  const onClose = () => {
+    setOffset(0)
+    setSearch("")
+
+    _setSelectedChannels(selectedChannels)
+
+    Object.values(selectedChannels).map((channel) =>
+      tableRef.current?.toggleRowSelected(channel.id, true)
+    )
+
+    close()
   }
 
   return (
-    <SideModal close={close} isVisible={!!isVisible}>
+    <SideModal close={onClose} isVisible={!!isVisible}>
       <div className="flex flex-col justify-between h-full p-6">
         {/* === HEADER === */}
 
@@ -109,15 +124,17 @@ function AddSalesChannelsSideModal(props: AddSalesChannelsSideModalProps) {
         {/* === FOOTER === */}
 
         <div className="flex justify-end gap-2">
-          <Button size="small" variant="ghost" onClick={close}>
+          <Button size="small" variant="ghost" onClick={onClose}>
             Cancel
           </Button>
           <Button
             size="small"
             variant="primary"
             onClick={onSave}
-            // TODO: allow for empty as well (case where previous selection needs to be set to null)
-            disabled={!Object.keys(_selectedChannels).length}
+            disabled={containsIdenticalKeys(
+              _selectedChannels,
+              selectedChannels
+            )}
           >
             Save and close
           </Button>

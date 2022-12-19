@@ -25,7 +25,7 @@ import AddSalesChannelsSideModal from "../modals/add-sales-channels"
 
 type AddSalesChannelsSectionProps = {
   setSelectedChannels: (arg: any) => void
-  selectedChannels: Map<string, SalesChannel>
+  selectedChannels: Record<string, SalesChannel>
 }
 
 /**
