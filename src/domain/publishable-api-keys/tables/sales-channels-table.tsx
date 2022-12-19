@@ -11,6 +11,7 @@ import Table from "../../../components/molecules/table"
 import TableContainer from "../../../components/organisms/table-container"
 import IndeterminateCheckbox from "../../../components/molecules/indeterminate-checkbox"
 import { TablePagination } from "../../../components/organisms/table-container/pagination"
+import clsx from "clsx"
 
 const LIMIT = 12
 
@@ -152,7 +153,14 @@ const SalesChannelTable = forwardRef(
               {table.rows.map((row) => {
                 table.prepareRow(row)
                 return (
-                  <Table.Row color={"inherit"} {...row.getRowProps()}>
+                  <Table.Row
+                    color="inherit"
+                    onClick={() => table.toggleRowSelected(row.id)}
+                    className={clsx("cursor-pointer", {
+                      "bg-grey-5": row.isSelected,
+                    })}
+                    {...row.getRowProps()}
+                  >
                     {row.cells.map((cell) => {
                       return (
                         <Table.Cell {...cell.getCellProps()}>

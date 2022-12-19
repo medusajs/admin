@@ -33,7 +33,7 @@ import Placeholder from "./placeholder"
 /* ************** TABLE CONFIG ************** */
 /* ****************************************** */
 
-const DEFAULT_PAGE_SIZE = 12
+const DEFAULT_PAGE_SIZE = 7
 
 /**
  * Default filtering config for querying products endpoint.
@@ -296,7 +296,7 @@ const ProductRow = ({ row, actions, onClick, disabled }) => {
       onClick={!disabled && onClick}
       color={"inherit"}
       className={clsx("cursor-pointer", {
-        "bg-grey-5 cursor-pointer": row.isSelected,
+        "bg-grey-5": row.isSelected,
         "opacity-40 cursor-not-allowed pointer-events-none": disabled,
       })}
       actions={actions}
@@ -469,10 +469,8 @@ function SalesChannelProductsSelectModal(
     expand: "sales_channels",
   })
 
-  const {
-    mutate: addProductsBatch,
-    isLoading: isMutating,
-  } = useAdminAddProductsToSalesChannel(salesChannel.id)
+  const { mutate: addProductsBatch, isLoading: isMutating } =
+    useAdminAddProductsToSalesChannel(salesChannel.id)
 
   const handleSubmit = () => {
     addProductsBatch({ product_ids: selectedRowIds.map((i) => ({ id: i })) })
