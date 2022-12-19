@@ -24,6 +24,7 @@ import ClipboardCopyIcon from "../../../components/fundamentals/icons/clipboard-
 import CornerDownRightIcon from "../../../components/fundamentals/icons/corner-down-right-icon"
 import DollarSignIcon from "../../../components/fundamentals/icons/dollar-sign-icon"
 import MailIcon from "../../../components/fundamentals/icons/mail-icon"
+import RefreshIcon from "../../../components/fundamentals/icons/refresh-icon"
 import TruckIcon from "../../../components/fundamentals/icons/truck-icon"
 import { ActionType } from "../../../components/molecules/actionables"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
@@ -31,10 +32,12 @@ import BodyCard from "../../../components/organisms/body-card"
 import RawJSON from "../../../components/organisms/raw-json"
 import Timeline from "../../../components/organisms/timeline"
 import { AddressType } from "../../../components/templates/address-form"
+import TransferOrdersModal from "../../../components/templates/transfer-orders-modal"
 import { FeatureFlagContext } from "../../../context/feature-flag"
 import useClipboard from "../../../hooks/use-clipboard"
 import useImperativeDialog from "../../../hooks/use-imperative-dialog"
 import useNotification from "../../../hooks/use-notification"
+import useToggleState from "../../../hooks/use-toggle-state"
 import { isoAlpha2Countries } from "../../../utils/countries"
 import { getErrorMessage } from "../../../utils/error-messages"
 import extractCustomerName from "../../../utils/extract-customer-name"
@@ -129,6 +132,9 @@ const OrderDetails = () => {
     email: string
   }>(null)
 
+  const { state: showTransferOrderModal, toggle: toggleTransferOrderModal } =
+    useToggleState()
+
   const [showFulfillment, setShowFulfillment] = useState(false)
   const [showRefund, setShowRefund] = useState(false)
   const [fullfilmentToShip, setFullfilmentToShip] = useState(null)
@@ -216,6 +222,11 @@ const OrderDetails = () => {
       label: "Go to Customer",
       icon: <DetailsIcon size={"20"} />,
       onClick: () => navigate(`/a/customers/${order?.customer.id}`),
+    },
+    {
+      label: "Transfer ownership",
+      icon: <RefreshIcon size={"20"} />,
+      onClick: () => toggleTransferOrderModal(),
     },
   ]
 
@@ -382,7 +393,7 @@ const OrderDetails = () => {
                             totalAmount={-1 * order.gift_card_total}
                             totalTitle={
                               <div className="flex inter-small-regular text-grey-90 items-center">
-                                Gift card:{" "}
+                                Gift card:
                                 <Badge className="ml-3" variant="default">
                                   {giftCard.code}
                                 </Badge>
@@ -640,6 +651,12 @@ const OrderDetails = () => {
               <CreateRefundModal
                 order={order}
                 onDismiss={() => setShowRefund(false)}
+              />
+            )}
+            {showTransferOrderModal && (
+              <TransferOrdersModal
+                order={order}
+                onDismiss={toggleTransferOrderModal}
               />
             )}
             {fullfilmentToShip && (
