@@ -38,10 +38,32 @@ const COLUMNS = [
   {
     Header: "Title",
     accessor: "name",
+    maxWidth: 160,
+    width: 160,
+    Cell: ({ row }) => {
+      return (
+        <span
+          title={row.original.description}
+          className="truncate block max-w-[160px]"
+        >
+          {row.original.description}
+        </span>
+      )
+    },
   },
   {
     Header: "Description",
     accessor: "description",
+    Cell: ({ row }) => {
+      return (
+        <span
+          title={row.original.description}
+          className="truncate block max-w-[200px]"
+        >
+          {row.original.description}
+        </span>
+      )
+    },
   },
 ]
 
@@ -142,7 +164,11 @@ const SalesChannelTable = forwardRef(
               {table.headerGroups?.map((headerGroup) => (
                 <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
                   {headerGroup.headers.map((col) => (
-                    <Table.HeadCell {...col.getHeaderProps()}>
+                    <Table.HeadCell
+                      {...col.getHeaderProps({
+                        style: { width: col.width, maxWidth: col.maxWidth },
+                      })}
+                    >
                       {col.render("Header")}
                     </Table.HeadCell>
                   ))}
@@ -163,7 +189,14 @@ const SalesChannelTable = forwardRef(
                   >
                     {row.cells.map((cell) => {
                       return (
-                        <Table.Cell {...cell.getCellProps()}>
+                        <Table.Cell
+                          {...cell.getCellProps({
+                            style: {
+                              width: cell.column.width,
+                              maxWidth: cell.column.maxWidth,
+                            },
+                          })}
+                        >
                           {cell.render("Cell")}
                         </Table.Cell>
                       )
