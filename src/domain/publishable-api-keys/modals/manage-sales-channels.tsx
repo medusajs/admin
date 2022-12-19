@@ -88,7 +88,7 @@ function AddScreen(props: {
           </Button>
           Add sales channels
         </h3>
-        <Button variant="ghost" onClick={props.close}>
+        <Button variant="secondary" className="p-2" onClick={props.close}>
           <CrossIcon size={20} className="text-grey-40" />
         </Button>
       </div>
@@ -171,7 +171,7 @@ function EditScreen(props: {
   const tableRef = useRef()
   const [selectedChannels, setSelectedChannels] = useState({})
 
-  const showRemoveControls = !!Object.keys(selectedChannels).length
+  const selectedCount = Object.keys(selectedChannels).length
 
   const notification = useNotification()
 
@@ -190,6 +190,11 @@ function EditScreen(props: {
 
   const { mutateAsync: removeSalesChannelsToKeyScope } =
     useAdminRemovePublishableKeySalesChannelsBatch(props.keyId)
+
+  const onDeselect = () => {
+    setSelectedChannels({})
+    tableRef.current?.toggleAllRowsSelected(false)
+  }
 
   const onRemove = () => {
     removeSalesChannelsToKeyScope({
@@ -211,7 +216,6 @@ function EditScreen(props: {
           "success"
         )
       })
-      .finally(close)
   }
 
   useEffect(() => {
@@ -256,8 +260,19 @@ function EditScreen(props: {
             onChange={(ev) => setSearch(ev.target.value)}
           />
 
-          {showRemoveControls ? (
-            <div className="flex justify-between items-center h-[32px]">
+          {selectedCount ? (
+            <div className="flex gap-2 justify-between items-center h-[32px]">
+              <span className="whitespace-nowrap text-small text-grey-50 px-2">
+                {selectedCount} selected
+              </span>
+              <Button
+                size="small"
+                className="flex-shrink-0 h-[32px]"
+                variant="secondary"
+                onClick={onDeselect}
+              >
+                Deselect
+              </Button>
               <Button
                 size="small"
                 className="flex-shrink-0 h-[32px] text-rose-500"

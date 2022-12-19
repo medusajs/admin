@@ -64,7 +64,7 @@ function AddSalesChannelsSideModal(props: AddSalesChannelsSideModalProps) {
           <h3 className="inter-large-semibold text-xl text-gray-900 flex items-center gap-2">
             Add sales channels
           </h3>
-          <Button variant="ghost" onClick={props.close}>
+          <Button variant="secondary" className="p-2" onClick={props.close}>
             <CrossIcon size={20} className="text-grey-40" />
           </Button>
         </div>
