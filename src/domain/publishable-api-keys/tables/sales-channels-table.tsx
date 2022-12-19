@@ -206,6 +206,14 @@ const SalesChannelTable = forwardRef(
               })}
             </Table.Body>
           </Table>
+
+          {!isLoading && !data?.length && (
+            <div className="absolute w-full h-full flex justify-center items-center">
+              <span className="text-sma text-grey-40">
+                No added sales channels
+              </span>
+            </div>
+          )}
         </TableContainer>
         <div className="absolute w-[506px]" style={{ bottom: 100 }}>
           <TablePagination
