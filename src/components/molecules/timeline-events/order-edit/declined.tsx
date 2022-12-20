@@ -23,9 +23,7 @@ const EditDeclined: React.FC<EditDeclinedProps> = ({ event }) => {
     enabled: !declinedByAdmin && !!event.edit.declined_by,
   })
 
-  const note = declinedByAdmin
-    ? orderEdit?.internal_note
-    : orderEdit?.declined_reason
+  const note = orderEdit?.declined_reason
 
   return (
     <EventContainer
