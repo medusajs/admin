@@ -100,13 +100,14 @@ type PublishableKeyTableRowProps = {
   row: Row<PublishableApiKey>
   isRevoked: boolean
   showDetails: () => void
+  showChannelsModal: () => void
 }
 
 /**
  * Component rendering a single PK table row.
  */
 function PublishableKeyTableRow(props: PublishableKeyTableRowProps) {
-  const { row, isRevoked, showDetails } = props
+  const { row, isRevoked, showChannelsModal, showDetails } = props
   const pubKeyId = row.original.id
 
   const [showDelete, setShowDelete] = useState(false)
@@ -122,6 +123,11 @@ function PublishableKeyTableRow(props: PublishableKeyTableRowProps) {
     {
       label: "Edit API key details",
       onClick: showDetails,
+      icon: <EditIcon size={16} />,
+    },
+    {
+      label: "Edit sales channels",
+      onClick: showChannelsModal,
       icon: <EditIcon size={16} />,
     },
     {
@@ -180,6 +186,7 @@ function PublishableKeyTableRow(props: PublishableKeyTableRowProps) {
 
 type PublishableApiKeysTableProps = {
   showDetailsModal: (pubKey: PublishableApiKey) => void
+  showChannelsModal: (pubKey: PublishableApiKey) => void
 }
 
 /**
@@ -272,8 +279,10 @@ function PublishableApiKeysTable(props: PublishableApiKeysTableProps) {
             table.prepareRow(row)
             return (
               <PublishableKeyTableRow
+                key={row.id}
                 row={row}
                 showDetails={() => props.showDetailsModal(row.original)}
+                showChannelsModal={() => props.showChannelsModal(row.original)}
                 isRevoked={!!row.original.revoked_at}
               />
             )

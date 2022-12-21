@@ -13,6 +13,7 @@ import InputHeader, { InputHeaderProps } from "../../fundamentals/input-header"
 
 export type InputProps = Omit<React.ComponentPropsWithRef<"input">, "prefix"> &
   InputHeaderProps & {
+    small?: boolean
     label?: string
     deletable?: boolean
     onDelete?: MouseEventHandler<HTMLSpanElement>
@@ -26,6 +27,7 @@ export type InputProps = Omit<React.ComponentPropsWithRef<"input">, "prefix"> &
 const InputField = React.forwardRef<HTMLInputElement, InputProps>(
   (
     {
+      small,
       placeholder,
       label,
       name,
@@ -87,18 +89,22 @@ const InputField = React.forwardRef<HTMLInputElement, InputProps>(
         )}
         <div
           className={clsx(
-            "w-full flex items-center bg-grey-5 border border-gray-20 px-small py-xsmall rounded-rounded h-10 focus-within:shadow-input focus-within:border-violet-60",
+            "w-full flex items-center bg-grey-5 border border-gray-20 px-small py-xsmall rounded-rounded focus-within:shadow-input focus-within:border-violet-60",
             {
               "border-rose-50 focus-within:shadow-cta focus-within:shadow-rose-60/10 focus-within:border-rose-50":
                 errors && name && errors[name],
-            }
+            },
+            small ? "h-8" : "h-10"
           )}
         >
           {prefix ? (
             <span className="text-grey-40 mr-2xsmall">{prefix}</span>
           ) : null}
           <input
-            className="bg-transparent outline-none outline-0 w-full remove-number-spinner leading-base text-grey-90 font-normal caret-violet-60 placeholder-grey-40"
+            className={clsx(
+              "bg-transparent outline-none outline-0 w-full remove-number-spinner leading-base text-grey-90 font-normal caret-violet-60 placeholder-grey-40",
+              { "text-small": small, "pt-[1px]": small }
+            )}
             ref={inputRef}
             autoComplete="off"
             name={name}

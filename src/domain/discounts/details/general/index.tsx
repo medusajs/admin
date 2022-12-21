@@ -50,8 +50,8 @@ const General: React.FC<GeneralProps> = ({ discount }) => {
         is_disabled: !discount.is_disabled,
       },
       {
-        onSuccess: () => {
-          const pastTense = !discount.is_disabled ? "published" : "drafted"
+        onSuccess: ({ discount: { is_disabled } }) => {
+          const pastTense = !is_disabled ? "published" : "drafted"
           notification(
             "Success",
             `Discount ${pastTense} successfully`,

@@ -237,6 +237,7 @@ const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
             immediateSearchFocus
             enableSearch
             searchPlaceholder="Search Products.."
+            searchValue={query}
             handleSearch={handleSearch}
             {...getTableProps()}
           >

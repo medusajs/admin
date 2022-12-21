@@ -64,5 +64,11 @@ declare module "react-select/dist/declarations/src/Select" {
      * @defaultValue `undefined`
      */
     customStyles?: SelectComponentStyles
+    /**
+     *
+     * @defaultValue false
+     *
+     */
+    truncateOption?: boolean
   }
 }
