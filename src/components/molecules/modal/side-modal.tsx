@@ -22,6 +22,7 @@ function SideModal(props: SideModalProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ ease: "easeInOut" }}
             style={{
               position: "absolute",
               top: 0,
@@ -33,6 +34,7 @@ function SideModal(props: SideModalProps) {
             }}
           ></motion.div>
           <motion.div
+            transition={{ ease: "easeInOut" }}
             initial={{ right: -MODAL_WIDTH }}
             style={{
               position: "fixed",
@@ -43,7 +45,7 @@ function SideModal(props: SideModalProps) {
               top: 0,
               zIndex: 9999,
             }}
-            className="rounded border"
+            className="rounded border overflow-hidden"
             animate={{ right: 0 }}
             exit={{ right: -MODAL_WIDTH }}
           >
