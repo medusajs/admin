@@ -4,6 +4,7 @@ import React from "react"
 import { OrderEditEvent } from "../../../../hooks/use-build-timeline"
 import XCircleIcon from "../../../fundamentals/icons/x-circle-icon"
 import EventContainer from "../event-container"
+import { isDeclinedByUser } from "../../../../domain/orders/edit/utils/user"
 import { ByLine } from "."
 
 type EditDeclinedProps = {
@@ -13,7 +14,7 @@ type EditDeclinedProps = {
 const EditDeclined: React.FC<EditDeclinedProps> = ({ event }) => {
   const { order_edit: orderEdit } = useAdminOrderEdit(event.edit.id)
 
-  const declinedByAdmin = event.edit.declined_by?.startsWith("usr")
+  const declinedByAdmin = isDeclinedByUser(event.edit)
 
   const { user } = useAdminUser(event.edit.declined_by as string, {
     enabled: declinedByAdmin && !!event.edit.declined_by,
