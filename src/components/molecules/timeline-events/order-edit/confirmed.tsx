@@ -4,6 +4,7 @@ import React from "react"
 import { OrderEditEvent } from "../../../../hooks/use-build-timeline"
 import FastDeliveryIcon from "../../../fundamentals/icons/fast-delivery-icon"
 import EventContainer from "../event-container"
+import { isConfirmedByUser } from "../../../../domain/orders/edit/utils/user"
 import { ByLine } from "."
 
 type ConfirmedProps = {
@@ -11,7 +12,7 @@ type ConfirmedProps = {
 }
 
 const EditConfirmed: React.FC<ConfirmedProps> = ({ event }) => {
-  const confirmedByAdmin = event.edit.confirmed_by?.startsWith("usr")
+  const confirmedByAdmin = isConfirmedByUser(event.edit)
 
   const title = `Order Edit ${
     !confirmedByAdmin ? "confirmation accepted" : "force confirmed"
