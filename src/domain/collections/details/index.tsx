@@ -10,7 +10,7 @@ import Spinner from "../../../components/atoms/spinner"
 import EditIcon from "../../../components/fundamentals/icons/edit-icon"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import Actionables from "../../../components/molecules/actionables"
-import ViewRaw from "../../../components/molecules/view-raw"
+import JSONView from "../../../components/molecules/json-view"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
 import { MetadataField } from "../../../components/organisms/metadata"
 import Section from "../../../components/organisms/section"
@@ -150,7 +150,7 @@ const CollectionDetails = () => {
                 <div className="mt-large flex flex-col gap-y-base">
                   <h3 className="inter-base-semibold">Metadata</h3>
                   <div>
-                    <ViewRaw raw={collection.metadata} name="metadata" />
+                    <JSONView data={collection.metadata} />
                   </div>
                 </div>
               )}
