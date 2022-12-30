@@ -1,4 +1,5 @@
-import { ProductVariant } from "@medusajs/medusa"
+import { Product, ProductVariant, Region } from "@medusajs/medusa"
+import { PricedVariant } from "@medusajs/medusa/dist/types/pricing"
 import clsx from "clsx"
 import React, { useContext, useEffect, useState } from "react"
 import { Controller } from "react-hook-form"
@@ -23,14 +24,14 @@ import { useNewOrderForm } from "../form"
 import CustomItemSubModal from "./custom-item-sub-modal"
 
 const Items = () => {
-  const { enableNextPage, disableNextPage, nextStepEnabled } = React.useContext(
-    SteppedContext
-  )
+  const { enableNextPage, disableNextPage, nextStepEnabled } =
+    React.useContext(SteppedContext)
 
   const {
     context: { region, items },
     form: { control, register, setValue, getValues },
   } = useNewOrderForm()
+
   const { fields, append, remove } = items
 
   const [editQuantity, setEditQuantity] = useState(-1)
@@ -38,7 +39,7 @@ const Items = () => {
 
   const layeredContext = useContext(LayeredModalContext)
 
-  const addItem = (variants: ProductVariant[]) => {
+  const addItem = (variants: PricedVariant[]) => {
     const ids = fields.map((field) => field.variant_id)
     const itemsToAdd = variants.filter((v) => !ids.includes(v.id))
 
@@ -46,10 +47,10 @@ const Items = () => {
       itemsToAdd.map((item) => ({
         quantity: 1,
         variant_id: item.id,
-        title: item.title,
-        unit_price: extractUnitPrice(item, region, false),
-        product_title: item.product.title,
-        thumbnail: item.product.thumbnail,
+        title: item.title as string,
+        unit_price: extractUnitPrice(item, region as Region, false),
+        product_title: (item.product as Product)?.title,
+        thumbnail: (item.product as Product)?.thumbnail,
       }))
     )
 
