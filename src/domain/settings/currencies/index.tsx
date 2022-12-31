@@ -1,10 +1,10 @@
-import { JsonViewer } from "@textea/json-viewer"
 import { useAdminStore } from "medusa-react"
 import { useNavigate } from "react-router-dom"
 import BackButton from "../../../components/atoms/back-button"
 import Spinner from "../../../components/atoms/spinner"
 import Tooltip from "../../../components/atoms/tooltip"
 import FeatureToggle from "../../../components/fundamentals/feature-toggle"
+import JSONView from "../../../components/molecules/json-view"
 import Section from "../../../components/organisms/section"
 import { useAnalytics } from "../../../context/analytics"
 import { getErrorStatus } from "../../../utils/get-error-status"
@@ -42,12 +42,8 @@ const CurrencySettings = () => {
       <Section title="Error">
         <p className="inter-base-regular">{message}</p>
 
-        <div className="mt-base bg-grey-5 rounded-rounded px-base py-xsmall">
-          <JsonViewer
-            rootName="stack_trace"
-            defaultInspectDepth={0}
-            value={JSON.parse(JSON.stringify(error))}
-          />
+        <div className="mt-base px-base py-xsmall">
+          <JSONView data={JSON.parse(JSON.stringify(error))} />
         </div>
       </Section>
     )
