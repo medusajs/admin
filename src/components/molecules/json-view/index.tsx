@@ -1,6 +1,6 @@
 import * as Collapsible from "@radix-ui/react-collapsible"
 import clsx from "clsx"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { JSONTree } from "react-json-tree"
 import useClipboard from "../../../hooks/use-clipboard"
 import Button from "../../fundamentals/button"
@@ -21,16 +21,21 @@ const JSONView = ({ data }: JSONViewProps) => {
     }
   )
 
+  const length = useMemo(() => {
+    return Object.keys(data).length
+  }, [data])
+
   return (
     <div className="px-base py-xsmall rounded-rounded bg-grey-5 w-full">
       <Collapsible.Root open={expanded} onOpenChange={setExpanded}>
         <Collapsible.Trigger asChild>
           <div className="flex items-center justify-between cursor-pointer">
             <div className="flex items-center gap-x-xsmall inter-base-regular">
-              <p className="inter-base-semibold">{expanded ? "{" : "{}"}</p>
+              <p className="inter-base-semibold">
+                {expanded ? "{" : length > 0 ? "{ ... }" : "{}"}
+              </p>
               <span className="text-grey-50">
-                ({Object.keys(data).length}{" "}
-                {Object.keys(data).length === 1 ? "item" : "items"})
+                ({length} {length === 1 ? "item" : "items"})
               </span>
             </div>
             <Button variant="ghost" size="small" className="text-grey-50">
