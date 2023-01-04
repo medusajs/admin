@@ -72,7 +72,7 @@ const GeneralSection = ({ product }: Props) => {
           />
         }
       >
-        <p className="inter-base-regular text-grey-50 mt-2 whitespace-pre-wrap">
+        <p className="mt-2 whitespace-pre-wrap inter-base-regular text-grey-50">
           {product.description}
         </p>
         <ProductTags product={product} />
@@ -100,7 +100,7 @@ type DetailProps = {
 
 const Detail = ({ title, value }: DetailProps) => {
   return (
-    <div className="flex justify-between items-center inter-base-regular text-grey-50">
+    <div className="flex items-center justify-between inter-base-regular text-grey-50">
       <p>{title}</p>
       <p>{value ? value : "–"}</p>
     </div>
@@ -109,7 +109,7 @@ const Detail = ({ title, value }: DetailProps) => {
 
 const ProductDetails = ({ product }: Props) => {
   return (
-    <div className="flex flex-col gap-y-3 mt-8">
+    <div className="flex flex-col mt-8 gap-y-3">
       <h2 className="inter-base-semibold">Details</h2>
       <Detail title="Subtitle" value={product.subtitle} />
       <Detail title="Handle" value={product.handle} />
@@ -129,7 +129,7 @@ const ProductTags = ({ product }: Props) => {
   }
 
   return (
-    <ul className="flex items-center gap-x-1 mt-4">
+    <ul className="flex flex-wrap items-center gap-1 mt-4">
       {product.tags.map((t) => (
         <li key={t.id}>
           <div className="text-grey-50 bg-grey-10 inter-small-semibold px-3 py-[6px] rounded-rounded">
