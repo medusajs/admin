@@ -69,14 +69,23 @@ const DeleteDialog = ({
   )
 }
 
-type ImperativeDialogProps = {
-  heading: string
-  text: string
-  confirmText?: string
-  cancelText?: string
-  extraConfirmation?: boolean
-  entityName?: string
-}
+type ImperativeDialogProps =
+  | {
+      heading: string
+      text: string
+      confirmText?: string
+      cancelText?: string
+    } & (
+      | {
+          extraConfirmation: true
+          entityName: string
+        }
+      | {
+          extraConfirmation: undefined
+          entityName: undefined
+        }
+    )
+
 const useImperativeDialog = () => {
   return ({
     heading,
