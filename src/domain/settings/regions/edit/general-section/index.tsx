@@ -28,8 +28,10 @@ const GeneralSection = ({ region }: Props) => {
 
   const handleDelete = async () => {
     const shouldDelete = await dialog({
-      heading: "Delete Collection",
-      text: "Are you sure you want to delete this collection?",
+      heading: "Delete Region",
+      text: "Are you sure you want to delete this region?",
+      extraConfirmation: true,
+      entityName: region.name,
     })
 
     if (shouldDelete) {
