@@ -34,7 +34,7 @@ const DeleteDialog = ({
               </span>
               <InputField
                 autoFocus={true}
-                placeholder={""}
+                placeholder={entityName}
                 className={"mt-base"}
                 onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
                   setConfirmationString(event.target.value)
