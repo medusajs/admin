@@ -177,13 +177,20 @@ const OrderEditLine = ({
             )}
           </div>
           <div className="flex flex-col justify-center">
-            <div>
+            <div className="flex gap-2 items-center">
               <span
-                className={clsx("inter-small-regular text-grey-900", {
+                className={clsx("font-semibold text-grey-900", {
                   "text-gray-400": isLocked,
                 })}
               >
                 {item.title}
+              </span>
+              <span
+                className={clsx("text-gray-500 flex gap-3", {
+                  "text-gray-400": isLocked,
+                })}
+              >
+                ({item.variant?.sku})
               </span>
             </div>
             <div className="flex items-center">
@@ -200,19 +207,13 @@ const OrderEditLine = ({
               )}
 
               <div className="min-h-[20px]">
-                {item?.variant && (
+                {item?.variant?.options && (
                   <span
-                    className={clsx(
-                      "inter-small-regular text-gray-500 flex gap-3",
-                      {
-                        "text-gray-400": isLocked,
-                      }
-                    )}
+                    className={clsx("text-gray-500 flex gap-3", {
+                      "text-gray-400": isLocked,
+                    })}
                   >
-                    {item.variant.title}
-                    {item.variant.sku && (
-                      <CopyToClipboard value={item.variant.sku} iconSize={14} />
-                    )}
+                    {item.variant.options.map((o) => o.value).join("*")}
                   </span>
                 )}
               </div>

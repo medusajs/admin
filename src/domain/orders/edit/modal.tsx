@@ -262,36 +262,39 @@ function OrderEditModal(props: OrderEditModalProps) {
           <h1 className="inter-xlarge-semibold">Edit Order</h1>
         </Modal.Header>
         <Modal.Content>
-          <div className="flex justify-between mb-6">
-            <span className="text-gray-900 font-semibold">Items</span>
-            <div className="flex gap-2 items-center justify-between">
+          <div className="flex justify-between items-center mb-4">
+            <span className="text-gray-900 text-large font-semibold">
+              Items
+            </span>
+            <div className="flex items-center justify-between">
               <Button
                 size="small"
                 variant="ghost"
-                className="border border-grey-20 text-gray-900 flex-shrink-0"
+                className="border border-grey-20 text-gray-900 flex-shrink-0 h-[32px] mr-2"
                 onClick={() =>
                   layeredModalContext.push(addProductVariantScreen)
                 }
               >
                 Add items
               </Button>
+              <Button
+                size="small"
+                variant="secondary"
+                className={clsx("h-full flex-shrink-0", {
+                  "focus:bg-grey-20": showFilter,
+                })}
+                onClick={toggleFilter}
+              >
+                <SearchIcon size={16} className="text-gray-500" />
+              </Button>
               {showFilter && (
                 <InputField
+                  small
                   value={filterTerm}
                   placeholder="Filter items..."
                   onChange={(e) => setFilterTerm(e.target.value)}
                 />
               )}
-              <Button
-                size="small"
-                variant="secondary"
-                className={clsx("h-full flex-shrink-0", {
-                  "bg-gray-100": showFilter,
-                })}
-                onClick={toggleFilter}
-              >
-                <SearchIcon size={18} className="text-gray-500" />
-              </Button>
             </div>
           </div>
 
