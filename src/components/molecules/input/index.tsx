@@ -118,7 +118,7 @@ const InputField = React.forwardRef<HTMLInputElement, InputProps>(
           {deletable && (
             <button
               onClick={onDelete}
-              className="text-grey-50 w-4 h-4 hover:bg-grey-10 focus:bg-grey-20 rounded-soft cursor-pointer outline-none ml-2 flex items-center justify-center pb-px"
+              className="flex items-center justify-center w-4 h-4 pb-px ml-2 outline-none cursor-pointer text-grey-50 hover:bg-grey-10 focus:bg-grey-20 rounded-soft"
               type="button"
             >
               &times;
@@ -126,11 +126,11 @@ const InputField = React.forwardRef<HTMLInputElement, InputProps>(
           )}
 
           {fieldProps.type === "number" && (
-            <div className="flex h-full items-center self-end">
+            <div className="flex items-center self-end h-full">
               <button
                 onClick={onNumberDecrement}
                 onMouseDown={(e) => e.preventDefault()}
-                className="mr-2 text-grey-50 w-4 h-4 hover:bg-grey-10 focus:bg-grey-20 rounded-soft cursor-pointer outline-none"
+                className="w-4 h-4 mr-2 outline-none cursor-pointer text-grey-50 hover:bg-grey-10 focus:bg-grey-20 rounded-soft"
                 type="button"
               >
                 <MinusIcon size={16} />
@@ -138,7 +138,7 @@ const InputField = React.forwardRef<HTMLInputElement, InputProps>(
               <button
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={onNumberIncrement}
-                className="text-grey-50 w-4 h-4 hover:bg-grey-10 focus:bg-grey-20 rounded-soft cursor-pointer outline-none"
+                className="w-4 h-4 outline-none cursor-pointer text-grey-50 hover:bg-grey-10 focus:bg-grey-20 rounded-soft"
                 type="button"
               >
                 <PlusIcon size={16} />

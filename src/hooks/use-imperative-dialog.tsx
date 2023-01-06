@@ -1,7 +1,8 @@
-import * as React from "react"
+import React, { useState } from "react"
 import { createRoot } from "react-dom/client"
 import Button from "../components/fundamentals/button"
 import Modal from "../components/molecules/modal"
+import InputField from "../components/molecules/input"
 
 const DeleteDialog = ({
   open,
@@ -11,21 +12,42 @@ const DeleteDialog = ({
   onCancel,
   confirmText = "Yes, confirm",
   cancelText = "Cancel",
+  extraConfirmation = false,
+  entityName,
 }) => {
+  const [confirmationString, setConfirmationString] = useState<string>()
+
   return (
     <Modal open={open} handleClose={onCancel} isLargeModal={false}>
       <Modal.Body>
         <Modal.Content className="!py-large">
           <div className="flex flex-col">
             <span className="inter-large-semibold">{heading}</span>
-            <span className="inter-base-regular mt-1 text-grey-50">{text}</span>
+            <span className="mt-1 inter-base-regular text-grey-50">{text}</span>
           </div>
+          {extraConfirmation && (
+            <div className="flex flex-col my-base">
+              <span className="mt-1 inter-base-regular text-grey-50">
+                Type the name{" "}
+                <span className="font-semibold">"{entityName}"</span> to
+                confirm.
+              </span>
+              <InputField
+                autoFocus={true}
+                placeholder={entityName}
+                className={"mt-base"}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                  setConfirmationString(event.target.value)
+                }
+              />
+            </div>
+          )}
         </Modal.Content>
         <Modal.Footer className="border-none !pt-0">
-          <div className="flex w-full justify-end">
+          <div className="flex justify-end w-full">
             <Button
               variant="secondary"
-              className="mr-2 text-small justify-center"
+              className="justify-center mr-2 text-small"
               size="small"
               onClick={onCancel}
             >
@@ -33,9 +55,10 @@ const DeleteDialog = ({
             </Button>
             <Button
               size="small"
-              className="text-small justify-center"
+              className="justify-center text-small"
               variant="nuclear"
               onClick={onConfirm}
+              disabled={extraConfirmation && entityName !== confirmationString}
             >
               {confirmText}
             </Button>
@@ -46,18 +69,31 @@ const DeleteDialog = ({
   )
 }
 
-type ImperativeDialogProps = {
-  heading: string
-  text: string
-  confirmText?: string
-  cancelText?: string
-}
+type ImperativeDialogProps =
+  | {
+      heading: string
+      text: string
+      confirmText?: string
+      cancelText?: string
+    } & (
+      | {
+          extraConfirmation: true
+          entityName: string
+        }
+      | {
+          extraConfirmation: undefined
+          entityName: undefined
+        }
+    )
+
 const useImperativeDialog = () => {
   return ({
     heading,
     text,
     confirmText,
     cancelText,
+    extraConfirmation,
+    entityName,
   }: ImperativeDialogProps) => {
     // We want a promise here so we can "await" the user's action (either confirm or cancel)
     return new Promise((resolve) => {
@@ -89,6 +125,8 @@ const useImperativeDialog = () => {
             onConfirm={onConfirm}
             confirmText={confirmText}
             cancelText={cancelText}
+            extraConfirmation={extraConfirmation}
+            entityName={entityName}
           />
         )
       }
