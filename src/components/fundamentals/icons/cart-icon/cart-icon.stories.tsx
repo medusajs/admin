@@ -1,7 +1,7 @@
 import { ComponentMeta } from "@storybook/react"
 import CartIcon from "."
 
-export default {
+const cartIconComponentMeta: ComponentMeta<typeof CartIcon> = {
   title: "Fundamentals/Icons/CartIcon",
   component: CartIcon,
   argTypes: {
@@ -12,7 +12,9 @@ export default {
       },
     },
   },
-} as ComponentMeta<typeof CartIcon>
+}
+
+export default cartIconComponentMeta
 
 const Template = (args) => <CartIcon {...args} />
 

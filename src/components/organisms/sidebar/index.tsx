@@ -44,6 +44,12 @@ const Sidebar: React.FC = () => {
         </div>
         <div className="py-3.5">
           <SidebarMenuItem
+            pageLink={"/a/orders"}
+            icon={<CartIcon size={ICON_SIZE} />}
+            triggerHandler={triggerHandler}
+            text={"Orders"}
+          />
+          <SidebarMenuItem
             pageLink={"/a/products"}
             icon={<TagIcon size={ICON_SIZE} />}
             text={"Products"}
@@ -56,16 +62,10 @@ const Sidebar: React.FC = () => {
             text={"Customers"}
           />
           <SidebarMenuItem
-            pageLink={"/a/orders"}
-            icon={<CartIcon size={ICON_SIZE} />}
-            triggerHandler={triggerHandler}
-            text={"Orders"}
-          />
-          <SidebarMenuItem
             pageLink={"/a/discounts"}
             icon={<SaleIcon size={ICON_SIZE} />}
             triggerHandler={triggerHandler}
-            text={"Promotions"}
+            text={"Discounts"}
           />
           <SidebarMenuItem
             pageLink={"/a/gift-cards"}
