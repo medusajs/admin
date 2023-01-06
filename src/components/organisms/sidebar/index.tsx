@@ -1,16 +1,16 @@
 import { useAdminStore } from "medusa-react"
 import React, { useState } from "react"
+import CartIcon from "../../fundamentals/icons/cart-icon"
 import CashIcon from "../../fundamentals/icons/cash-icon"
-import CustomerIcon from "../../fundamentals/icons/customer-icon"
-import DollarSignIcon from "../../fundamentals/icons/dollar-sign-icon"
 import GearIcon from "../../fundamentals/icons/gear-icon"
 import GiftIcon from "../../fundamentals/icons/gift-icon"
 import SaleIcon from "../../fundamentals/icons/sale-icon"
 import TagIcon from "../../fundamentals/icons/tag-icon"
-import SidebarCompanyLogo from "../../molecules/sidebar-company-logo"
+import UsersIcon from "../../fundamentals/icons/users-icon"
 import SidebarMenuItem from "../../molecules/sidebar-menu-item"
+import UserMenu from "../../molecules/user-menu"
 
-const ICON_SIZE = 18
+const ICON_SIZE = 20
 
 const Sidebar: React.FC = () => {
   const [currentlyOpen, setCurrentlyOpen] = useState(-1)
@@ -29,14 +29,23 @@ const Sidebar: React.FC = () => {
   triggerHandler.id = 0
 
   return (
-    <div className="min-w-sidebar max-w-sidebar h-screen overflow-y-auto bg-gray-0 border-r border-grey-20 py-base px-base">
-      <div className="h-full ">
-        <SidebarCompanyLogo storeName={store?.name} />
-
-        <div className="border-b pb-3.5 border-grey-20">
+    <div className="h-screen overflow-y-auto border-r min-w-sidebar max-w-sidebar bg-gray-0 border-grey-20 py-base px-base">
+      <div className="h-full">
+        <div className="flex justify-between px-2">
+          <div className="flex items-center justify-center w-8 h-8 border border-gray-300 border-solid rounded-circle">
+            <UserMenu />
+          </div>
+        </div>
+        <div className="flex flex-col px-2 my-base">
+          <span className="font-medium text-grey-50 text-small">Store</span>
+          <span className="font-medium text-grey-90 text-medium">
+            {store?.name}
+          </span>
+        </div>
+        <div className="py-3.5">
           <SidebarMenuItem
             pageLink={"/a/orders"}
-            icon={<DollarSignIcon size={ICON_SIZE} />}
+            icon={<CartIcon size={ICON_SIZE} />}
             triggerHandler={triggerHandler}
             text={"Orders"}
           />
@@ -48,7 +57,7 @@ const Sidebar: React.FC = () => {
           />
           <SidebarMenuItem
             pageLink={"/a/customers"}
-            icon={<CustomerIcon size={ICON_SIZE} />}
+            icon={<UsersIcon size={ICON_SIZE} />}
             triggerHandler={triggerHandler}
             text={"Customers"}
           />

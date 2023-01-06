@@ -38,7 +38,7 @@ const Avatar: React.FC<AvatarProps> = ({
       <RadixAvatar.Image
         src={user?.img}
         alt={username}
-        className="w-full h-full object-cover rounded-circle"
+        className="object-cover w-full h-full rounded-circle"
       />
       <RadixAvatar.Fallback
         className={clsx(
