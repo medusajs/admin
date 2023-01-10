@@ -32,8 +32,8 @@ const ReturnReasonDetail = ({ reason }: ReturnReasonDetailsProps) => {
   } = useToggleState()
   const {
     state: showDanger,
-    open: handleClosePrompt,
-    close: handleOpenPrompt,
+    open: handleOpenPrompt,
+    close: handleClosePrompt,
   } = useToggleState()
   const { register, reset, handleSubmit } = useForm<
     ReturnReasonDetailsFormData
