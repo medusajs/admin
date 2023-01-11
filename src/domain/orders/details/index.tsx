@@ -1,5 +1,4 @@
 import { Address, ClaimOrder, Fulfillment, Swap } from "@medusajs/medusa"
-import { JsonViewer } from "@textea/json-viewer"
 import { capitalize, sum } from "lodash"
 import {
   useAdminCancelOrder,
@@ -28,6 +27,7 @@ import RefreshIcon from "../../../components/fundamentals/icons/refresh-icon"
 import TruckIcon from "../../../components/fundamentals/icons/truck-icon"
 import { ActionType } from "../../../components/molecules/actionables"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
+import JSONView from "../../../components/molecules/json-view"
 import BodyCard from "../../../components/organisms/body-card"
 import RawJSON from "../../../components/organisms/raw-json"
 import Timeline from "../../../components/organisms/timeline"
@@ -538,20 +538,8 @@ const OrderDetails = () => {
                         <span className="inter-small-regular text-grey-90 mt-2">
                           {method?.shipping_option?.name || ""}
                         </span>
-                        <div className="flex flex-col min-h-[100px] mt-8 bg-grey-5 px-3 py-2 h-full">
-                          <span className="inter-base-semibold">
-                            Data{" "}
-                            <span className="text-grey-50 inter-base-regular">
-                              (1 item)
-                            </span>
-                          </span>
-                          <div className="flex flex-grow items-center mt-4">
-                            <JsonViewer
-                              defaultInspectDepth={0}
-                              value={method?.data}
-                              rootName="method"
-                            />
-                          </div>
+                        <div className="flex flex-grow items-center mt-4 w-full">
+                          <JSONView data={method?.data} />
                         </div>
                       </div>
                     ))}

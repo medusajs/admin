@@ -1,5 +1,4 @@
 import { Address } from "@medusajs/medusa"
-import { JsonViewer } from "@textea/json-viewer"
 import {
   useAdminDeleteDraftOrder,
   useAdminDraftOrder,
@@ -21,6 +20,7 @@ import TruckIcon from "../../../components/fundamentals/icons/truck-icon"
 import ImagePlaceholder from "../../../components/fundamentals/image-placeholder"
 import StatusDot from "../../../components/fundamentals/status-indicator"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
+import JSONView from "../../../components/molecules/json-view"
 import BodyCard from "../../../components/organisms/body-card"
 import ConfirmationPrompt from "../../../components/organisms/confirmation-prompt"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
@@ -376,11 +376,7 @@ const DraftOrderDetails = () => {
                         </span>
                       </span>
                       <div className="flex flex-grow items-center mt-4">
-                        <JsonViewer
-                          rootName={"shipping_method"}
-                          value={method?.data}
-                          defaultInspectDepth={0}
-                        />
+                        <JSONView data={method?.data} />
                       </div>
                     </div>
                   </div>
@@ -466,14 +462,10 @@ const DraftOrderDetails = () => {
               </div>
             </BodyCard>
             <BodyCard
-              className={"w-full mb-4 min-h-0 h-auto"}
+              className={"w-full mb-4 min-h-0 h-auto pt-[15px]"}
               title="Raw Draft Order"
             >
-              <JsonViewer
-                style={{ marginTop: "15px" }}
-                rootName={"draft_order"}
-                value={draft_order!}
-              />
+              <JSONView data={draft_order!} />
             </BodyCard>
           </div>
         </div>
