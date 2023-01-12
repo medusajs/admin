@@ -51,7 +51,9 @@ const OrderIndex = () => {
     const reqObj = {
       dry_run: false,
       type: "order-export",
-      context: transformFiltersAsExportContext(contextFilters!),
+      context: contextFilters
+        ? transformFiltersAsExportContext(contextFilters)
+        : {},
     }
 
     createBatchJob.mutate(reqObj, {

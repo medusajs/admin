@@ -10,7 +10,7 @@ export function transformFiltersAsExportContext(
       payment_status: filters.payment.filter,
       region_id: filters.region.filter,
       status: filters.status.filter,
-      created_at: Object.keys(filters.date.filter).reduce((prev, k) => {
+      created_at: Object.keys(filters.date.filter || {}).reduce((prev, k) => {
         prev[k] = new Date(Number(filters.date.filter[k]) * 1000).toISOString()
         return prev
       }, {}),

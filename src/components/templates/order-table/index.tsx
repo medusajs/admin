@@ -162,8 +162,6 @@ const OrderTable = ({ setContextFilters }: OrderTableProps) => {
     refreshWithFilters()
   }, [representationObject])
 
-  console.log("render 2")
-
   return (
     <div>
       <TableContainer
