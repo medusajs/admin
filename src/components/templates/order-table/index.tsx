@@ -21,7 +21,11 @@ const defaultQueryProps = {
     "id,status,display_id,created_at,email,fulfillment_status,payment_status,total,currency_code",
 }
 
-const OrderTable = () => {
+type OrderTableProps = {
+  setContextFilters: (filters: Record<string, { filter: string[] }>) => void
+}
+
+const OrderTable = ({ setContextFilters }: OrderTableProps) => {
   const location = useLocation()
 
   const { isFeatureEnabled } = React.useContext(FeatureFlagContext)
@@ -68,6 +72,10 @@ const OrderTable = () => {
     const controlledPageCount = Math.ceil(count! / queryObject.limit)
     setNumPages(controlledPageCount)
   }, [orders])
+
+  useEffect(() => {
+    setContextFilters(filters as {})
+  }, [filters])
 
   const [columns] = useOrderTableColums()
 
@@ -230,4 +238,4 @@ const OrderTable = () => {
   )
 }
 
-export default OrderTable
+export default React.memo(OrderTable)
