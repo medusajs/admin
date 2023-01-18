@@ -1,5 +1,6 @@
 import { useAdminStore } from "medusa-react"
 import React, { useState } from "react"
+import BuildingsIcon from "../../fundamentals/icons/buildings-icon"
 import CartIcon from "../../fundamentals/icons/cart-icon"
 import CashIcon from "../../fundamentals/icons/cash-icon"
 import GearIcon from "../../fundamentals/icons/gear-icon"
@@ -60,6 +61,12 @@ const Sidebar: React.FC = () => {
             icon={<UsersIcon size={ICON_SIZE} />}
             triggerHandler={triggerHandler}
             text={"Customers"}
+          />
+          <SidebarMenuItem
+            pageLink={"/a/inventory"}
+            icon={<BuildingsIcon size={ICON_SIZE} />}
+            triggerHandler={triggerHandler}
+            text={"Inventory"}
           />
           <SidebarMenuItem
             pageLink={"/a/discounts"}

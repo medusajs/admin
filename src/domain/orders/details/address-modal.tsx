@@ -6,7 +6,7 @@ import {
 } from "@medusajs/medusa"
 import React from "react"
 import { useForm } from "react-hook-form"
-import { MutateOptions } from "react-query"
+import { MutateOptions } from "@tanstack/react-query"
 import Button from "../../../components/fundamentals/button"
 import Modal from "../../../components/molecules/modal"
 import AddressForm, {
@@ -106,10 +106,10 @@ const AddressModal = ({
             />
           </Modal.Content>
           <Modal.Footer>
-            <div className="flex w-full h-8 justify-end">
+            <div className="flex justify-end w-full h-8">
               <Button
                 variant="ghost"
-                className="mr-2 w-32 text-small justify-center"
+                className="justify-center w-32 mr-2 text-small"
                 size="large"
                 onClick={handleClose}
                 type="button"
@@ -118,7 +118,7 @@ const AddressModal = ({
               </Button>
               <Button
                 size="large"
-                className="w-32 text-small justify-center"
+                className="justify-center w-32 text-small"
                 variant="primary"
                 type="submit"
                 loading={submitting}

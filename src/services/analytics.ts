@@ -1,7 +1,7 @@
 import { AdminAnalyticsConfigRes } from "@medusajs/medusa"
 import { AnalyticsBrowser } from "@segment/analytics-next"
 import axios from "axios"
-import { useMutation, useQuery, useQueryClient } from "react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { WRITE_KEY } from "../components/constants/analytics"
 import { useFeatureFlag } from "../context/feature-flag"
 import { medusaUrl } from "./config"

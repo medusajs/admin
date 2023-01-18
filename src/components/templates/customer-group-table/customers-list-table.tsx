@@ -5,7 +5,7 @@ import {
   useSortBy,
   useTable,
 } from "react-table"
-import { UseMutateFunction } from "react-query"
+import { UseMutateFunction } from "@tanstack/react-query"
 
 import { Customer } from "@medusajs/medusa"
 
