@@ -1,5 +1,5 @@
 import { ProductVariant } from "@medusajs/medusa"
-import React, { useMemo } from "react"
+import { useMemo } from "react"
 import { Column, useTable } from "react-table"
 import DuplicateIcon from "../../../../../components/fundamentals/icons/duplicate-icon"
 import EditIcon from "../../../../../components/fundamentals/icons/edit-icon"
@@ -79,19 +79,14 @@ export const useVariantsTableColumns = () => {
 const VariantsTable = ({ variants, actions }: Props) => {
   const columns = useVariantsTableColumns()
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-  } = useTable({
-    columns,
-    data: variants,
-    defaultColumn: {
-      width: "auto",
-    },
-  })
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
+    useTable({
+      columns,
+      data: variants,
+      defaultColumn: {
+        width: "auto",
+      },
+    })
 
   const { deleteVariant, updateVariant, duplicateVariant } = actions
 

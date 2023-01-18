@@ -1,5 +1,5 @@
 import { AdminPostProductsProductVariantsReq, Product } from "@medusajs/medusa"
-import React, { useEffect } from "react"
+import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import Button from "../../../../../components/fundamentals/button"
 import Modal from "../../../../../components/molecules/modal"
@@ -123,7 +123,6 @@ export const createAddPayload = (
         amount: price.amount,
         currency_code: price.region_id ? undefined : price.currency_code,
         region_id: price.region_id,
-        id: price.id || undefined,
       }
     })
 
