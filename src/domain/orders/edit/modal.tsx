@@ -166,6 +166,7 @@ function OrderEditModal(props: OrderEditModalProps) {
   const [filterTerm, setFilterTerm] = useState<string>("")
 
   const showTotals = currentSubtotal !== orderEdit.subtotal
+  const showNote = !!orderEdit.changes.length
 
   const {
     mutateAsync: requestConfirmation,
@@ -280,7 +281,7 @@ function OrderEditModal(props: OrderEditModalProps) {
               <Button
                 size="small"
                 variant="secondary"
-                className={clsx("h-full flex-shrink-0", {
+                className={clsx("h-full flex-shrink-0 w-[32px] h–[32px]", {
                   "focus:bg-grey-20": showFilter,
                 })}
                 onClick={toggleFilter}
@@ -327,20 +328,22 @@ function OrderEditModal(props: OrderEditModalProps) {
           )}
 
           {/* NOTE */}
-          <div className="flex items-center justify-between">
-            <span className="text-gray-500">Note</span>
-            <InputField
-              className="max-w-[455px]"
-              placeholder="Add a note..."
-              onChange={(e) => setNote(e.target.value)}
-              value={note}
-            />
-          </div>
+          {showNote && (
+            <div className="flex items-center justify-between">
+              <span className="text-gray-500">Note</span>
+              <InputField
+                className="max-w-[455px]"
+                placeholder="Add a note..."
+                onChange={(e) => setNote(e.target.value)}
+                value={note}
+              />
+            </div>
+          )}
         </Modal.Content>
         <Modal.Footer>
-          <div className="flex items-center justify-end w-full">
+          <div className="flex items-center justify-end w-full gap-2">
             <Button
-              variant="ghost"
+              variant="secondary"
               size="small"
               type="button"
               onClick={onCancel}

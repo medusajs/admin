@@ -161,6 +161,10 @@ const OrderEditLine = ({
     },
   ].filter(Boolean)
 
+  if (item.variant) {
+    item.variant.options = [{ value: "red" }, { value: "L" }]
+  }
+
   return (
     <Tooltip
       side="top"
@@ -185,13 +189,15 @@ const OrderEditLine = ({
               >
                 {item.title}
               </span>
-              <span
-                className={clsx("text-gray-500 flex gap-3", {
-                  "text-gray-400": isLocked,
-                })}
-              >
-                ({item.variant?.sku})
-              </span>
+              {item?.variant?.options && (
+                <span
+                  className={clsx("text-gray-400 flex gap-3", {
+                    "text-gray-400": isLocked,
+                  })}
+                >
+                  ({item.variant.options.map((o) => o.value).join(" • ")})
+                </span>
+              )}
             </div>
             <div className="flex items-center">
               {isNew && (
@@ -207,14 +213,20 @@ const OrderEditLine = ({
               )}
 
               <div className="min-h-[20px]">
-                {item?.variant?.options && (
-                  <span
-                    className={clsx("text-gray-500 flex gap-3", {
-                      "text-gray-400": isLocked,
-                    })}
-                  >
-                    {item.variant.options.map((o) => o.value).join("*")}
-                  </span>
+                {item.variant?.sku && (
+                  <CopyToClipboard
+                    value={item.variant?.sku}
+                    displayValue={
+                      <span
+                        className={clsx("text-gray-500 flex gap-3", {
+                          "text-gray-400": isLocked,
+                        })}
+                      >
+                        {item.variant?.sku}
+                      </span>
+                    }
+                    successDuration={1000}
+                  />
                 )}
               </div>
             </div>
@@ -251,32 +263,31 @@ const OrderEditLine = ({
             />
           </div>
 
-          <div
-            className={clsx(
-              "flex small:space-x-2 medium:space-x-4 large:space-x-6",
-              { "!text-gray-400 pointer-events-none": isLocked }
-            )}
-          >
+          <div className="flex gap-6 items-center h-full">
             <div
               className={clsx(
-                "inter-small-regular text-gray-900 min-w-[60px] text-right",
-                {
-                  "!text-gray-400 pointer-events-none": isLocked,
-                }
+                "flex small:space-x-2 medium:space-x-4 large:space-x-6",
+                { "!text-gray-400 pointer-events-none": isLocked }
               )}
             >
-              {formatAmountWithSymbol({
-                amount: item.unit_price * item.quantity,
-                currency: currencyCode,
-                tax: item.tax_lines,
-                digits: 2,
-              })}
+              <div
+                className={clsx("text-gray-900 min-w-[60px] text-right", {
+                  "!text-gray-400 pointer-events-none": isLocked,
+                })}
+              >
+                {formatAmountWithSymbol({
+                  amount: item.unit_price * item.quantity,
+                  currency: currencyCode,
+                  tax: item.tax_lines,
+                  digits: 2,
+                })}
+                <span className="text-gray-400 ml-2">
+                  {currencyCode.toUpperCase()}
+                </span>
+              </div>
             </div>
+            <Actionables forceDropdown actions={actions} />
           </div>
-          <div className="inter-small-regular text-gray-400">
-            {currencyCode.toUpperCase()}
-          </div>
-          <Actionables forceDropdown actions={actions} />
         </div>
       </div>
     </Tooltip>
