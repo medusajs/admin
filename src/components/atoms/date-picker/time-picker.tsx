@@ -77,6 +77,7 @@ const TimePicker: React.FC<DateTimePickerProps> = ({
           </button>
         </PopoverPrimitive.Trigger>
         <PopoverPrimitive.Content
+          side="top"
           sideOffset={8}
           className="rounded-rounded scrollbar-hide border px-6 pt-6 pb-4 border-grey-20 bg-grey-0 w-full flex shadow-dropdown"
         >
