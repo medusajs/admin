@@ -1,5 +1,6 @@
 import * as PopoverPrimitive from "@radix-ui/react-popover"
 import clsx from "clsx"
+import { isNil } from "lodash"
 import moment from "moment"
 import React, { useEffect, useState } from "react"
 import ArrowDownIcon from "../../fundamentals/icons/arrow-down-icon"
@@ -8,7 +9,6 @@ import InputContainer from "../../fundamentals/input-container"
 import InputHeader from "../../fundamentals/input-header"
 import NumberScroller from "../number-scroller"
 import { DateTimePickerProps } from "./types"
-import { isNil } from "lodash"
 
 const TimePicker: React.FC<DateTimePickerProps> = ({
   date,
@@ -77,7 +77,6 @@ const TimePicker: React.FC<DateTimePickerProps> = ({
           </button>
         </PopoverPrimitive.Trigger>
         <PopoverPrimitive.Content
-          side="top"
           sideOffset={8}
           className="rounded-rounded scrollbar-hide border px-6 pt-6 pb-4 border-grey-20 bg-grey-0 w-full flex shadow-dropdown"
         >
