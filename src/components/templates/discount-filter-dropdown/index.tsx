@@ -1,5 +1,5 @@
 import clsx from "clsx"
-import React, { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import FilterDropdownContainer from "../../../components/molecules/filter-dropdown/container"
 import FilterDropdownItem from "../../../components/molecules/filter-dropdown/item"
 import SaveFilterItem from "../../../components/molecules/filter-dropdown/save-field"
@@ -11,7 +11,6 @@ const dynamicFilters = ["normal", "dynamic"]
 const dateFilters = [
   "is in the last",
   "is older than",
-  "is between",
   "is after",
   "is before",
   "is equal to",

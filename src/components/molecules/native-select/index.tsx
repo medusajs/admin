@@ -31,7 +31,10 @@ const NativeSelect: NativeSelectType = ({
           <ChevronDownIcon size={ICON_SIZE} />
         </RadixSelect.Icon>
       </RadixSelect.SelectTrigger>
-      <RadixSelect.Content className="rounded-rounded scrollbar-hide border px-2 py-2 border-grey-20 bg-grey-0 w-full flex shadow-dropdown">
+      <RadixSelect.Content
+        position="popper"
+        className="rounded-rounded scrollbar-hide border px-2 py-2 border-grey-20 bg-grey-0 w-full flex shadow-dropdown z-[9999] max-h-[305px] overflow-y-auto"
+      >
         <RadixSelect.ScrollUpButton className="h-[25px] flex items-center justify-center bg-gradient-to-b from-transparent to-grey-0">
           <ChevronUpIcon size={ICON_SIZE} />
         </RadixSelect.ScrollUpButton>
