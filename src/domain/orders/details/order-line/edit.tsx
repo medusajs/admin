@@ -161,10 +161,6 @@ const OrderEditLine = ({
     },
   ].filter(Boolean)
 
-  if (item.variant) {
-    item.variant.options = [{ value: "red" }, { value: "L" }]
-  }
-
   return (
     <Tooltip
       side="top"
