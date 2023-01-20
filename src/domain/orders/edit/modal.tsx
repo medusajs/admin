@@ -300,10 +300,11 @@ function OrderEditModal(props: OrderEditModalProps) {
               {showFilter && (
                 <InputField
                   small
+                  deletable
                   ref={filterRef}
                   value={filterTerm}
+                  onDelete={hideFilter}
                   placeholder="Filter items..."
-                  onBlur={hideFilter}
                   onChange={(e) => setFilterTerm(e.target.value)}
                   prefix={<SearchIcon size={14} className="text-gray-400" />}
                 />
