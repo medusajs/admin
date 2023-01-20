@@ -160,6 +160,7 @@ function OrderEditModal(props: OrderEditModalProps) {
     refundedTotal,
   } = props
 
+  const filterRef = useRef()
   const notification = useNotification()
   const [note, setNote] = useState<string | undefined>()
   const [showFilter, setShowFilter] = useState(false)
@@ -204,6 +205,12 @@ function OrderEditModal(props: OrderEditModalProps) {
     close()
   }
 
+  useEffect(() => {
+    if (showFilter) {
+      filterRef.current.focus()
+    }
+  }, [showFilter])
+
   const onAddVariants = async (selectedVariants: ProductVariant[]) => {
     try {
       const promises = selectedVariants.map((v) =>
@@ -218,7 +225,7 @@ function OrderEditModal(props: OrderEditModalProps) {
     }
   }
 
-  const toggleFilter = () => {
+  const hideFilter = () => {
     if (showFilter) {
       setFilterTerm("")
     }
@@ -278,22 +285,27 @@ function OrderEditModal(props: OrderEditModalProps) {
               >
                 Add items
               </Button>
-              <Button
-                size="small"
-                variant="secondary"
-                className={clsx("h-full flex-shrink-0 w-[32px] h–[32px]", {
-                  "focus:bg-grey-20": showFilter,
-                })}
-                onClick={toggleFilter}
-              >
-                <SearchIcon size={16} className="text-gray-500" />
-              </Button>
+              {!showFilter && (
+                <Button
+                  size="small"
+                  variant="secondary"
+                  className={clsx("h-full flex-shrink-0 w-[32px] h–[32px]", {
+                    "focus:bg-grey-20": showFilter,
+                  })}
+                  onClick={() => setShowFilter(true)}
+                >
+                  <SearchIcon size={16} className="text-gray-500" />
+                </Button>
+              )}
               {showFilter && (
                 <InputField
                   small
+                  ref={filterRef}
                   value={filterTerm}
                   placeholder="Filter items..."
+                  onBlur={hideFilter}
                   onChange={(e) => setFilterTerm(e.target.value)}
+                  prefix={<SearchIcon size={14} className="text-gray-400" />}
                 />
               )}
             </div>
