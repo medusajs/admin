@@ -177,19 +177,25 @@ const OrderEditLine = ({
             )}
           </div>
           <div className="flex flex-col justify-center">
-            <div className="flex gap-2 items-center">
+            <div className="flex gap-2 items-center max-w-[310px]">
               <span
-                className={clsx("font-semibold text-grey-900", {
-                  "text-gray-400": isLocked,
-                })}
+                className={clsx(
+                  "font-semibold text-grey-900 flex-shrink-0 flex-grow",
+                  {
+                    "text-gray-400": isLocked,
+                  }
+                )}
               >
                 {item.title}
               </span>
               {item?.variant?.options && (
                 <span
-                  className={clsx("text-gray-400 flex gap-3", {
-                    "text-gray-400": isLocked,
-                  })}
+                  className={clsx(
+                    "text-gray-400 flex gap-3 flex-shrink-1 truncate",
+                    {
+                      "text-gray-400": isLocked,
+                    }
+                  )}
                 >
                   ({item.variant.options.map((o) => o.value).join(" • ")})
                 </span>
