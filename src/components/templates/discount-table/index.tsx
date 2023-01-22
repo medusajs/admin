@@ -35,22 +35,19 @@ const DiscountTable: React.FC = () => {
 
   const offs = parseInt(queryObject?.offset) || 0
   const lim = parseInt(queryObject.limit) || DEFAULT_PAGE_SIZE
-
-  const { discounts, isLoading, count } = useAdminDiscounts(
-    {
-      is_dynamic: false,
-      expand: "rule,rule.conditions,rule.conditions.products,regions",
-      ...queryObject,
+  const discountsQuery = {
+    is_dynamic: false,
+    expand: "rule,rule.conditions,rule.conditions.products,regions",
+    ...queryObject,
+  }
+  const { discounts, isLoading, count } = useAdminDiscounts(discountsQuery, {
+    keepPreviousData: true,
+    onSuccess: ({ count }) => {
+      trackNumberOfDiscounts({
+        count,
+      })
     },
-    {
-      keepPreviousData: true,
-      onSuccess: ({ count }) => {
-        trackNumberOfDiscounts({
-          count,
-        })
-      },
-    }
-  )
+  })
 
   const [query, setQuery] = useState("")
   const [numPages, setNumPages] = useState(0)
@@ -199,7 +196,13 @@ const DiscountTable: React.FC = () => {
         <Table.Body {...getTableBodyProps()}>
           {rows.map((row) => {
             prepareRow(row)
-            return <PromotionRow row={row} key={row.original.id} />
+            return (
+              <PromotionRow
+                discountsQuery={discountsQuery}
+                row={row}
+                key={row.original.id}
+              />
+            )
           })}
         </Table.Body>
       </Table>
@@ -207,10 +210,10 @@ const DiscountTable: React.FC = () => {
   )
 }
 
-const PromotionRow = ({ row }) => {
+const PromotionRow = ({ row, discountsQuery }) => {
   const promotion = row.original
 
-  const { getRowActions } = usePromotionActions(promotion)
+  const { getRowActions } = usePromotionActions(promotion, discountsQuery)
 
   return (
     <Table.Row

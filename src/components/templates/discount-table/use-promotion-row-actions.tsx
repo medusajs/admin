@@ -1,5 +1,9 @@
 import React from "react"
-import { useAdminDeleteDiscount, useAdminUpdateDiscount } from "medusa-react"
+import {
+  adminDiscountKeys,
+  useAdminDeleteDiscount,
+  useAdminUpdateDiscount,
+} from "medusa-react"
 import useImperativeDialog from "../../../hooks/use-imperative-dialog"
 import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
@@ -10,8 +14,14 @@ import UnpublishIcon from "../../fundamentals/icons/unpublish-icon"
 import EditIcon from "../../fundamentals/icons/edit-icon"
 import useCopyPromotion from "./use-copy-promotion"
 import { useNavigate } from "react-router-dom"
+import { useQueryClient } from "react-query"
+import { AdminGetDiscountParams, Discount } from "@medusajs/medusa"
 
-const usePromotionActions = (promotion) => {
+const usePromotionActions = (
+  promotion,
+  discountsQuery: AdminGetDiscountParams
+) => {
+  const queryClient = useQueryClient()
   const navigate = useNavigate()
   const notification = useNotification()
   const dialog = useImperativeDialog()
@@ -20,6 +30,23 @@ const usePromotionActions = (promotion) => {
 
   const updatePromotion = useAdminUpdateDiscount(promotion.id)
   const deletePromotion = useAdminDeleteDiscount(promotion?.id)
+
+  const setDiscountsQueryData = (
+    newDiscount: Discount,
+    discountsQuery: AdminGetDiscountParams
+  ) => {
+    queryClient.setQueryData(
+      adminDiscountKeys.list(discountsQuery),
+      ({ discounts, ...rest }): { discounts: Discount[] } => {
+        const updatedDiscounts = discounts.map((oldDiscount: Discount) =>
+          oldDiscount.id !== newDiscount.id
+            ? oldDiscount
+            : { ...oldDiscount, ...newDiscount }
+        )
+        return { ...rest, discounts: updatedDiscounts }
+      }
+    )
+  }
 
   const handleDelete = async () => {
     const shouldDelete = await dialog({
@@ -52,10 +79,12 @@ const usePromotionActions = (promotion) => {
               is_disabled: !promotion.is_disabled,
             },
             {
-              onSuccess: () => {
+              onSuccess: ({ discount }) => {
+                setDiscountsQueryData(discount, discountsQuery)
                 notification(
                   "Success",
-                  `Successfully ${promotion.is_disabled ? "published" : "unpublished"
+                  `Successfully ${
+                    promotion.is_disabled ? "published" : "unpublished"
                   } discount`,
                   "success"
                 )
