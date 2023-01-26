@@ -280,7 +280,7 @@ const OrderEditLine = ({
                 {formatAmountWithSymbol({
                   amount: item.unit_price * item.quantity,
                   currency: currencyCode,
-                  tax: item.tax_lines,
+                  tax: item.includes_tax ? 0 : item.tax_lines,
                   digits: 2,
                 })}
                 <span className="text-gray-400 ml-2">
