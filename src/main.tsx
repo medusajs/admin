@@ -2,6 +2,7 @@ import React from "react"
 import type { PropsWithChildren } from "react"
 import { createRoot } from "react-dom/client"
 import { MedusaProvider } from "medusa-react"
+import { HelmetProvider } from "react-helmet-async"
 import "./assets/styles/global.css"
 import { AccountProvider } from "./context/account"
 import { CacheProvider } from "./context/cache"
@@ -26,7 +27,9 @@ const Page = ({ children }: PropsWithChildren) => {
           <FeatureFlagProvider>
             <InterfaceProvider>
               <SteppedProvider>
-                <LayeredModalProvider>{children}</LayeredModalProvider>
+                <HelmetProvider>
+                  <LayeredModalProvider>{children}</LayeredModalProvider>
+                </HelmetProvider>
               </SteppedProvider>
             </InterfaceProvider>
           </FeatureFlagProvider>
