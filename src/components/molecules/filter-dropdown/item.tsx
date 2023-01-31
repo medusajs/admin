@@ -2,7 +2,7 @@ import * as RadixCollapsible from "@radix-ui/react-collapsible"
 import * as RadixPopover from "@radix-ui/react-popover"
 import clsx from "clsx"
 import moment from "moment"
-import React, { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { DateFilters } from "../../../utils/filters"
 import { addHours, atMidnight, dateToUnixTimestamp } from "../../../utils/time"
 import { CalendarComponent } from "../../atoms/date-picker/date-picker"
@@ -471,9 +471,6 @@ const DateFilter = ({
             </RightPopover>
           </div>
         )
-
-      default:
-        return <span>{currentFilter} - coming soon!</span>
     }
   }
   return (
