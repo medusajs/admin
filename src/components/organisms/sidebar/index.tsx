@@ -1,5 +1,6 @@
 import { useAdminStore } from "medusa-react"
 import React, { useState } from "react"
+import { useFeatureFlag } from "../../../context/feature-flag"
 import BuildingsIcon from "../../fundamentals/icons/buildings-icon"
 import CartIcon from "../../fundamentals/icons/cart-icon"
 import CashIcon from "../../fundamentals/icons/cash-icon"
@@ -28,6 +29,12 @@ const Sidebar: React.FC = () => {
   // We store the `id` counter on the function object, as a state creates
   // infinite updates, and we do not want the variable to be free floating.
   triggerHandler.id = 0
+
+  const { isFeatureEnabled } = useFeatureFlag()
+
+  const inventoryEnabled =
+    isFeatureEnabled("inventoryService") &&
+    isFeatureEnabled("stockLocationService")
 
   return (
     <div className="h-screen overflow-y-auto border-r min-w-sidebar max-w-sidebar bg-gray-0 border-grey-20 py-base px-base">
@@ -62,12 +69,14 @@ const Sidebar: React.FC = () => {
             triggerHandler={triggerHandler}
             text={"Customers"}
           />
-          <SidebarMenuItem
-            pageLink={"/a/inventory"}
-            icon={<BuildingsIcon size={ICON_SIZE} />}
-            triggerHandler={triggerHandler}
-            text={"Inventory"}
-          />
+          {inventoryEnabled && (
+            <SidebarMenuItem
+              pageLink={"/a/inventory"}
+              icon={<BuildingsIcon size={ICON_SIZE} />}
+              triggerHandler={triggerHandler}
+              text={"Inventory"}
+            />
+          )}
           <SidebarMenuItem
             pageLink={"/a/discounts"}
             icon={<SaleIcon size={ICON_SIZE} />}

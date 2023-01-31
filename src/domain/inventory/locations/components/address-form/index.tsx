@@ -1,26 +1,16 @@
-import { Country } from "@medusajs/medusa"
+import { Country, StockLocationAddressDTO } from "@medusajs/medusa"
 import { useAdminRegions } from "medusa-react"
 import { useEffect, useMemo, useState } from "react"
 import { Controller, useWatch } from "react-hook-form"
 import InputField from "../../../../../components/molecules/input"
 import { NextSelect } from "../../../../../components/molecules/select/next-select"
-import { Option } from "../../../../../types/shared"
 import FormValidator from "../../../../../utils/form-validator"
 import { NestedForm } from "../../../../../utils/nested-form"
-
-export type LocationAddressFormType = {
-  company: string
-  address_1: string
-  address_2: string | null
-  city: string
-  country_code: Option
-  postal_code: string
-}
 
 const AddressForm = ({
   form,
 }: {
-  form: NestedForm<LocationAddressFormType>
+  form: NestedForm<StockLocationAddressDTO>
 }) => {
   const {
     register,
@@ -28,18 +18,28 @@ const AddressForm = ({
     formState: { errors },
     control,
   } = form
+
   const { regions } = useAdminRegions()
 
-  const watchedAddress = useWatch({
+  const watchedAddressForm = useWatch({
     control,
-    name: path("address_1"),
+    name: [
+      path("company"),
+      path("address_1"),
+      path("address_2"),
+      path("postal_code"),
+      path("city"),
+      path("country_code"),
+    ],
   })
 
-  const [countryRequired, setCountryRequired] = useState(false)
+  const anyAddressFieldsFilled = watchedAddressForm.some((field) => !!field)
+
+  const [addressFieldsRequired, setAddressFieldsRequired] = useState(false)
 
   useEffect(() => {
-    setCountryRequired(!!watchedAddress)
-  }, [watchedAddress])
+    setAddressFieldsRequired(!!anyAddressFieldsFilled)
+  }, [anyAddressFieldsFilled])
 
   const countries = useMemo(() => {
     if (!regions) {
@@ -75,8 +75,10 @@ const AddressForm = ({
             label="Address 1"
             placeholder="Address 1"
             errors={errors}
+            required={addressFieldsRequired}
             {...register(path("address_1"), {
               pattern: FormValidator.whiteSpaceRule("Address 1"),
+              required: addressFieldsRequired,
             })}
           />
           <InputField
@@ -110,17 +112,33 @@ const AddressForm = ({
           <Controller
             control={control}
             name={path("country_code")}
-            render={({ field: { value, onChange } }) => (
-              <NextSelect
-                label="Country"
-                required={countryRequired}
-                value={value}
-                options={countries}
-                onChange={onChange}
-                name={path("country_code")}
-                errors={errors}
-              />
-            )}
+            rules={{
+              required: addressFieldsRequired,
+            }}
+            render={({ field: { value, onChange } }) => {
+              let fieldValue:
+                | string
+                | { value: string; label: string }
+                | undefined = value
+
+              if (typeof fieldValue === "string") {
+                fieldValue = countries.find(
+                  (country) => country.value === fieldValue
+                )
+              }
+
+              return (
+                <NextSelect
+                  label="Country"
+                  required={addressFieldsRequired}
+                  value={fieldValue}
+                  options={countries}
+                  onChange={onChange}
+                  name={path("country_code")}
+                  errors={errors}
+                />
+              )
+            }}
           />
         </div>
       </div>

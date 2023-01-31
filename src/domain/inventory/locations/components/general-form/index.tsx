@@ -8,10 +8,9 @@ export type GeneralFormType = {
 
 type Props = {
   form: NestedForm<GeneralFormType>
-  requireHandle?: boolean
 }
 
-const GeneralForm = ({ form, requireHandle = true }: Props) => {
+const GeneralForm = ({ form }: Props) => {
   const {
     register,
     path,
