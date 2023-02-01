@@ -1,3 +1,4 @@
+import { UseMutateFunction } from "@tanstack/react-query"
 import {
   HeaderGroup,
   Row,
@@ -5,18 +6,17 @@ import {
   useSortBy,
   useTable,
 } from "react-table"
-import { UseMutateFunction } from "react-query"
 
 import { Customer } from "@medusajs/medusa"
 
-import { CUSTOMER_GROUPS_CUSTOMERS_LIST_TABLE_COLUMNS } from "./config"
-import Table from "../../molecules/table"
+import { useNavigate } from "react-router-dom"
+import useQueryFilters from "../../../hooks/use-query-filters"
 import DetailsIcon from "../../fundamentals/details-icon"
 import TrashIcon from "../../fundamentals/icons/trash-icon"
-import useQueryFilters from "../../../hooks/use-query-filters"
+import Table from "../../molecules/table"
 import { FilteringOptionProps } from "../../molecules/table/filtering-option"
-import { useNavigate } from "react-router-dom"
 import TableContainer from "../../organisms/table-container"
+import { CUSTOMER_GROUPS_CUSTOMERS_LIST_TABLE_COLUMNS } from "./config"
 
 /* ********************************** */
 /* ************** TYPES ************* */

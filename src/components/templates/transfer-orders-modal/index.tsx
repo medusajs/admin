@@ -1,4 +1,4 @@
-import { Customer, Order } from "@medusajs/medusa"
+import { Order } from "@medusajs/medusa"
 import {
   useAdminCustomer,
   useAdminCustomers,
@@ -13,6 +13,7 @@ import {
 } from "../../../domain/orders/details/templates"
 import { useDebounce } from "../../../hooks/use-debounce"
 import useNotification from "../../../hooks/use-notification"
+import { Option } from "../../../types/shared"
 import Badge from "../../fundamentals/badge"
 import Button from "../../fundamentals/button"
 import Modal from "../../molecules/modal"
@@ -87,6 +88,10 @@ const TransferOrdersModal: React.FC<TransferOrdersModalProps> = ({
     first_name?: string
     last_name?: string
   }) => {
+    if (!customer) {
+      return undefined
+    }
+
     const customerLabel = (c: {
       email: string
       first_name?: string
@@ -108,7 +113,11 @@ const TransferOrdersModal: React.FC<TransferOrdersModalProps> = ({
     }
   }
   const customerOptions = React.useMemo(() => {
-    return customers?.map((c) => getCustomerOption(c)) || []
+    const isOption = (c: Option | undefined): c is Option => {
+      return !!c
+    }
+
+    return customers?.map((c) => getCustomerOption(c)).filter(isOption) || []
   }, [customers])
 
   return (
@@ -136,7 +145,7 @@ const TransferOrdersModal: React.FC<TransferOrdersModalProps> = ({
                 />
               </div>
             </div>
-            <div className="flex w-full grid grid-cols-2">
+            <div className="w-full grid grid-cols-2">
               <div className="flex flex-col">
                 <span className="inter-base-semibold">Current Owner</span>
                 <span className="inter-base-regular">
@@ -150,20 +159,24 @@ const TransferOrdersModal: React.FC<TransferOrdersModalProps> = ({
                     id: order.customer_id,
                     email: order.email,
                     first_name:
-                      order.customer.first_name ??
-                      order.billing_address.first_name,
+                      order.customer.first_name ||
+                      order.billing_address?.first_name ||
+                      order.shipping_address?.first_name ||
+                      undefined,
                     last_name:
-                      order.customer.last_name ??
-                      order.billing_address.last_name,
+                      order.customer.last_name ||
+                      order.billing_address?.last_name ||
+                      order.shipping_address?.last_name ||
+                      undefined,
                   })}
                 />
               </div>
             </div>
-            <div className="flex w-full grid grid-cols-2">
+            <div className="w-full grid grid-cols-2">
               <div className="flex flex-col">
-                <span className="inter-base-semibold">Current Owner</span>
+                <span className="inter-base-semibold">New Owner</span>
                 <span className="inter-base-regular">
-                  The customer currently related to this order
+                  The customer to transfer this order to
                 </span>
               </div>
               <div className="flex items-center">

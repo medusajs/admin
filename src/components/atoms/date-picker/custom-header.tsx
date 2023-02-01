@@ -1,7 +1,6 @@
-import React from "react"
-import NativeSelect from "../../molecules/native-select"
 import { ReactDatePickerCustomHeaderProps } from "react-datepicker"
-import { monthNames, getYearRange } from "./utils"
+import NativeSelect from "../../molecules/native-select"
+import { getYearRange, monthNames } from "./utils"
 
 const CustomHeader = ({
   date,
