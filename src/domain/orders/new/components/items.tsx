@@ -3,7 +3,7 @@ import { PricedVariant } from "@medusajs/medusa/dist/types/pricing"
 import clsx from "clsx"
 import React, { useContext, useEffect, useState } from "react"
 import { Controller } from "react-hook-form"
-
+import Medusa from "../../../../services/api"
 import Button from "../../../../components/fundamentals/button"
 import MinusIcon from "../../../../components/fundamentals/icons/minus-icon"
 import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
@@ -32,16 +32,22 @@ const Items = () => {
     form: { control, register, setValue, getValues },
   } = useNewOrderForm()
 
-  const { fields, append, remove } = items
+  const { fields, append, remove, update } = items
 
   const [editQuantity, setEditQuantity] = useState(-1)
   const [editPrice, setEditPrice] = useState(-1)
 
   const layeredContext = useContext(LayeredModalContext)
 
-  const addItem = (variants: PricedVariant[]) => {
+  const addItem = async (variants: ProductVariant[]) => {
+    const variantIds = variants.map((v) => v.id)
+    const { data } = (await Medusa.variants.list({
+      id: variantIds,
+      region_id: region?.id,
+    })) as unknown as { data: { variants: PricedVariant[] } }
+
     const ids = fields.map((field) => field.variant_id)
-    const itemsToAdd = variants.filter((v) => !ids.includes(v.id))
+    const itemsToAdd = data.variants.filter((v) => !ids.includes(v.id))
 
     append(
       itemsToAdd.map((item) => ({
@@ -60,11 +66,11 @@ const Items = () => {
   }
 
   const handleEditQuantity = (index: number, value: number) => {
-    const oldQuantity = getValues(`items.${index}.quantity`)
-    const newQuantity = +oldQuantity + value
+    const field = fields[index]
+    field.quantity = field.quantity + value
 
-    if (newQuantity > 0) {
-      setValue(`items.${index}.quantity`, newQuantity)
+    if (field.quantity > 0) {
+      update(index, field)
     }
   }
 

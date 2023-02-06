@@ -1,10 +1,4 @@
-import {
-  LineItem,
-  LineItemTaxLine,
-  MoneyAmount,
-  Order,
-  Region,
-} from "@medusajs/medusa"
+import { LineItemTaxLine, MoneyAmount, Order, Region } from "@medusajs/medusa"
 import { PricedVariant } from "@medusajs/medusa/dist/types/pricing"
 import { currencies } from "./currencies"
 
