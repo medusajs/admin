@@ -17,6 +17,7 @@ import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import Modal from "../../../../components/molecules/modal"
 import LayeredModal, {
   LayeredModalContext,
+  LayeredModalScreen,
 } from "../../../../components/molecules/modal/layered-modal"
 import RMAShippingPrice from "../../../../components/molecules/rma-select-shipping"
 import Select from "../../../../components/molecules/select"
@@ -73,13 +74,11 @@ const SwapMenu: React.FC<SwapMenuProps> = ({ order, onDismiss }) => {
     return []
   }, [order])
 
-  const {
-    shipping_options: shippingOptions,
-    isLoading: shippingLoading,
-  } = useAdminShippingOptions({
-    is_return: true,
-    region_id: order.region_id,
-  })
+  const { shipping_options: shippingOptions, isLoading: shippingLoading } =
+    useAdminShippingOptions({
+      is_return: true,
+      region_id: order.region_id,
+    })
 
   const returnTotal = useMemo(() => {
     const items = Object.keys(toReturn).map((t) =>
@@ -99,12 +98,13 @@ const SwapMenu: React.FC<SwapMenuProps> = ({ order, onDismiss }) => {
         )
       }, 0) - (shippingPrice || 0)
     )
-  }, [toReturn, shippingPrice])
+  }, [toReturn, shippingPrice, allItems])
 
   const additionalTotal = useMemo(() => {
     return itemsToAdd.reduce((acc, next) => {
-      let amount = next.prices.find((ma) => ma.region_id === order.region_id)
-        ?.amount
+      let amount = next.prices.find(
+        (ma) => ma.region_id === order.region_id
+      )?.amount
 
       if (!amount) {
         amount = next.prices.find(
@@ -147,7 +147,7 @@ const SwapMenu: React.FC<SwapMenuProps> = ({ order, onDismiss }) => {
 
     setShippingMethod(selectedItem)
     const method = shippingOptions?.find((o) => selectedItem.value === o.id)
-    setShippingPrice(method?.amount)
+    setShippingPrice(method?.amount || undefined)
   }
 
   const handleUpdateShippingPrice = (value: number | undefined) => {
@@ -161,9 +161,9 @@ const SwapMenu: React.FC<SwapMenuProps> = ({ order, onDismiss }) => {
   useEffect(() => {
     if (!useCustomShippingPrice && shippingMethod && shippingOptions) {
       const method = shippingOptions.find((o) => shippingMethod.value === o.id)
-      setShippingPrice(method?.amount)
+      setShippingPrice(method?.amount || undefined)
     }
-  }, [useCustomShippingPrice, shippingMethod])
+  }, [useCustomShippingPrice, shippingMethod, shippingOptions])
 
   const handleProductSelect = (variants: SelectProduct[]) => {
     const existingIds = itemsToAdd.map((i) => i.id)
@@ -276,7 +276,8 @@ const SwapMenu: React.FC<SwapMenuProps> = ({ order, onDismiss }) => {
                     SelectProductsScreen(
                       layeredModalContext.pop,
                       itemsToAdd,
-                      handleProductSelect
+                      handleProductSelect,
+                      order.region_id
                     )
                   )
                 }}
@@ -307,7 +308,8 @@ const SwapMenu: React.FC<SwapMenuProps> = ({ order, onDismiss }) => {
                       SelectProductsScreen(
                         layeredModalContext.pop,
                         itemsToAdd,
-                        handleProductSelect
+                        handleProductSelect,
+                        order.region_id
                       )
                     )
                   }}
@@ -399,7 +401,12 @@ const SwapMenu: React.FC<SwapMenuProps> = ({ order, onDismiss }) => {
   )
 }
 
-const SelectProductsScreen = (pop, itemsToAdd, setSelectedItems) => {
+const SelectProductsScreen = (
+  pop: () => void,
+  itemsToAdd: SelectProduct[],
+  setSelectedItems: (items: SelectProduct[]) => void,
+  regionId: string
+): LayeredModalScreen => {
   return {
     title: "Add Products",
     onBack: () => pop(),
@@ -407,8 +414,10 @@ const SelectProductsScreen = (pop, itemsToAdd, setSelectedItems) => {
       <RMASelectProductSubModal
         selectedItems={itemsToAdd || []}
         onSubmit={setSelectedItems}
+        regionId={regionId}
       />
     ),
+    onConfirm: () => pop(),
   }
 }
 

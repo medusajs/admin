@@ -413,7 +413,9 @@ export const useBuildTimeline = (orderId: string) => {
           refundStatus: claim.payment_status,
           refundAmount: claim.refund_amount,
           currencyCode: order.currency_code,
-          claimItems: claim.claim_items.map((i) => getClaimItem(i)),
+          claimItems: claim.claim_items?.length
+            ? claim.claim_items.map((i) => getClaimItem(i))
+            : [],
           time: claim.canceled_at ? claim.canceled_at : claim.created_at,
           noNotification: claim.no_notification,
           claimType: claim.type,
@@ -465,7 +467,9 @@ export const useBuildTimeline = (orderId: string) => {
             refundStatus: claim.payment_status,
             refundAmount: claim.refund_amount,
             currencyCode: order.currency_code,
-            claimItems: claim.claim_items.map((i) => getClaimItem(i)),
+            claimItems: claim.claim_items?.length
+              ? claim.claim_items.map((i) => getClaimItem(i))
+              : [],
             time: claim.created_at,
             noNotification: claim.no_notification,
             claimType: claim.type,

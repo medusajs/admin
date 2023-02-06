@@ -19,6 +19,7 @@ import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import Modal from "../../../../components/molecules/modal"
 import LayeredModal, {
   LayeredModalContext,
+  LayeredModalScreen,
 } from "../../../../components/molecules/modal/layered-modal"
 import RMAShippingPrice from "../../../../components/molecules/rma-select-shipping"
 import Select from "../../../../components/molecules/select"
@@ -94,19 +95,16 @@ const reasonOptions = [
 const ClaimMenu: React.FC<ClaimMenuProps> = ({ order, onDismiss }) => {
   const { mutate, isLoading } = useAdminCreateClaim(order.id)
   const { refetch } = useAdminOrder(order.id)
-  const [shippingAddress, setShippingAddress] = useState<AddressPayload>(
-    undefined
-  )
+  const [shippingAddress, setShippingAddress] =
+    useState<AddressPayload>(undefined)
 
   const [isReplace, toggleReplace] = useState(false)
   const [noNotification, setNoNotification] = useState(order.no_notification)
   const [toReturn, setToReturn] = useState<ReturnRecord>({})
 
   const [itemsToAdd, setItemsToAdd] = useState<SelectProduct[]>([])
-  const [
-    returnShippingMethod,
-    setReturnShippingMethod,
-  ] = useState<ShippingOption | null>(null)
+  const [returnShippingMethod, setReturnShippingMethod] =
+    useState<ShippingOption | null>(null)
   const [returnShippingPrice, setReturnShippingPrice] = useState<
     number | undefined
   >(undefined)
@@ -184,14 +182,14 @@ const ClaimMenu: React.FC<ClaimMenuProps> = ({ order, onDismiss }) => {
         standard: false,
       })
     }
-  }, [isReplace])
+  }, [isReplace, showCustomPrice])
 
   useEffect(() => {
     setCustomOptionPrice({
       ...customOptionPrice,
       standard: 0,
     })
-  }, [shippingMethod, showCustomPrice])
+  }, [customOptionPrice, shippingMethod, showCustomPrice])
 
   const onSubmit = () => {
     const claim_items = Object.entries(toReturn).map(([key, value]) => {
@@ -277,7 +275,7 @@ const ClaimMenu: React.FC<ClaimMenuProps> = ({ order, onDismiss }) => {
     if (selectSo) {
       setReturnShippingMethod(selectSo)
       setReturnShippingPrice(
-        selectSo.amount * (1 + (order.tax_rate || 0 / 100))
+        (selectSo.amount || 0) * (1 + (order.tax_rate || 0 / 100))
       )
     } else {
       setReturnShippingMethod(null)
@@ -355,6 +353,7 @@ const ClaimMenu: React.FC<ClaimMenuProps> = ({ order, onDismiss }) => {
             />
             {returnShippingMethod && (
               <RMAShippingPrice
+                inclTax={false}
                 useCustomShippingPrice={showCustomPrice.return}
                 shippingPrice={customOptionPrice.return || undefined}
                 currencyCode={returnShippingMethod.region.currency_code}
@@ -367,7 +366,7 @@ const ClaimMenu: React.FC<ClaimMenuProps> = ({ order, onDismiss }) => {
                 setUseCustomShippingPrice={(value) => {
                   setCustomOptionPrice({
                     ...customOptionPrice,
-                    return: returnShippingMethod.amount,
+                    return: returnShippingMethod.amount || undefined,
                   })
 
                   setShowCustomPrice({
@@ -436,7 +435,8 @@ const ClaimMenu: React.FC<ClaimMenuProps> = ({ order, onDismiss }) => {
                         SelectProductsScreen(
                           layeredModalContext.pop,
                           itemsToAdd,
-                          handleProductSelect
+                          handleProductSelect,
+                          order.region_id
                         )
                       )
                     }}
@@ -466,7 +466,8 @@ const ClaimMenu: React.FC<ClaimMenuProps> = ({ order, onDismiss }) => {
                           SelectProductsScreen(
                             layeredModalContext.pop,
                             itemsToAdd,
-                            handleProductSelect
+                            handleProductSelect,
+                            order.region_id
                           )
                         )
                       }}
@@ -676,7 +677,12 @@ const ClaimMenu: React.FC<ClaimMenuProps> = ({ order, onDismiss }) => {
   )
 }
 
-const SelectProductsScreen = (pop, itemsToAdd, setSelectedItems) => {
+const SelectProductsScreen = (
+  pop: () => void,
+  itemsToAdd: SelectProduct[],
+  setSelectedItems: (items: SelectProduct[]) => void,
+  regionId: string
+): LayeredModalScreen => {
   return {
     title: "Add Products",
     onBack: () => pop(),
@@ -684,6 +690,7 @@ const SelectProductsScreen = (pop, itemsToAdd, setSelectedItems) => {
       <RMASelectProductSubModal
         selectedItems={itemsToAdd || []}
         onSubmit={setSelectedItems}
+        regionId={regionId}
       />
     ),
   }
@@ -694,7 +701,7 @@ const showEditAddressScreen = (
   address: AddressPayload,
   order: Omit<Order, "beforeInsert">,
   setShippingAddress: (address: AddressPayload) => void
-) => {
+): LayeredModalScreen => {
   return {
     title: "Edit Address",
     onBack: () => pop(),

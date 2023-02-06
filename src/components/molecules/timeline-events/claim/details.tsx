@@ -1,5 +1,5 @@
 import clsx from "clsx"
-import React, { useContext } from "react"
+import { useContext } from "react"
 import Button from "../../../../components/fundamentals/button"
 import InputField from "../../../../components/molecules/input"
 import Modal from "../../../../components/molecules/modal"
