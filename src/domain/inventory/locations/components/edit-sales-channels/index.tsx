@@ -39,14 +39,14 @@ const EditSalesChannels = ({
     )
     for (const channelToRemove of channelsToRemove) {
       await removeLocationFromSalesChannel({
-        id: channelToRemove.id,
-        payload: { location_id: location.id },
+        sales_channel_id: channelToRemove.id,
+        location_id: location.id,
       })
     }
     for (const channelToAdd of channelsToAdd) {
       await addLocationToSalesChannel({
-        id: channelToAdd.id,
-        payload: { location_id: location.id },
+        sales_channel_id: channelToAdd.id,
+        location_id: location.id,
       })
     }
   }
