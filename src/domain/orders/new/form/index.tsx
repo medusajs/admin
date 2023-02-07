@@ -3,8 +3,8 @@ import {
   useAdminRegion,
   useAdminShippingOption,
   useAdminShippingOptions,
+  useMedusa,
 } from "medusa-react"
-import Medusa from "../../../../services/api"
 import React, {
   createContext,
   ReactNode,
@@ -22,7 +22,6 @@ import {
 } from "react-hook-form"
 import { AddressPayload } from "../../../../components/templates/address-form"
 import { Option } from "../../../../types/shared"
-import { PricedVariant } from "@medusajs/medusa/dist/types/pricing"
 import { extractUnitPrice } from "../../../../utils/prices"
 
 export type NewOrderForm = {
@@ -106,6 +105,8 @@ const NewOrderFormProvider = ({ children }: { children?: ReactNode }) => {
     }))
   }, [region])
 
+  const { client } = useMedusa()
+
   useEffect(() => {
     const updateItems = async () => {
       if (items.fields.length) {
@@ -116,15 +117,17 @@ const NewOrderFormProvider = ({ children }: { children?: ReactNode }) => {
           return acc
         }, {} as { [key: string]: any })
 
-        const variantIds = items.fields.map((v) => v.variant_id)
+        const variantIds = items.fields
+          .map((v) => v.variant_id)
+          .filter(Boolean) as string[]
 
-        const { data } = (await Medusa.variants.list({
-          ["id[]"]: variantIds,
+        const { variants } = await client.admin.variants.list({
+          id: variantIds,
           region_id: region?.id,
-        })) as unknown as { data: { variants: PricedVariant[] } }
+        })
 
         items.replace(
-          data.variants.map((variant) => ({
+          variants.map((variant) => ({
             quantity: itemsMap[variant.id as string].quantity,
             variant_id: variant.id,
             title: variant.title as string,
@@ -135,6 +138,7 @@ const NewOrderFormProvider = ({ children }: { children?: ReactNode }) => {
         )
       }
     }
+
     updateItems()
   }, [region])
 

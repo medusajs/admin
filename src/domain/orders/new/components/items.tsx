@@ -2,7 +2,6 @@ import { Product, ProductVariant, Region } from "@medusajs/medusa"
 import clsx from "clsx"
 import React, { useContext, useEffect, useState } from "react"
 import { Controller } from "react-hook-form"
-import Medusa from "../../../../services/api"
 import Button from "../../../../components/fundamentals/button"
 import MinusIcon from "../../../../components/fundamentals/icons/minus-icon"
 import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
@@ -21,7 +20,7 @@ import {
 import RMASelectProductSubModal from "../../details/rma-sub-modals/products"
 import { useNewOrderForm } from "../form"
 import CustomItemSubModal from "./custom-item-sub-modal"
-import { PricedVariant } from "@medusajs/medusa/dist/types/pricing"
+import { useMedusa } from "medusa-react"
 
 const Items = () => {
   const { enableNextPage, disableNextPage, nextStepEnabled } =
@@ -29,8 +28,10 @@ const Items = () => {
 
   const {
     context: { region, items },
-    form: { control, register, setValue, getValues },
+    form: { control, register, setValue },
   } = useNewOrderForm()
+
+  const { client } = useMedusa()
 
   const { fields, append, remove, update } = items
 
@@ -46,13 +47,13 @@ const Items = () => {
 
     const variantIds = itemsToAdd.map((v) => v.id)
 
-    const { data } = (await Medusa.variants.list({
-      ["id[]"]: variantIds,
+    const { variants: newVariants } = await client.admin.variants.list({
+      id: variantIds,
       region_id: region?.id,
-    })) as unknown as { data: { variants: PricedVariant[] } }
+    })
 
     append(
-      data.variants.map((item) => ({
+      newVariants.map((item) => ({
         quantity: 1,
         variant_id: item.id,
         title: item.title as string,
