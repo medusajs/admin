@@ -119,7 +119,7 @@ const NewOrderFormProvider = ({ children }: { children?: ReactNode }) => {
         const variantIds = items.fields.map((v) => v.variant_id)
 
         const { data } = (await Medusa.variants.list({
-          id: variantIds,
+          ["id[]"]: variantIds,
           region_id: region?.id,
         })) as unknown as { data: { variants: PricedVariant[] } }
 

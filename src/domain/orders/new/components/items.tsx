@@ -1,5 +1,4 @@
 import { Product, ProductVariant, Region } from "@medusajs/medusa"
-import { PricedVariant } from "@medusajs/medusa/dist/types/pricing"
 import clsx from "clsx"
 import React, { useContext, useEffect, useState } from "react"
 import { Controller } from "react-hook-form"
@@ -22,6 +21,7 @@ import {
 import RMASelectProductSubModal from "../../details/rma-sub-modals/products"
 import { useNewOrderForm } from "../form"
 import CustomItemSubModal from "./custom-item-sub-modal"
+import { PricedVariant } from "@medusajs/medusa/dist/types/pricing"
 
 const Items = () => {
   const { enableNextPage, disableNextPage, nextStepEnabled } =
@@ -40,17 +40,19 @@ const Items = () => {
   const layeredContext = useContext(LayeredModalContext)
 
   const addItem = async (variants: ProductVariant[]) => {
-    const variantIds = variants.map((v) => v.id)
+    const ids = fields.map((field) => field.variant_id)
+
+    const itemsToAdd = variants.filter((v) => !ids.includes(v.id))
+
+    const variantIds = itemsToAdd.map((v) => v.id)
+
     const { data } = (await Medusa.variants.list({
-      id: variantIds,
+      ["id[]"]: variantIds,
       region_id: region?.id,
     })) as unknown as { data: { variants: PricedVariant[] } }
 
-    const ids = fields.map((field) => field.variant_id)
-    const itemsToAdd = data.variants.filter((v) => !ids.includes(v.id))
-
     append(
-      itemsToAdd.map((item) => ({
+      data.variants.map((item) => ({
         quantity: 1,
         variant_id: item.id,
         title: item.title as string,
