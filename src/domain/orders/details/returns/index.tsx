@@ -19,7 +19,7 @@ import { Option } from "../../../../types/shared"
 import { getErrorMessage } from "../../../../utils/error-messages"
 import { displayAmount } from "../../../../utils/prices"
 import { removeNullish } from "../../../../utils/remove-nullish"
-import { filterItems } from "../utils/create-filtering"
+import { getAllReturnableItems } from "../utils/create-filtering"
 
 type ReturnMenuProps = {
   order: Order
@@ -52,17 +52,15 @@ const ReturnMenu: React.FC<ReturnMenuProps> = ({ order, onDismiss }) => {
 
   useEffect(() => {
     if (order) {
-      setAllItems(filterItems(order, false))
+      setAllItems(getAllReturnableItems(order, false))
     }
   }, [order])
 
-  const {
-    isLoading: shippingLoading,
-    shipping_options: shippingOptions,
-  } = useAdminShippingOptions({
-    region_id: order.region_id,
-    is_return: true,
-  })
+  const { isLoading: shippingLoading, shipping_options: shippingOptions } =
+    useAdminShippingOptions({
+      region_id: order.region_id,
+      is_return: true,
+    })
 
   useEffect(() => {
     const items = Object.keys(toReturn)

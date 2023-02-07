@@ -10,17 +10,17 @@ enum LayeredModalActions {
   RESET,
 }
 
-type LayeredModalScreen = {
+export type LayeredModalScreen = {
   title: string
   subtitle?: string
   onBack: () => void
-  onConfirm: () => void
+  onConfirm?: () => void
   view: ReactNode
 }
 
 export type ILayeredModalContext = {
   screens: LayeredModalScreen[]
-  push: (screen: ReactNode) => void
+  push: (screen: LayeredModalScreen) => void
   pop: () => void
   reset: () => void
 }

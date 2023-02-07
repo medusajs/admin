@@ -2,7 +2,7 @@ import clsx from "clsx"
 import { useAdminCreateNote, useAdminOrder } from "medusa-react"
 import React, { useState } from "react"
 
-import ClaimMenu from "../../../domain/orders/details/claim/create"
+import RegisterClaimMenu from "../../../domain/orders/details/claim/register-claim-menu"
 import ReturnMenu from "../../../domain/orders/details/returns"
 import SwapMenu from "../../../domain/orders/details/swap/create"
 import useOrdersExpandParam from "../../../domain/orders/details/utils/use-admin-expand-paramter"
@@ -13,17 +13,18 @@ import {
   ItemsShippedEvent,
   NoteEvent,
   NotificationEvent,
-  OrderPlacedEvent,
   OrderEditEvent,
+  OrderEditRequestedEvent,
+  OrderPlacedEvent,
+  PaymentRequiredEvent,
   RefundEvent,
+  RefundRequiredEvent,
   ReturnEvent,
   TimelineEvent,
   useBuildTimeline,
-  OrderEditRequestedEvent,
-  RefundRequiredEvent,
-  PaymentRequiredEvent,
 } from "../../../hooks/use-build-timeline"
 import useNotification from "../../../hooks/use-notification"
+import useToggleState from "../../../hooks/use-toggle-state"
 import { getErrorMessage } from "../../../utils/error-messages"
 import Spinner from "../../atoms/spinner"
 import AlertIcon from "../../fundamentals/icons/alert-icon"
@@ -42,12 +43,12 @@ import EditCanceled from "../../molecules/timeline-events/order-edit/canceled"
 import EditConfirmed from "../../molecules/timeline-events/order-edit/confirmed"
 import EditCreated from "../../molecules/timeline-events/order-edit/created"
 import EditDeclined from "../../molecules/timeline-events/order-edit/declined"
+import PaymentRequired from "../../molecules/timeline-events/order-edit/payment-required"
+import RefundRequired from "../../molecules/timeline-events/order-edit/refund-required"
 import EditRequested from "../../molecules/timeline-events/order-edit/requested"
 import OrderPlaced from "../../molecules/timeline-events/order-placed"
 import Refund from "../../molecules/timeline-events/refund"
 import Return from "../../molecules/timeline-events/return"
-import PaymentRequired from "../../molecules/timeline-events/order-edit/payment-required"
-import RefundRequired from "../../molecules/timeline-events/order-edit/refund-required"
 
 type TimelineProps = {
   orderId: string
@@ -64,7 +65,12 @@ const Timeline: React.FC<TimelineProps> = ({ orderId }) => {
   })
   const [showRequestReturn, setShowRequestReturn] = useState(false)
   const [showCreateSwap, setshowCreateSwap] = useState(false)
-  const [showCreateClaim, setshowCreateClaim] = useState(false)
+
+  const {
+    state: showRegisterClaim,
+    close: closeRegisterClaim,
+    open: openRegisterClaim,
+  } = useToggleState()
 
   const actions: ActionType[] = [
     {
@@ -80,7 +86,7 @@ const Timeline: React.FC<TimelineProps> = ({ orderId }) => {
     {
       icon: <AlertIcon size={20} />,
       label: "Register Claim",
-      onClick: () => setshowCreateClaim(true),
+      onClick: openRegisterClaim,
     },
   ]
 
@@ -146,8 +152,8 @@ const Timeline: React.FC<TimelineProps> = ({ orderId }) => {
       {showCreateSwap && order && (
         <SwapMenu order={order} onDismiss={() => setshowCreateSwap(false)} />
       )}
-      {showCreateClaim && order && (
-        <ClaimMenu order={order} onDismiss={() => setshowCreateClaim(false)} />
+      {showRegisterClaim && order && (
+        <RegisterClaimMenu order={order} onClose={closeRegisterClaim} />
       )}
     </>
   )

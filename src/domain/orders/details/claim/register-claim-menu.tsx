@@ -1,0 +1,216 @@
+import { ClaimReason, Order } from "@medusajs/medusa"
+import { useAdminCreateClaim } from "medusa-react"
+import { useEffect } from "react"
+import { useForm, useWatch } from "react-hook-form"
+import Button from "../../../../components/fundamentals/button"
+import Modal from "../../../../components/molecules/modal"
+import LayeredModal, {
+  useLayeredModal,
+} from "../../../../components/molecules/modal/layered-modal"
+import { AddressPayload } from "../../../../components/templates/address-form"
+import useNotification from "../../../../hooks/use-notification"
+import { getErrorMessage } from "../../../../utils/error-messages"
+import { nestedForm } from "../../../../utils/nested-form"
+import ClaimTypeForm, {
+  ClaimTypeFormType,
+} from "../../components/claim-type-form"
+import ItemsToReturnForm, {
+  ItemsToReturnFormType,
+} from "../../components/items-to-return-form"
+import ItemsToSendForm, {
+  ItemsToSendFormType,
+} from "../../components/items-to-send-form"
+import SendNotificationForm, {
+  SendNotificationFormType,
+} from "../../components/send-notification-form"
+import ShippingAddressForm from "../../components/shipping-address-form"
+import ShippingForm, { ShippingFormType } from "../../components/shipping-form"
+import { getDefaultClaimValues } from "../utils/get-default-values"
+
+export type CreateClaimFormType = {
+  notification: SendNotificationFormType
+  return_items: ItemsToReturnFormType
+  additional_items: ItemsToSendFormType
+  return_shipping: ShippingFormType
+  replacement_shipping: ShippingFormType
+  shipping_address: AddressPayload
+  claim_type: ClaimTypeFormType
+}
+
+type Props = {
+  order: Order
+  onClose: () => void
+}
+
+const RegisterClaimMenu = ({ order, onClose }: Props) => {
+  const context = useLayeredModal()
+  const { mutate, isLoading } = useAdminCreateClaim(order.id)
+
+  const form = useForm<CreateClaimFormType>({
+    defaultValues: getDefaultClaimValues(order),
+  })
+  const {
+    handleSubmit,
+    reset,
+    formState: { isDirty },
+  } = form
+
+  const notification = useNotification()
+
+  useEffect(() => {
+    reset(getDefaultClaimValues(order))
+  }, [order, reset])
+
+  const handleClose = () => {
+    context.reset()
+    onClose()
+  }
+
+  const onSubmit = handleSubmit((data) => {
+    const type = data.claim_type.type
+    const returnShipping = data.return_shipping
+
+    mutate(
+      {
+        claim_items: data.return_items.items.map((item) => ({
+          item_id: item.item_id,
+          quantity: item.quantity,
+          note: item.return_reason_details.note || undefined,
+          reason: item.return_reason_details.reason?.value as ClaimReason,
+        })),
+        type: type,
+        return_shipping: returnShipping.option
+          ? {
+              option_id: returnShipping.option.value,
+              price: returnShipping.price,
+            }
+          : undefined,
+        additional_items:
+          type === "replace"
+            ? data.additional_items.items.map((item) => ({
+                quantity: item.quantity,
+                variant_id: item.variant_id,
+              }))
+            : undefined,
+        no_notification: !data.notification.send_notification,
+        shipping_address:
+          type === "replace"
+            ? {
+                address_1: data.shipping_address.address_1,
+                address_2: data.shipping_address.address_2 || undefined,
+                city: data.shipping_address.city,
+                country_code: data.shipping_address.country_code.value,
+                company: data.shipping_address.company || undefined,
+                first_name: data.shipping_address.first_name,
+                last_name: data.shipping_address.last_name,
+                phone: data.shipping_address.phone || undefined,
+                postal_code: data.shipping_address.postal_code,
+                province: data.shipping_address.province || undefined,
+              }
+            : undefined,
+        shipping_methods:
+          type === "replace"
+            ? [
+                {
+                  option_id: data.replacement_shipping.option?.value,
+                  price: data.replacement_shipping.price,
+                },
+              ]
+            : undefined,
+      },
+      {
+        onSuccess: () => {
+          notification(
+            "Successfully created claim",
+            `A claim for order #${order.display_id} was successfully created`,
+            "success"
+          )
+          handleClose()
+        },
+        onError: (err) => {
+          notification("Error creating claim", getErrorMessage(err), "error")
+        },
+      }
+    )
+  })
+
+  const watchedType = useWatch({
+    control: form.control,
+    name: "claim_type.type",
+  })
+
+  const watchedItems = useWatch({
+    control: form.control,
+    name: "return_items.items",
+  })
+
+  return (
+    <LayeredModal
+      open={true}
+      handleClose={handleClose}
+      context={context}
+      isLargeModal
+    >
+      <Modal.Body>
+        <Modal.Header handleClose={handleClose}>
+          <h1 className="inter-xlarge-semibold">Create Claim</h1>
+        </Modal.Header>
+        <form onSubmit={onSubmit}>
+          <Modal.Content>
+            <div className="flex flex-col gap-y-xlarge">
+              <ItemsToReturnForm
+                form={nestedForm(form, "return_items")}
+                order={order}
+                isClaim={true}
+              />
+              <ShippingForm
+                form={nestedForm(form, "return_shipping")}
+                order={order}
+                isReturn={true}
+              />
+              <ClaimTypeForm form={nestedForm(form, "claim_type")} />
+              {watchedType === "replace" && (
+                <>
+                  <ItemsToSendForm
+                    form={nestedForm(form, "additional_items")}
+                    order={order}
+                  />
+                  <ShippingAddressForm
+                    form={nestedForm(form, "shipping_address")}
+                    order={order}
+                  />
+                  <ShippingForm
+                    form={nestedForm(form, "replacement_shipping")}
+                    order={order}
+                  />
+                </>
+              )}
+            </div>
+          </Modal.Content>
+          <Modal.Footer>
+            <div className="w-full flex items-center justify-between">
+              <SendNotificationForm
+                form={nestedForm(form, "notification")}
+                type="claim"
+              />
+              <div className="items-center flex justify-end gap-x-xsmall">
+                <Button variant="secondary" size="small" type="button">
+                  Cancel
+                </Button>
+                <Button
+                  variant="primary"
+                  size="small"
+                  disabled={!isDirty || isLoading || watchedItems?.length < 1}
+                >
+                  Submit and close
+                </Button>
+              </div>
+            </div>
+          </Modal.Footer>
+        </form>
+      </Modal.Body>
+    </LayeredModal>
+  )
+}
+
+export default RegisterClaimMenu
