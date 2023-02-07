@@ -72,12 +72,14 @@ const RegisterClaimMenu = ({ order, onClose }: Props) => {
 
     mutate(
       {
-        claim_items: data.return_items.items.map((item) => ({
-          item_id: item.item_id,
-          quantity: item.quantity,
-          note: item.return_reason_details.note || undefined,
-          reason: item.return_reason_details.reason?.value as ClaimReason,
-        })),
+        claim_items: data.return_items.items
+          .filter((item) => item.return)
+          .map((item) => ({
+            item_id: item.item_id,
+            quantity: item.quantity,
+            note: item.return_reason_details.note || undefined,
+            reason: item.return_reason_details.reason?.value as ClaimReason,
+          })),
         type: type,
         return_shipping: returnShipping.option
           ? {
