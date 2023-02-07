@@ -31,7 +31,38 @@ const VariantStockForm = ({ form }: Props) => {
       <p className="inter-base-regular text-grey-50">
         Configure the inventory and stock for this variant.
       </p>
-      <div className="pt-large flex flex-col gap-y-xlarge">
+      <div className="flex flex-col pt-large gap-y-xlarge">
+        <div className="grid grid-cols-2 gap-large">
+          <InputField
+            label="Stock keeping unit (SKU)"
+            placeholder="SUN-G, JK1234..."
+            {...register(path("sku"))}
+          />
+          <InputField
+            label="Quantity in stock"
+            type="number"
+            placeholder="100..."
+            errors={errors}
+            {...register(path("inventory_quantity"), {
+              valueAsNumber: true,
+            })}
+          />
+          <InputField
+            label="EAN (Barcode)"
+            placeholder="123456789102..."
+            {...register(path("ean"))}
+          />
+          <InputField
+            label="UPC (Barcode)"
+            placeholder="023456789104..."
+            {...register(path("upc"))}
+          />
+          <InputField
+            label="Barcode"
+            placeholder="123456789104..."
+            {...register(path("barcode"))}
+          />
+        </div>
         <div className="flex flex-col gap-y-2xsmall">
           <div className="flex items-center justify-between">
             <h3 className="inter-base-semibold mb-2xsmall">Manage inventory</h3>
@@ -64,36 +95,12 @@ const VariantStockForm = ({ form }: Props) => {
             product being sold out
           </p>
         </div>
-        <div className="grid grid-cols-2 gap-large">
-          <InputField
-            label="Stock keeping unit (SKU)"
-            placeholder="SUN-G, JK1234..."
-            {...register(path("sku"))}
-          />
-          <InputField
-            label="Quantity in stock"
-            type="number"
-            placeholder="100..."
-            errors={errors}
-            {...register(path("inventory_quantity"), {
-              valueAsNumber: true,
-            })}
-          />
-          <InputField
-            label="EAN (Barcode)"
-            placeholder="123456789102..."
-            {...register(path("ean"))}
-          />
-          <InputField
-            label="UPC (Barcode)"
-            placeholder="023456789104..."
-            {...register(path("upc"))}
-          />
-          <InputField
-            label="Barcode"
-            placeholder="123456789104..."
-            {...register(path("barcode"))}
-          />
+        <div className="flex flex-col gap-y-2xsmall">
+          <h3 className="inter-base-semibold mb-2xsmall">Quantity</h3>
+          <div className="flex items-center justify-between">
+            <p className="inter-base-regular text-grey-50">Location</p>
+            <p className="inter-base-regular text-grey-50">In Stock</p>
+          </div>
         </div>
       </div>
     </div>
