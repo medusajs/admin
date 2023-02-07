@@ -1,28 +1,40 @@
-import React, { useContext } from "react"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
+import { useAdminDeleteSession, useAdminGetSession } from "medusa-react"
+import React from "react"
+import { useNavigate } from "react-router-dom"
+import useNotification from "../../../hooks/use-notification"
+import { getErrorMessage } from "../../../utils/error-messages"
 import Avatar from "../../atoms/avatar"
 import Button from "../../fundamentals/button"
 import GearIcon from "../../fundamentals/icons/gear-icon"
 import SignOutIcon from "../../fundamentals/icons/log-out-icon"
-import { useNavigate } from "react-router-dom"
-import { AccountContext } from "../../../context/account"
 
 const UserMenu: React.FC = () => {
   const navigate = useNavigate()
-  const { first_name, last_name, email, handleLogout } =
-    useContext(AccountContext)
+
+  const { user, isLoading } = useAdminGetSession()
+  const { mutate } = useAdminDeleteSession()
+
+  const notification = useNotification()
 
   const logOut = () => {
-    handleLogout()
-    navigate("/login")
+    mutate(undefined, {
+      onSuccess: () => {
+        navigate("/login")
+      },
+      onError: (err) => {
+        notification("Failed to log out", getErrorMessage(err), "error")
+      },
+    })
   }
   return (
     <div className="w-large h-large">
       <DropdownMenu.Root>
-        <DropdownMenu.Trigger asChild>
+        <DropdownMenu.Trigger asChild disabled={isLoading}>
           <div className="w-full h-full cursor-pointer">
             <Avatar
-              user={{ first_name, last_name, email }}
+              user={{ ...user }}
+              isLoading={isLoading}
               color="bg-fuschia-40"
             />
           </div>

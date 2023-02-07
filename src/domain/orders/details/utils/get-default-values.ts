@@ -1,20 +1,15 @@
-import { ClaimItem, LineItem, Order, Return } from "@medusajs/medusa"
+import { ClaimItem, LineItem, Order } from "@medusajs/medusa"
 import { AddressPayload } from "../../../../components/templates/address-form"
 import { Subset } from "../../../../types/shared"
 import { isoAlpha2Countries } from "../../../../utils/countries"
 import { isLineItemNotReturnable } from "../../../../utils/is-line-item"
 import { ClaimTypeFormType } from "../../components/claim-type-form"
-import { ItemsToReceiveFormType } from "../../components/items-to-receive-form"
 import { ItemsToReturnFormType } from "../../components/items-to-return-form"
 import { ItemsToSendFormType } from "../../components/items-to-send-form"
-import { ReceiveNowFormType } from "../../components/receive-now-form"
-import { ReturnShippingFormType } from "../../components/return-shipping-form"
+
 import { SendNotificationFormType } from "../../components/send-notification-form"
 import { ShippingFormType } from "../../components/shipping-form"
 import { CreateClaimFormType } from "../claim/register-claim-menu"
-import { ReceiveReturnFormType } from "../returns/receive-return-menu"
-import { RequestReturnFormType } from "../returns/request-return-menu"
-import { CreateSwapFormType } from "../swap/swap-menu"
 
 const getDefaultShippingAddressValues = (
   order: Order
@@ -114,11 +109,11 @@ const getDefaultAdditionalItemsValues = (): ItemsToSendFormType => {
   }
 }
 
-const getDefaultReceiveVaues = (): ReceiveNowFormType => {
-  return {
-    receive_now: false,
-  }
-}
+// const getDefaultReceiveValues = (): ReceiveNowFormType => {
+//   return {
+//     receive_now: false,
+//   }
+// }
 
 const getDefaultClaimTypeValues = (): ClaimTypeFormType => {
   return {
@@ -126,9 +121,7 @@ const getDefaultClaimTypeValues = (): ClaimTypeFormType => {
   }
 }
 
-const getDefaultShippingValues = (): Subset<
-  ShippingFormType | ReturnShippingFormType
-> => {
+const getDefaultShippingValues = (): Subset<ShippingFormType> => {
   return {
     option: undefined,
     price: undefined,
@@ -173,71 +166,71 @@ const getReturnableItemsValues = (
   return returnItems
 }
 
-const getReceiveableItemsValues = (
-  order: Order,
-  returnRequest: Return
-): Subset<ItemsToReceiveFormType> => {
-  const returnableItems = getReturnableItemsValues(order, false)
+// const getReceiveableItemsValues = (
+//   order: Order,
+//   returnRequest: Return
+// ): Subset<ItemsToReceiveFormType> => {
+//   const returnableItems = getReturnableItemsValues(order, false)
 
-  const returnItems = {
-    items: returnableItems?.items?.reduce((acc, item) => {
-      if (!item) {
-        return acc
-      }
+//   const returnItems = {
+//     items: returnableItems?.items?.reduce((acc, item) => {
+//       if (!item) {
+//         return acc
+//       }
 
-      const indexOfRequestedItem = returnRequest.items.findIndex(
-        (i) => i.item_id === item.item_id
-      )
+//       const indexOfRequestedItem = returnRequest.items.findIndex(
+//         (i) => i.item_id === item.item_id
+//       )
 
-      if (item?.item_id && indexOfRequestedItem > -1) {
-        const requestedItem = returnRequest.items[indexOfRequestedItem]
+//       if (item?.item_id && indexOfRequestedItem > -1) {
+//         const requestedItem = returnRequest.items[indexOfRequestedItem]
 
-        const adjustedQuantity =
-          requestedItem.requested_quantity - requestedItem.received_quantity
+//         const adjustedQuantity =
+//           requestedItem.requested_quantity - requestedItem.received_quantity
 
-        acc.push({
-          ...item,
-          quantity: adjustedQuantity,
-          original_quantity: adjustedQuantity,
-        })
-      }
-      return acc
-    }, [] as Subset<ItemsToReceiveFormType["items"]>),
-  }
+//         acc.push({
+//           ...item,
+//           quantity: adjustedQuantity,
+//           original_quantity: adjustedQuantity,
+//         })
+//       }
+//       return acc
+//     }, [] as Subset<ItemsToReceiveFormType["items"]>),
+//   }
 
-  return returnItems
-}
+//   return returnItems
+// }
 
-export const getDefaultSwapValues = (
-  order: Order
-): Subset<CreateSwapFormType> => {
-  return {
-    return_items: getReturnableItemsValues(order, false),
-    additional_items: getDefaultAdditionalItemsValues(),
-    notification: getDefaultSendNotificationValues(),
-    return_shipping: getDefaultShippingValues(),
-  }
-}
+// export const getDefaultSwapValues = (
+//   order: Order
+// ): Subset<CreateSwapFormType> => {
+//   return {
+//     return_items: getReturnableItemsValues(order, false),
+//     additional_items: getDefaultAdditionalItemsValues(),
+//     notification: getDefaultSendNotificationValues(),
+//     return_shipping: getDefaultShippingValues(),
+//   }
+// }
 
-export const getDefaultRequestReturnValues = (
-  order: Order
-): Subset<RequestReturnFormType> => {
-  return {
-    return_items: getReturnableItemsValues(order, false),
-    notification: getDefaultSendNotificationValues(),
-    receive: getDefaultReceiveVaues(),
-    return_shipping: getDefaultShippingValues(),
-  }
-}
+// export const getDefaultRequestReturnValues = (
+//   order: Order
+// ): Subset<RequestReturnFormType> => {
+//   return {
+//     return_items: getReturnableItemsValues(order, false),
+//     notification: getDefaultSendNotificationValues(),
+//     receive: getDefaultReceiveVaues(),
+//     return_shipping: getDefaultShippingValues(),
+//   }
+// }
 
-export const getDefaultReceiveReturnValues = (
-  order: Order,
-  returnRequest: Return
-): Subset<ReceiveReturnFormType> => {
-  return {
-    receive_items: getReceiveableItemsValues(order, returnRequest),
-  }
-}
+// export const getDefaultReceiveReturnValues = (
+//   order: Order,
+//   returnRequest: Return
+// ): Subset<ReceiveReturnFormType> => {
+//   return {
+//     receive_items: getReceiveableItemsValues(order, returnRequest),
+//   }
+// }
 
 export const getDefaultClaimValues = (
   order: Order
