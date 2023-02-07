@@ -16,12 +16,16 @@ import { useOrderFilters } from "./use-order-filters"
 const DEFAULT_PAGE_SIZE = 15
 
 const defaultQueryProps = {
-  expand: "shipping_address",
+  expand: "customer,shipping_address",
   fields:
     "id,status,display_id,created_at,email,fulfillment_status,payment_status,total,currency_code",
 }
 
-const OrderTable = () => {
+type OrderTableProps = {
+  setContextFilters: (filters: Record<string, { filter: string[] }>) => void
+}
+
+const OrderTable = ({ setContextFilters }: OrderTableProps) => {
   const location = useLocation()
 
   const { isFeatureEnabled } = React.useContext(FeatureFlagContext)
@@ -29,7 +33,7 @@ const OrderTable = () => {
 
   let hiddenColumns = ["sales_channel"]
   if (isFeatureEnabled("sales_channels")) {
-    defaultQueryProps.expand = "shipping_address,sales_channel"
+    defaultQueryProps.expand = defaultQueryProps.expand + ",sales_channel"
     hiddenColumns = []
   }
 
@@ -68,6 +72,10 @@ const OrderTable = () => {
     const controlledPageCount = Math.ceil(count! / queryObject.limit)
     setNumPages(controlledPageCount)
   }, [orders])
+
+  useEffect(() => {
+    setContextFilters(filters as {})
+  }, [filters])
 
   const [columns] = useOrderTableColums()
 
@@ -230,4 +238,4 @@ const OrderTable = () => {
   )
 }
 
-export default OrderTable
+export default React.memo(OrderTable)

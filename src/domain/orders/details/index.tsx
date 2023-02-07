@@ -1,5 +1,4 @@
 import { Address, ClaimOrder, Fulfillment, Swap } from "@medusajs/medusa"
-import { JsonViewer } from "@textea/json-viewer"
 import { capitalize, sum } from "lodash"
 import {
   useAdminCancelOrder,
@@ -24,17 +23,21 @@ import ClipboardCopyIcon from "../../../components/fundamentals/icons/clipboard-
 import CornerDownRightIcon from "../../../components/fundamentals/icons/corner-down-right-icon"
 import DollarSignIcon from "../../../components/fundamentals/icons/dollar-sign-icon"
 import MailIcon from "../../../components/fundamentals/icons/mail-icon"
+import RefreshIcon from "../../../components/fundamentals/icons/refresh-icon"
 import TruckIcon from "../../../components/fundamentals/icons/truck-icon"
 import { ActionType } from "../../../components/molecules/actionables"
 import Breadcrumb from "../../../components/molecules/breadcrumb"
+import JSONView from "../../../components/molecules/json-view"
 import BodyCard from "../../../components/organisms/body-card"
 import RawJSON from "../../../components/organisms/raw-json"
 import Timeline from "../../../components/organisms/timeline"
 import { AddressType } from "../../../components/templates/address-form"
+import TransferOrdersModal from "../../../components/templates/transfer-orders-modal"
 import { FeatureFlagContext } from "../../../context/feature-flag"
 import useClipboard from "../../../hooks/use-clipboard"
 import useImperativeDialog from "../../../hooks/use-imperative-dialog"
 import useNotification from "../../../hooks/use-notification"
+import useToggleState from "../../../hooks/use-toggle-state"
 import { isoAlpha2Countries } from "../../../utils/countries"
 import { getErrorMessage } from "../../../utils/error-messages"
 import extractCustomerName from "../../../utils/extract-customer-name"
@@ -121,13 +124,16 @@ const OrderDetails = () => {
   const dialog = useImperativeDialog()
 
   const [addressModal, setAddressModal] = useState<null | {
-    address: Address
+    address?: Address | null
     type: AddressType
   }>(null)
 
   const [emailModal, setEmailModal] = useState<null | {
     email: string
   }>(null)
+
+  const { state: showTransferOrderModal, toggle: toggleTransferOrderModal } =
+    useToggleState()
 
   const [showFulfillment, setShowFulfillment] = useState(false)
   const [showRefund, setShowRefund] = useState(false)
@@ -196,6 +202,8 @@ const OrderDetails = () => {
     const shouldDelete = await dialog({
       heading: "Cancel order",
       text: "Are you sure you want to cancel the order?",
+      extraConfirmation: true,
+      entityName: `order #${order?.display_id}`,
     })
 
     if (!shouldDelete) {
@@ -217,34 +225,33 @@ const OrderDetails = () => {
       icon: <DetailsIcon size={"20"} />,
       onClick: () => navigate(`/a/customers/${order?.customer.id}`),
     },
+    {
+      label: "Transfer ownership",
+      icon: <RefreshIcon size={"20"} />,
+      onClick: () => toggleTransferOrderModal(),
+    },
   ]
 
-  if (order?.shipping_address) {
-    customerActionables.push({
-      label: "Edit Shipping Address",
-      icon: <TruckIcon size={"20"} />,
-      onClick: () =>
-        setAddressModal({
-          address: order?.shipping_address,
-          type: AddressType.SHIPPING,
-        }),
-    })
-  }
+  customerActionables.push({
+    label: "Edit Shipping Address",
+    icon: <TruckIcon size={"20"} />,
+    onClick: () =>
+      setAddressModal({
+        address: order?.shipping_address,
+        type: AddressType.SHIPPING,
+      }),
+  })
 
-  if (order?.billing_address) {
-    customerActionables.push({
-      label: "Edit Billing Address",
-      icon: <DollarSignIcon size={"20"} />,
-      onClick: () => {
-        if (order.billing_address) {
-          setAddressModal({
-            address: order?.billing_address,
-            type: AddressType.BILLING,
-          })
-        }
-      },
-    })
-  }
+  customerActionables.push({
+    label: "Edit Billing Address",
+    icon: <DollarSignIcon size={"20"} />,
+    onClick: () => {
+      setAddressModal({
+        address: order?.billing_address,
+        type: AddressType.BILLING,
+      })
+    },
+  })
 
   if (order?.email) {
     customerActionables.push({
@@ -258,9 +265,21 @@ const OrderDetails = () => {
     })
   }
 
+  if (!order && isLoading) {
+    return (
+      <div className="w-full h-full flex items-center justify-center">
+        <Spinner size="small" variant="secondary" />
+      </div>
+    )
+  }
+
+  if (!order && !isLoading) {
+    navigate("/404")
+  }
+
   return (
     <div>
-      <OrderEditProvider orderId={id}>
+      <OrderEditProvider orderId={id!}>
         <Breadcrumb
           currentPage={"Order Details"}
           previousBreadcrumb={"Orders"}
@@ -382,7 +401,7 @@ const OrderDetails = () => {
                             totalAmount={-1 * order.gift_card_total}
                             totalTitle={
                               <div className="flex inter-small-regular text-grey-90 items-center">
-                                Gift card:{" "}
+                                Gift card:
                                 <Badge className="ml-3" variant="default">
                                   {giftCard.code}
                                 </Badge>
@@ -527,20 +546,8 @@ const OrderDetails = () => {
                         <span className="inter-small-regular text-grey-90 mt-2">
                           {method?.shipping_option?.name || ""}
                         </span>
-                        <div className="flex flex-col min-h-[100px] mt-8 bg-grey-5 px-3 py-2 h-full">
-                          <span className="inter-base-semibold">
-                            Data{" "}
-                            <span className="text-grey-50 inter-base-regular">
-                              (1 item)
-                            </span>
-                          </span>
-                          <div className="flex flex-grow items-center mt-4">
-                            <JsonViewer
-                              defaultInspectDepth={0}
-                              value={method?.data}
-                              rootName="method"
-                            />
-                          </div>
+                        <div className="flex flex-grow items-center mt-4 w-full">
+                          <JSONView data={method?.data} />
                         </div>
                       </div>
                     ))}
@@ -608,7 +615,7 @@ const OrderDetails = () => {
                   </div>
                 </BodyCard>
                 <div className="mt-large">
-                  <RawJSON data={order} title="Raw order" rootName="order" />
+                  <RawJSON data={order} title="Raw order" />
                 </div>
               </div>
               <Timeline orderId={order.id} />
@@ -617,7 +624,7 @@ const OrderDetails = () => {
               <AddressModal
                 handleClose={() => setAddressModal(null)}
                 submit={updateOrder}
-                address={addressModal.address}
+                address={addressModal.address || undefined}
                 type={addressModal.type}
                 allowedCountries={region?.countries}
               />
@@ -640,6 +647,12 @@ const OrderDetails = () => {
               <CreateRefundModal
                 order={order}
                 onDismiss={() => setShowRefund(false)}
+              />
+            )}
+            {showTransferOrderModal && (
+              <TransferOrdersModal
+                order={order}
+                onDismiss={toggleTransferOrderModal}
               />
             )}
             {fullfilmentToShip && (

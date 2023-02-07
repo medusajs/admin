@@ -45,7 +45,7 @@ function DetailsModal(props: DetailsModalProps) {
 
   return (
     <SideModal close={close} isVisible={!!selectedKey}>
-      <div className="flex flex-col justify-between h-[100%] p-6">
+      <div className="flex flex-col justify-between h-full p-6">
         {/* === HEADER === */}
 
         <div className="flex items-center justify-between">

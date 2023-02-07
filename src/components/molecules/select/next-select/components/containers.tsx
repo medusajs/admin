@@ -72,7 +72,11 @@ export const SelectContainer = <
           "--is-rtl": isRtl,
           "--has-value": hasValue,
         },
-        clsx("relative pointer-events-auto", className)
+        clsx(
+          "relative pointer-events-auto",
+          { "text-grey-40": isDisabled },
+          className
+        )
       )}
     >
       {children}

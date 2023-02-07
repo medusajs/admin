@@ -7,7 +7,7 @@ export const PaymentStatusComponent = ({ status }) => {
     case "captured":
       return <StatusDot title="Paid" variant="success" />
     case "awaiting":
-      return <StatusDot title="Awaiting" variant="default" />
+      return <StatusDot title="Awaiting payment" variant="danger" />
     case "canceled":
       return <StatusDot title="Canceled" variant="danger" />
     case "requires_action":

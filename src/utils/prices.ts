@@ -1,4 +1,11 @@
-import { LineItemTaxLine, MoneyAmount, Order } from "@medusajs/medusa"
+import {
+  LineItem,
+  LineItemTaxLine,
+  MoneyAmount,
+  Order,
+  Region,
+} from "@medusajs/medusa"
+import { PricedVariant } from "@medusajs/medusa/dist/types/pricing"
 import { currencies } from "./currencies"
 
 export function normalizeAmount(currency: string, amount: number): number {
@@ -14,22 +21,44 @@ export function displayAmount(currency: string, amount: number) {
   )
 }
 
-export const extractUnitPrice = (item, region, withTax = true) => {
-  let itemPrice = item.unit_price
+export const extractUnitPrice = (
+  item: PricedVariant,
+  region: Region,
+  withTax = true
+) => {
+  let itemPrice = item.original_price
+  let includesTax = item.original_price_includes_tax
+  let taxRate = item.original_tax
 
   if (itemPrice === undefined) {
     const regionPrice = item.prices.find(
       (p) => p.currency_code === region.currency_code
     )
 
+    if (!regionPrice) {
+      return 0
+    }
+
     itemPrice = regionPrice.amount
+    includesTax = region.includes_tax
+    taxRate = includesTax
+      ? (itemPrice * region.tax_rate) / (1 + region.tax_rate)
+      : itemPrice * region.tax_rate
   }
 
   if (itemPrice) {
-    if (withTax) {
-      return itemPrice * (1 + region.tax_rate / 100)
+    if (includesTax) {
+      if (withTax) {
+        return itemPrice
+      } else {
+        return itemPrice - (taxRate ?? 0)
+      }
     } else {
-      return itemPrice
+      if (withTax) {
+        return itemPrice + (taxRate ?? 0)
+      } else {
+        return itemPrice
+      }
     }
   }
 

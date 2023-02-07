@@ -87,7 +87,7 @@ const ReceiveMenu: React.FC<ReceiveMenuProps> = ({
   }, [allItems])
 
   const shippingTaxRate = useMemo(() => {
-    return returnRequest.shipping_method.tax_lines.reduce((acc, curr) => {
+    return returnRequest.shipping_method?.tax_lines.reduce((acc, curr) => {
       return acc + curr.rate
     }, 0)
   }, [returnRequest])

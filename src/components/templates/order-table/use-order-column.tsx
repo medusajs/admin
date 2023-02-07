@@ -1,5 +1,5 @@
 import moment from "moment"
-import React, { useMemo } from "react"
+import { useMemo } from "react"
 import ReactCountryFlag from "react-country-flag"
 import { getColor } from "../../../utils/color"
 import { isoAlpha2Countries } from "../../../utils/countries"
@@ -7,7 +7,6 @@ import { formatAmountWithSymbol } from "../../../utils/prices"
 import Tooltip from "../../atoms/tooltip"
 import StatusDot from "../../fundamentals/status-indicator"
 import CustomerAvatarItem from "../../molecules/customer-avatar-item"
-import Table from "../../molecules/table"
 
 const useOrderTableColums = () => {
   const decideStatus = (status) => {

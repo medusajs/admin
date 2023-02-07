@@ -13,6 +13,7 @@ import InputHeader, { InputHeaderProps } from "../../fundamentals/input-header"
 
 export type InputProps = Omit<React.ComponentPropsWithRef<"input">, "prefix"> &
   InputHeaderProps & {
+    small?: boolean
     label?: string
     deletable?: boolean
     onDelete?: MouseEventHandler<HTMLSpanElement>
@@ -26,6 +27,7 @@ export type InputProps = Omit<React.ComponentPropsWithRef<"input">, "prefix"> &
 const InputField = React.forwardRef<HTMLInputElement, InputProps>(
   (
     {
+      small,
       placeholder,
       label,
       name,
@@ -87,18 +89,22 @@ const InputField = React.forwardRef<HTMLInputElement, InputProps>(
         )}
         <div
           className={clsx(
-            "w-full flex items-center bg-grey-5 border border-gray-20 px-small py-xsmall rounded-rounded h-10 focus-within:shadow-input focus-within:border-violet-60",
+            "w-full flex items-center bg-grey-5 border border-gray-20 px-small py-xsmall rounded-rounded focus-within:shadow-input focus-within:border-violet-60",
             {
               "border-rose-50 focus-within:shadow-cta focus-within:shadow-rose-60/10 focus-within:border-rose-50":
                 errors && name && errors[name],
-            }
+            },
+            small ? "h-8" : "h-10"
           )}
         >
           {prefix ? (
             <span className="text-grey-40 mr-2xsmall">{prefix}</span>
           ) : null}
           <input
-            className="bg-transparent outline-none outline-0 w-full remove-number-spinner leading-base text-grey-90 font-normal caret-violet-60 placeholder-grey-40"
+            className={clsx(
+              "bg-transparent outline-none outline-0 w-full remove-number-spinner leading-base text-grey-90 font-normal caret-violet-60 placeholder-grey-40",
+              { "text-small": small, "pt-[1px]": small }
+            )}
             ref={inputRef}
             autoComplete="off"
             name={name}
@@ -112,7 +118,7 @@ const InputField = React.forwardRef<HTMLInputElement, InputProps>(
           {deletable && (
             <button
               onClick={onDelete}
-              className="text-grey-50 w-4 h-4 hover:bg-grey-10 focus:bg-grey-20 rounded-soft cursor-pointer outline-none ml-2 flex items-center justify-center pb-px"
+              className="flex items-center justify-center w-4 h-4 pb-px ml-2 outline-none cursor-pointer text-grey-50 hover:bg-grey-10 focus:bg-grey-20 rounded-soft"
               type="button"
             >
               &times;
@@ -120,11 +126,11 @@ const InputField = React.forwardRef<HTMLInputElement, InputProps>(
           )}
 
           {fieldProps.type === "number" && (
-            <div className="flex h-full items-center self-end">
+            <div className="flex items-center self-end h-full">
               <button
                 onClick={onNumberDecrement}
                 onMouseDown={(e) => e.preventDefault()}
-                className="mr-2 text-grey-50 w-4 h-4 hover:bg-grey-10 focus:bg-grey-20 rounded-soft cursor-pointer outline-none"
+                className="w-4 h-4 mr-2 outline-none cursor-pointer text-grey-50 hover:bg-grey-10 focus:bg-grey-20 rounded-soft"
                 type="button"
               >
                 <MinusIcon size={16} />
@@ -132,7 +138,7 @@ const InputField = React.forwardRef<HTMLInputElement, InputProps>(
               <button
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={onNumberIncrement}
-                className="text-grey-50 w-4 h-4 hover:bg-grey-10 focus:bg-grey-20 rounded-soft cursor-pointer outline-none"
+                className="w-4 h-4 outline-none cursor-pointer text-grey-50 hover:bg-grey-10 focus:bg-grey-20 rounded-soft"
                 type="button"
               >
                 <PlusIcon size={16} />
