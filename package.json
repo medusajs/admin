@@ -25,7 +25,6 @@
     "@radix-ui/react-tooltip": "^1.0.2",
     "@segment/analytics-next": "^1.43.0",
     "@tailwindcss/line-clamp": "^0.3.1",
-    "@tanstack/react-query": "^4.22.0",
     "@tanstack/react-query": "^4.22.4",
     "axios": "^1.1.3",
     "clsx": "^1.1.1",
@@ -100,7 +99,7 @@
     "vite": "^3.1.8"
   },
   "scripts": {
-    "dev": "vite --port 7001",
+    "dev": "vite --port 7000",
     "develop": "npm run dev",
     "check": "tsc",
     "build": "vite build",

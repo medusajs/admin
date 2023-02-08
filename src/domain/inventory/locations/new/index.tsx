@@ -29,13 +29,7 @@ type NewLocationForm = {
   }
 }
 
-const NewLocation = ({
-  onClose,
-  refetch,
-}: {
-  onClose: () => void
-  refetch: () => void
-}) => {
+const NewLocation = ({ onClose }: { onClose: () => void }) => {
   const form = useForm<NewLocationForm>({
     defaultValues: {
       general: {
@@ -54,48 +48,45 @@ const NewLocation = ({
   const notification = useNotification()
   const { isFeatureEnabled } = useFeatureFlag()
 
-  const { mutate } = useAdminCreateStockLocation()
+  const { mutateAsync: createStockLocation } = useAdminCreateStockLocation()
   const { mutateAsync: associateSalesChannel } =
     useAdminAddLocationToSalesChannel()
 
   const createSalesChannelAssociationPromise = (salesChannelId, locationId) =>
     associateSalesChannel({
-      id: salesChannelId,
-      payload: { location_id: locationId },
+      sales_channel_id: salesChannelId,
+      location_id: locationId,
     })
 
   const onSubmit = () =>
     handleSubmit(async (data) => {
       const { locationPayload, salesChannelsPayload } = createPayload(data)
-      mutate(locationPayload, {
-        onSuccess: ({ stock_location }) => {
-          Promise.all(
-            salesChannelsPayload.map((salesChannel) =>
-              createSalesChannelAssociationPromise(
-                salesChannel.id,
-                stock_location.id
-              )
+      try {
+        const { stock_location } = await createStockLocation(locationPayload)
+        Promise.all(
+          salesChannelsPayload.map((salesChannel) =>
+            createSalesChannelAssociationPromise(
+              salesChannel.id,
+              stock_location.id
             )
           )
-            .then(() => {
-              notification("Success", "Location added successfully", "success")
-            })
-            .catch(() => {
-              notification(
-                "Error",
-                "Location was created successfully, but there was an error associating sales channels",
-                "error"
-              )
-            })
-            .finally(() => {
-              refetch()
-              onClose()
-            })
-        },
-        onError: (err) => {
-          notification("Error", getErrorMessage(err), "error")
-        },
-      })
+        )
+          .then(() => {
+            notification("Success", "Location added successfully", "success")
+          })
+          .catch(() => {
+            notification(
+              "Error",
+              "Location was created successfully, but there was an error associating sales channels",
+              "error"
+            )
+          })
+          .finally(() => {
+            onClose()
+          })
+      } catch (err) {
+        notification("Error", getErrorMessage(err), "error")
+      }
     })
 
   const { isDirty, isValid } = formState
