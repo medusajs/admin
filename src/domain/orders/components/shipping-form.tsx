@@ -89,12 +89,13 @@ const ShippingForm = ({
         control={control}
         name={path("option")}
         rules={{ required: required ? `Shipping method is required` : false }}
-        render={({ field: { value, onChange, onBlur, ref } }) => {
+        render={({ field: { value, onChange, onBlur, ref, name } }) => {
           return (
             <NextSelect
               ref={ref}
               placeholder="Choose shipping method"
               label="Shipping method"
+              name={name}
               options={returnShippingOptions}
               value={value}
               onChange={onChange}

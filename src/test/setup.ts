@@ -1,5 +1,6 @@
 import "@testing-library/jest-dom"
 import { vi } from "vitest"
+import "./mocks/medusa-react"
 
 const IntersectionObserverMock = vi.fn(() => ({
   disconnect: vi.fn(),

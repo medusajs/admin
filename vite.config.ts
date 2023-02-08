@@ -15,6 +15,7 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: ["./src/test/setup.ts"],
+    api: 7001,
   },
   // Backwards-compat with Gatsby.
   publicDir: "static",

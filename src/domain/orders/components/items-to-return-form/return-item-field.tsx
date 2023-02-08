@@ -83,7 +83,11 @@ export const ReturnItemField = ({
             name={path(`items.${index}.return`)}
             render={({ field: { value, onChange } }) => {
               return (
-                <IndeterminateCheckbox checked={value} onChange={onChange} />
+                <IndeterminateCheckbox
+                  checked={value}
+                  onChange={onChange}
+                  data-testid={`return_item_checkbox_${index}`}
+                />
               )
             }}
           />
@@ -128,7 +132,10 @@ export const ReturnItemField = ({
           )}
         </div>
         <div className="flex items-center justify-end">
-          <p className="inter-small-regular">
+          <p
+            className="inter-small-regular"
+            data-testid={`return_item_refundable_${index}`}
+          >
             {formatAmountWithSymbol({
               amount: refundable || 0,
               currency: order.currency_code,
