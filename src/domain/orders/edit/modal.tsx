@@ -418,7 +418,7 @@ function OrderEditModalContainer(props: OrderEditModalContainerProps) {
   }, [activeOrderEditId])
 
   const onClose = () => {
-    setActiveOrderEdit(undefined)
+    // setActiveOrderEdit(undefined) -> context will unset active edit after flag toggle
     hideModal()
   }
 
