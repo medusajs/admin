@@ -32,6 +32,8 @@ const BodyCard: React.FC<BodyCardProps> = ({
   className,
   children,
   compact = false,
+  setBorders = false,
+  footerMinHeight = 24,
   ...rest
 }) => {
   const { isScrolled, scrollListener } = useScroll({ threshold: 16 })
@@ -50,41 +52,55 @@ const BodyCard: React.FC<BodyCardProps> = ({
         )}
       </div>
       <div
-        className="pt-medium px-xlarge flex flex-col grow overflow-y-auto"
+        className={clsx("flex flex-col grow overflow-y-auto", {
+          "border-b border-solid border-grey-20": setBorders,
+        })}
         onScroll={scrollListener}
       >
-        <div className="flex items-center justify-between mt-6 h-xlarge">
-          {customHeader ? (
-            <div>{customHeader}</div>
-          ) : title ? (
-            <h1 className="inter-xlarge-semibold text-grey-90">{title}</h1>
-          ) : (
-            <div />
-          )}
+        <div
+          className={clsx("px-xlarge py-large", {
+            "border-b border-solid border-grey-20": setBorders,
+          })}
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              {customHeader ? (
+                <div>{customHeader}</div>
+              ) : title ? (
+                <h1 className="inter-xlarge-semibold text-grey-90">{title}</h1>
+              ) : (
+                <div />
+              )}
 
-          <div className="flex items-center space-x-2">
-            {status && status}
-            <Actionables
-              actions={actionables}
-              forceDropdown={forceDropdown}
-              customTrigger={customActionable}
-            />
+              {subtitle && (
+                <h3 className="inter-small-regular pt-1.5 text-grey-50">
+                  {subtitle}
+                </h3>
+              )}
+            </div>
+
+            <div className="flex items-center space-x-2">
+              {status && status}
+              <Actionables
+                actions={actionables}
+                forceDropdown={forceDropdown}
+                customTrigger={customActionable}
+              />
+            </div>
           </div>
         </div>
-        {subtitle && (
-          <h3 className="inter-small-regular pt-1.5 text-grey-50">
-            {subtitle}
-          </h3>
-        )}
-        {children && (
-          <div
-            className={clsx("flex flex-col", {
-              "my-large grow": !compact,
-            })}
-          >
-            {children}
-          </div>
-        )}
+
+        <div className="px-xlarge">
+          {children && (
+            <div
+              className={clsx("flex flex-col", {
+                "my-large grow": !compact,
+              })}
+            >
+              {children}
+            </div>
+          )}
+        </div>
       </div>
       {events && events.length > 0 ? (
         <div className="pb-large pt-base px-xlarge border-t border-grey-20">
@@ -106,7 +122,7 @@ const BodyCard: React.FC<BodyCardProps> = ({
           </div>
         </div>
       ) : (
-        <div className="min-h-[24px]" />
+        <div className={`min-h-[${footerMinHeight}px]`} />
       )}
     </div>
   )
