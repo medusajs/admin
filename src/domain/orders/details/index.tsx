@@ -124,7 +124,7 @@ const OrderDetails = () => {
   const dialog = useImperativeDialog()
 
   const [addressModal, setAddressModal] = useState<null | {
-    address: Address
+    address?: Address | null
     type: AddressType
   }>(null)
 
@@ -202,6 +202,8 @@ const OrderDetails = () => {
     const shouldDelete = await dialog({
       heading: "Cancel order",
       text: "Are you sure you want to cancel the order?",
+      extraConfirmation: true,
+      entityName: `order #${order?.display_id}`,
     })
 
     if (!shouldDelete) {
@@ -230,32 +232,26 @@ const OrderDetails = () => {
     },
   ]
 
-  if (order?.shipping_address) {
-    customerActionables.push({
-      label: "Edit Shipping Address",
-      icon: <TruckIcon size={"20"} />,
-      onClick: () =>
-        setAddressModal({
-          address: order?.shipping_address,
-          type: AddressType.SHIPPING,
-        }),
-    })
-  }
+  customerActionables.push({
+    label: "Edit Shipping Address",
+    icon: <TruckIcon size={"20"} />,
+    onClick: () =>
+      setAddressModal({
+        address: order?.shipping_address,
+        type: AddressType.SHIPPING,
+      }),
+  })
 
-  if (order?.billing_address) {
-    customerActionables.push({
-      label: "Edit Billing Address",
-      icon: <DollarSignIcon size={"20"} />,
-      onClick: () => {
-        if (order.billing_address) {
-          setAddressModal({
-            address: order?.billing_address,
-            type: AddressType.BILLING,
-          })
-        }
-      },
-    })
-  }
+  customerActionables.push({
+    label: "Edit Billing Address",
+    icon: <DollarSignIcon size={"20"} />,
+    onClick: () => {
+      setAddressModal({
+        address: order?.billing_address,
+        type: AddressType.BILLING,
+      })
+    },
+  })
 
   if (order?.email) {
     customerActionables.push({
@@ -269,9 +265,21 @@ const OrderDetails = () => {
     })
   }
 
+  if (!order && isLoading) {
+    return (
+      <div className="w-full h-full flex items-center justify-center">
+        <Spinner size="small" variant="secondary" />
+      </div>
+    )
+  }
+
+  if (!order && !isLoading) {
+    navigate("/404")
+  }
+
   return (
     <div>
-      <OrderEditProvider orderId={id}>
+      <OrderEditProvider orderId={id!}>
         <Breadcrumb
           currentPage={"Order Details"}
           previousBreadcrumb={"Orders"}
@@ -607,7 +615,7 @@ const OrderDetails = () => {
                   </div>
                 </BodyCard>
                 <div className="mt-large">
-                  <RawJSON data={order} title="Raw order" rootName="order" />
+                  <RawJSON data={order} title="Raw order" />
                 </div>
               </div>
               <Timeline orderId={order.id} />
@@ -616,7 +624,7 @@ const OrderDetails = () => {
               <AddressModal
                 handleClose={() => setAddressModal(null)}
                 submit={updateOrder}
-                address={addressModal.address}
+                address={addressModal.address || undefined}
                 type={addressModal.type}
                 allowedCountries={region?.countries}
               />
