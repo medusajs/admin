@@ -18,6 +18,7 @@ import DraftOrders from "../domain/orders/draft-orders"
 import Pricing from "../domain/pricing"
 import ProductsRoute from "../domain/products"
 import PublishableApiKeys from "../domain/publishable-api-keys"
+import ProductCategories from "../domain/product-categories"
 import SalesChannels from "../domain/sales-channels"
 import Settings from "../domain/settings"
 
@@ -42,6 +43,10 @@ const DashboardRoutes = () => {
           <Routes className="h-full">
             <Route path="oauth/:app_name" element={<Oauth />} />
             <Route path="products/*" element={<ProductsRoute />} />
+            <Route
+              path="product-categories/*"
+              element={<ProductCategories />}
+            />
             <Route path="collections/*" element={<Collections />} />
             <Route path="gift-cards/*" element={<GiftCards />} />
             <Route path="orders/*" element={<Orders />} />
