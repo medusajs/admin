@@ -1,7 +1,7 @@
 import { SalesChannel } from "@medusajs/medusa"
 import clsx from "clsx"
 import { useAdminStore } from "medusa-react"
-import React, { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useFieldArray } from "react-hook-form"
 import Switch from "../../../components/atoms/switch"
 import Button from "../../../components/fundamentals/button"
@@ -21,6 +21,8 @@ type Props = {
 
 const AddSalesChannelsForm = ({ form }: Props) => {
   const { control, path } = form
+  const [removedDefaultSalesChannel, setRemovedDefaultSalesChannel] =
+    useState(false)
 
   const { fields, replace, append } = useFieldArray({
     control,
@@ -37,6 +39,12 @@ const AddSalesChannelsForm = ({ form }: Props) => {
   const { store } = useAdminStore()
 
   const onAddChannels = (channels: SalesChannel[]) => {
+    if (store?.default_sales_channel) {
+      if (!channels.find(({ id }) => id === store.default_sales_channel.id)) {
+        setRemovedDefaultSalesChannel(true)
+      }
+    }
+
     replace(channels)
   }
 
@@ -46,11 +54,23 @@ const AddSalesChannelsForm = ({ form }: Props) => {
         ({ id }) => id === store.default_sales_channel.id
       )
 
-      if (!alreadyAdded) {
+      if (!alreadyAdded && !removedDefaultSalesChannel) {
         append(store.default_sales_channel)
       }
+
+      /**
+       * In case the default sales channel is added more than once, we remove the duplicates.
+       */
+      const duplicates = fields.filter(
+        (channel, index) =>
+          fields.findIndex((c) => c.id === channel.id) !== index
+      )
+
+      if (duplicates.length > 0) {
+        replace(fields.filter((channel) => !duplicates.includes(channel)))
+      }
     }
-  }, [store])
+  }, [store, append, fields, replace, removedDefaultSalesChannel])
 
   return (
     <>
