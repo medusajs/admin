@@ -54,9 +54,10 @@ const NewOrder = ({ onDismiss }: NewOrderProps) => {
         shipping_methods: [
           {
             option_id: data.shipping_option.value,
-            price: data.custom_shipping_price
-              ? data.custom_shipping_price
-              : undefined,
+            price:
+              typeof data.custom_shipping_price === "number"
+                ? data.custom_shipping_price
+                : undefined,
           },
         ],
         shipping_address: data.shipping_address_id
