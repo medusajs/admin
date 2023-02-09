@@ -81,6 +81,9 @@ const useCopyProduct = () => {
         const { prices, options, ...rest } = omit(variant, [
           "id",
           "sku",
+          "barcode",
+          "ean",
+          "upc",
           "created_at",
           "updated_at",
           "deleted_at",
