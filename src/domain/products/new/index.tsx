@@ -1,6 +1,6 @@
 import { AdminPostProductsReq } from "@medusajs/medusa"
 import { useAdminCreateProduct } from "medusa-react"
-import React, { useEffect } from "react"
+import { useEffect } from "react"
 import { useForm, useWatch } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
 import Button from "../../../components/fundamentals/button"

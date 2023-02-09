@@ -18,7 +18,7 @@ const EditSalesChannels = ({
     open: openSalesChannelsModal,
   } = useToggleState()
 
-  const { mutate: addLocationToSalesChannel } =
+  const { mutateAsync: addLocationToSalesChannel } =
     useAdminAddLocationToSalesChannel()
   const { mutateAsync: removeLocationFromSalesChannel } =
     useAdminRemoveLocationFromSalesChannel()
@@ -37,18 +37,32 @@ const EditSalesChannels = ({
           (existingChannel) => existingChannel.id === channel.id
         )
     )
-    for (const channelToRemove of channelsToRemove) {
-      await removeLocationFromSalesChannel({
-        sales_channel_id: channelToRemove.id,
-        location_id: location.id,
-      })
-    }
-    for (const channelToAdd of channelsToAdd) {
-      await addLocationToSalesChannel({
-        sales_channel_id: channelToAdd.id,
-        location_id: location.id,
-      })
-    }
+    Promise.all([
+      ...channelsToRemove.map((channelToRemove) =>
+        removeLocationFromSalesChannel({
+          sales_channel_id: channelToRemove.id,
+          location_id: location.id,
+        })
+      ),
+      ...channelsToAdd.map((channelToAdd) =>
+        addLocationToSalesChannel({
+          sales_channel_id: channelToAdd.id,
+          location_id: location.id,
+        })
+      ),
+    ])
+    // for (const channelToRemove of channelsToRemove) {
+    //   await removeLocationFromSalesChannel({
+    //     sales_channel_id: channelToRemove.id,
+    //     location_id: location.id,
+    //   })
+    // }
+    // for (const channelToAdd of channelsToAdd) {
+    //   await addLocationToSalesChannel({
+    //     sales_channel_id: channelToAdd.id,
+    //     location_id: location.id,
+    //   })
+    // }
   }
 
   return (
@@ -59,9 +73,7 @@ const EditSalesChannels = ({
         type="button"
         onClick={openSalesChannelsModal}
       >
-        {location.sales_channels && location.sales_channels.length > 0
-          ? "Edit channels"
-          : "Add channels"}
+        {location.sales_channels?.length ? "Edit channels" : "Add channels"}
       </Button>
       <SalesChannelsModal
         open={showSalesChannelsModal}

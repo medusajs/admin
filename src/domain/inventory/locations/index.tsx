@@ -43,14 +43,14 @@ const Locations = () => {
           ) : (
             <div>
               {stock_locations?.map((stockLocation) => (
-                <LocationCard location={stockLocation} refetch={() => {}} />
+                <LocationCard location={stockLocation} />
               ))}
             </div>
           )}
         </div>
       </div>
       <Fade isVisible={createLocationState} isFullScreen={true}>
-        <NewLocation onClose={closeLocationCreate} refetch={() => {}} />
+        <NewLocation onClose={closeLocationCreate} />
       </Fade>
     </>
   )

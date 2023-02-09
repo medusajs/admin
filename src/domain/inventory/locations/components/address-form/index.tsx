@@ -136,6 +136,7 @@ const AddressForm = ({
                   onChange={onChange}
                   name={path("country_code")}
                   errors={errors}
+                  isClearable={!addressFieldsRequired}
                 />
               )
             }}

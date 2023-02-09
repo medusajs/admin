@@ -19,10 +19,9 @@ import { useFeatureFlag } from "../../../../../context/feature-flag"
 
 type Props = {
   location: StockLocationDTO
-  refetch: () => void
 }
 
-const LocationCard: React.FC<Props> = ({ location, refetch }) => {
+const LocationCard: React.FC<Props> = ({ location }) => {
   const { mutate: deleteLocation } = useAdminDeleteStockLocation(location.id)
 
   const dialog = useImperativeDialog()
@@ -61,12 +60,6 @@ const LocationCard: React.FC<Props> = ({ location, refetch }) => {
       variant: "normal",
       icon: <EditIcon size="20px" />,
     },
-    // {
-    //   label: "Set as default",
-    //   onClick: () => {},
-    //   variant: "normal",
-    //   icon: <SparklesIcon size="20px" />,
-    // },
     {
       label: "Delete",
       onClick: onDelete,
@@ -103,11 +96,7 @@ const LocationCard: React.FC<Props> = ({ location, refetch }) => {
         </div>
       )}
       {editLocationState && (
-        <LocationEditModal
-          onClose={closeLocationEdit}
-          location={location}
-          refetch={refetch}
-        />
+        <LocationEditModal onClose={closeLocationEdit} location={location} />
       )}
     </div>
   )

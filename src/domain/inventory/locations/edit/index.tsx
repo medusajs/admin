@@ -21,14 +21,9 @@ type EditLocationForm = {
 export type LocationEditModalProps = {
   onClose: () => void
   location: StockLocationDTO
-  refetch: () => void
 }
 
-const LocationEditModal = ({
-  onClose,
-  location,
-  refetch,
-}: LocationEditModalProps) => {
+const LocationEditModal = ({ onClose, location }: LocationEditModalProps) => {
   const form = useForm<EditLocationForm>({
     defaultValues: {
       general: {
@@ -47,20 +42,18 @@ const LocationEditModal = ({
 
   const { isDirty, isValid } = formState
 
-  const onSubmit = () =>
-    handleSubmit(async (data) => {
-      const payload = createPayload(data)
-      mutate(payload, {
-        onSuccess: () => {
-          refetch()
-          onClose()
-          notification("Success", "Location edited successfully", "success")
-        },
-        onError: (err) => {
-          notification("Error", getErrorMessage(err), "error")
-        },
-      })
+  const onSubmit = handleSubmit(async (data) => {
+    const payload = createPayload(data)
+    mutate(payload, {
+      onSuccess: () => {
+        onClose()
+        notification("Success", "Location edited successfully", "success")
+      },
+      onError: (err) => {
+        notification("Error", getErrorMessage(err), "error")
+      },
     })
+  })
 
   return (
     <Modal handleClose={onClose}>
@@ -92,7 +85,7 @@ const LocationEditModal = ({
             variant="primary"
             type="button"
             disabled={!isDirty || !isValid}
-            onClick={onSubmit()}
+            onClick={onSubmit}
           >
             Save and close
           </Button>

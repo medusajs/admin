@@ -100,7 +100,7 @@
     "vite": "^3.1.8"
   },
   "scripts": {
-    "dev": "vite --port 7001",
+    "dev": "vite --port 7000",
     "develop": "npm run dev",
     "check": "tsc",
     "build": "vite build",
