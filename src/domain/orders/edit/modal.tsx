@@ -160,12 +160,14 @@ function OrderEditModal(props: OrderEditModalProps) {
     refundedTotal,
   } = props
 
+  const filterRef = useRef()
   const notification = useNotification()
   const [note, setNote] = useState<string | undefined>()
   const [showFilter, setShowFilter] = useState(false)
   const [filterTerm, setFilterTerm] = useState<string>("")
 
   const showTotals = currentSubtotal !== orderEdit.subtotal
+  const showNote = !!orderEdit.changes.length
 
   const {
     mutateAsync: requestConfirmation,
@@ -203,6 +205,12 @@ function OrderEditModal(props: OrderEditModalProps) {
     close()
   }
 
+  useEffect(() => {
+    if (showFilter) {
+      filterRef.current.focus()
+    }
+  }, [showFilter])
+
   const onAddVariants = async (selectedVariants: ProductVariant[]) => {
     try {
       const promises = selectedVariants.map((v) =>
@@ -217,7 +225,7 @@ function OrderEditModal(props: OrderEditModalProps) {
     }
   }
 
-  const toggleFilter = () => {
+  const hideFilter = () => {
     if (showFilter) {
       setFilterTerm("")
     }
@@ -262,36 +270,45 @@ function OrderEditModal(props: OrderEditModalProps) {
           <h1 className="inter-xlarge-semibold">Edit Order</h1>
         </Modal.Header>
         <Modal.Content>
-          <div className="flex justify-between mb-6">
-            <span className="text-gray-900 font-semibold">Items</span>
-            <div className="flex gap-2 items-center justify-between">
+          <div className="flex justify-between items-center mb-4">
+            <span className="text-gray-900 text-large font-semibold">
+              Items
+            </span>
+            <div className="flex items-center justify-between">
               <Button
                 size="small"
                 variant="ghost"
-                className="border border-grey-20 text-gray-900 flex-shrink-0"
+                className="border border-grey-20 text-gray-900 flex-shrink-0 h-[32px] mr-2"
                 onClick={() =>
                   layeredModalContext.push(addProductVariantScreen)
                 }
               >
                 Add items
               </Button>
+              {!showFilter && (
+                <Button
+                  size="small"
+                  variant="secondary"
+                  className={clsx("h-full flex-shrink-0 w-[32px] h–[32px]", {
+                    "focus:bg-grey-20": showFilter,
+                  })}
+                  onClick={() => setShowFilter(true)}
+                >
+                  <SearchIcon size={16} className="text-gray-500" />
+                </Button>
+              )}
               {showFilter && (
                 <InputField
+                  small
+                  deletable
+                  ref={filterRef}
                   value={filterTerm}
+                  onDelete={hideFilter}
                   placeholder="Filter items..."
                   onChange={(e) => setFilterTerm(e.target.value)}
+                  prefix={<SearchIcon size={14} className="text-gray-400" />}
                 />
               )}
-              <Button
-                size="small"
-                variant="secondary"
-                className={clsx("h-full flex-shrink-0", {
-                  "bg-gray-100": showFilter,
-                })}
-                onClick={toggleFilter}
-              >
-                <SearchIcon size={18} className="text-gray-500" />
-              </Button>
             </div>
           </div>
 
@@ -324,20 +341,22 @@ function OrderEditModal(props: OrderEditModalProps) {
           )}
 
           {/* NOTE */}
-          <div className="flex items-center justify-between">
-            <span className="text-gray-500">Note</span>
-            <InputField
-              className="max-w-[455px]"
-              placeholder="Add a note..."
-              onChange={(e) => setNote(e.target.value)}
-              value={note}
-            />
-          </div>
+          {showNote && (
+            <div className="flex items-center justify-between">
+              <span className="text-gray-500">Note</span>
+              <InputField
+                className="max-w-[455px]"
+                placeholder="Add a note..."
+                onChange={(e) => setNote(e.target.value)}
+                value={note}
+              />
+            </div>
+          )}
         </Modal.Content>
         <Modal.Footer>
-          <div className="flex items-center justify-end w-full">
+          <div className="flex items-center justify-end w-full gap-2">
             <Button
-              variant="ghost"
+              variant="secondary"
               size="small"
               type="button"
               onClick={onCancel}
@@ -399,7 +418,7 @@ function OrderEditModalContainer(props: OrderEditModalContainerProps) {
   }, [activeOrderEditId])
 
   const onClose = () => {
-    setActiveOrderEdit(undefined)
+    // setActiveOrderEdit(undefined) -> context will unset active edit after flag toggle
     hideModal()
   }
 

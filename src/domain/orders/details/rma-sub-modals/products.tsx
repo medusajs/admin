@@ -11,7 +11,6 @@ import { LayeredModalContext } from "../../../../components/molecules/modal/laye
 import Table from "../../../../components/molecules/table"
 import TableContainer from "../../../../components/organisms/table-container"
 import { useDebounce } from "../../../../hooks/use-debounce"
-import { useNewOrderForm } from "../../new/form"
 
 const getProductStatusVariant = (status) => {
   switch (status) {
@@ -36,10 +35,6 @@ const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
   onSubmit,
   selectedItems,
 }) => {
-  const {
-    context: { region },
-  } = useNewOrderForm()
-
   const PAGE_SIZE = 12
   const { pop } = useContext(LayeredModalContext)
   const [query, setQuery] = useState("")
@@ -55,7 +50,6 @@ const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
     q: debouncedSearchTerm,
     limit: PAGE_SIZE,
     offset,
-    region_id: region?.id,
   })
 
   useEffect(() => {
