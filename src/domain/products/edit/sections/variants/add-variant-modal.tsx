@@ -1,4 +1,5 @@
 import { AdminPostProductsProductVariantsReq, Product } from "@medusajs/medusa"
+import { omit } from "lodash"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import Button from "../../../../../components/fundamentals/button"
@@ -116,6 +117,8 @@ export const createAddPayload = (
 ): AdminPostProductsProductVariantsReq => {
   const { general, stock, options, prices, dimensions, customs } = data
 
+  const cleanedStockDetails = omit(stock, ["sku", "barcode", "ean", "upc"])
+
   const priceArray = prices.prices
     .filter((price) => typeof price.amount === "number")
     .map((price) => {
@@ -126,11 +129,13 @@ export const createAddPayload = (
       }
     })
 
+  console.log(cleanedStockDetails)
+
   return {
     // @ts-ignore
     ...general,
     ...customs,
-    ...stock,
+    ...cleanedStockDetails,
     inventory_quantity: stock.inventory_quantity || 0,
     ...dimensions,
     ...customs,
