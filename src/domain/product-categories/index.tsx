@@ -1,7 +1,18 @@
 import BodyCard from "../../components/organisms/body-card"
 import { Route, Routes } from "react-router-dom"
 
+const ProductCategoryEmptyState = () => (
+  <div className="flex items-center justify-center min-h-[600px]">
+    <p className="text-grey-40">
+      No product categories yet, use the above button to create your
+      first category.
+    </p>
+  </div>
+)
+
 const ProductCategoryIndex = () => {
+  // TODO: Replace this with the categories from API
+  const categories = []
   const actions = [
     {
       label: "Add category",
@@ -20,12 +31,7 @@ const ProductCategoryIndex = () => {
           setBorders={true}
           footerMinHeight={40}
         >
-          <div className="flex items-center justify-center min-h-[600px]">
-            <p className="text-grey-40">
-              No product categories yet, use the above button to create your
-              first category.
-            </p>
-          </div>
+          { !categories.length && <ProductCategoryEmptyState /> }
         </BodyCard>
       </div>
     </div>
