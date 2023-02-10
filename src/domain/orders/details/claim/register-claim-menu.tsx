@@ -8,6 +8,7 @@ import LayeredModal, {
   useLayeredModal,
 } from "../../../../components/molecules/modal/layered-modal"
 import { AddressPayload } from "../../../../components/templates/address-form"
+import useImperativeDialog from "../../../../hooks/use-imperative-dialog"
 import useNotification from "../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../utils/error-messages"
 import { nestedForm } from "../../../../utils/nested-form"
@@ -20,6 +21,8 @@ import ItemsToReturnForm, {
 import ItemsToSendForm, {
   ItemsToSendFormType,
 } from "../../components/items-to-send-form"
+import { RefundAmountFormType } from "../../components/refund-amount-form"
+import { ClaimSummary } from "../../components/rma-summaries"
 import SendNotificationForm, {
   SendNotificationFormType,
 } from "../../components/send-notification-form"
@@ -35,6 +38,7 @@ export type CreateClaimFormType = {
   replacement_shipping: ShippingFormType
   shipping_address: AddressPayload
   claim_type: ClaimTypeFormType
+  refund_amount: RefundAmountFormType
 }
 
 type Props = {
@@ -53,9 +57,11 @@ const RegisterClaimMenu = ({ order, onClose }: Props) => {
     handleSubmit,
     reset,
     formState: { isDirty },
+    setError,
   } = form
 
   const notification = useNotification()
+  const dialog = useImperativeDialog()
 
   useEffect(() => {
     reset(getDefaultClaimValues(order))
@@ -66,20 +72,57 @@ const RegisterClaimMenu = ({ order, onClose }: Props) => {
     onClose()
   }
 
+  const onCancel = async () => {
+    let shouldClose = true
+
+    if (isDirty) {
+      shouldClose = await dialog({
+        heading: "Are you sure you want to close?",
+        text: "You have unsaved changes, are you sure you want to close?",
+      })
+    }
+
+    if (shouldClose) {
+      handleClose()
+    }
+  }
+
   const onSubmit = handleSubmit((data) => {
     const type = data.claim_type.type
     const returnShipping = data.return_shipping
+    const refundAmount = data.refund_amount?.amount
+
+    const items = data.return_items.items
+      .filter((item) => item.return)
+      .map((item) => ({
+        item_id: item.item_id,
+        quantity: item.quantity,
+        note: item.return_reason_details.note || undefined,
+        reason: item.return_reason_details.reason?.value as ClaimReason,
+      }))
+
+    const returnItemsMissingReason = items.filter((item) => !item.reason)
+
+    if (returnItemsMissingReason.length > 0) {
+      returnItemsMissingReason.forEach((item) => {
+        const index = items.findIndex((i) => i.item_id === item.item_id)
+
+        setError(
+          `return_items.items.${index}.return_reason_details`,
+          {
+            type: "manual",
+            message: "Please select a reason",
+          },
+          { shouldFocus: true }
+        )
+      })
+
+      return
+    }
 
     mutate(
       {
-        claim_items: data.return_items.items
-          .filter((item) => item.return)
-          .map((item) => ({
-            item_id: item.item_id,
-            quantity: item.quantity,
-            note: item.return_reason_details.note || undefined,
-            reason: item.return_reason_details.reason?.value as ClaimReason,
-          })),
+        claim_items: items,
         type: type,
         return_shipping: returnShipping.option
           ? {
@@ -95,6 +138,8 @@ const RegisterClaimMenu = ({ order, onClose }: Props) => {
               }))
             : undefined,
         no_notification: !data.notification.send_notification,
+        refund_amount:
+          type === "refund" && refundAmount ? refundAmount : undefined,
         shipping_address:
           type === "replace"
             ? {
@@ -149,15 +194,15 @@ const RegisterClaimMenu = ({ order, onClose }: Props) => {
   return (
     <LayeredModal
       open={true}
-      handleClose={handleClose}
+      handleClose={onCancel}
       context={context}
       isLargeModal
     >
       <Modal.Body>
-        <Modal.Header handleClose={handleClose}>
+        <Modal.Header handleClose={onCancel}>
           <h1 className="inter-xlarge-semibold">Create Claim</h1>
         </Modal.Header>
-        <form onSubmit={onSubmit}>
+        <form onSubmit={onSubmit} data-testid="register-claim-form">
           <Modal.Content>
             <div className="flex flex-col gap-y-xlarge">
               <ItemsToReturnForm
@@ -169,6 +214,7 @@ const RegisterClaimMenu = ({ order, onClose }: Props) => {
                 form={nestedForm(form, "return_shipping")}
                 order={order}
                 isReturn={true}
+                isClaim={true}
               />
               <ClaimTypeForm form={nestedForm(form, "claim_type")} />
               {watchedType === "replace" && (
@@ -187,6 +233,7 @@ const RegisterClaimMenu = ({ order, onClose }: Props) => {
                   />
                 </>
               )}
+              <ClaimSummary form={form} order={order} />
             </div>
           </Modal.Content>
           <Modal.Footer>
@@ -196,7 +243,12 @@ const RegisterClaimMenu = ({ order, onClose }: Props) => {
                 type="claim"
               />
               <div className="items-center flex justify-end gap-x-xsmall">
-                <Button variant="secondary" size="small" type="button">
+                <Button
+                  variant="secondary"
+                  size="small"
+                  type="button"
+                  onClick={onCancel}
+                >
                   Cancel
                 </Button>
                 <Button

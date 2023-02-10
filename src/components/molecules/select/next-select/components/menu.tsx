@@ -1,5 +1,5 @@
 import clsx from "clsx"
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import {
   ActionMeta,
   CX,
@@ -15,7 +15,7 @@ import {
 import Button from "../../../../fundamentals/button"
 import CheckIcon from "../../../../fundamentals/icons/check-icon"
 import ListArrowIcon from "../../../../fundamentals/icons/list-arrow-icon"
-import { hasPrefix, optionIsDisabled } from "../utils"
+import { hasPrefix, hasSuffix, optionIsDisabled } from "../utils"
 import SelectPrimitives from "./select-primitives"
 
 const Menu = <
@@ -104,7 +104,7 @@ const SelectAllOption = <
     }
 
     return false
-  }, [value])
+  }, [options, value])
 
   const onClick = useCallback(() => {
     if (isAllSelected) {
@@ -120,7 +120,7 @@ const SelectAllOption = <
         option: selectableOptions as unknown as Option,
       })
     }
-  }, [isAllSelected, options])
+  }, [isAllSelected, onChange, options])
 
   useEffect(() => {
     setIsFocused(
@@ -258,6 +258,7 @@ export const Option = <
   } = props
 
   const prefix = hasPrefix(props.data) ? props.data.prefix : null
+  const suffix = hasSuffix(props.data) ? props.data.suffix : null
 
   return (
     <div
@@ -289,20 +290,33 @@ export const Option = <
       tabIndex={isDisabled ? -1 : 0}
       {...innerProps}
     >
-      <div className="flex items-center gap-x-small">
+      <div className="flex items-center gap-x-small flex-1">
         {isMulti && (
           <CheckboxAdornment isSelected={isSelected} isDisabled={isDisabled} />
         )}
         <div
-          className={clsx("flex items-center gap-x-xsmall inter-base-regular", {
-            truncate: !!truncateOption,
-          })}
+          className={clsx(
+            "flex items-center justify-between gap-x-xsmall inter-base-regular flex-1",
+            {
+              truncate: !!truncateOption,
+            }
+          )}
         >
           {prefix && <span className="inter-base-semibold">{prefix}</span>}
-          {children}
+          <span className="w-full">{children}</span>
+
+          {suffix && (
+            <span className="inter-base-regular justify-self-end text-grey-50">
+              {suffix}
+            </span>
+          )}
         </div>
       </div>
-      {!isMulti && isSelected && <CheckIcon size={16} />}
+      {!isMulti && (
+        <div className="w-5 ml-xsmall">
+          {isSelected && <CheckIcon size={16} />}
+        </div>
+      )}
     </div>
   )
 }

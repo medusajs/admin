@@ -18,13 +18,14 @@ vi.mock("medusa-react", async () => {
     useAdminProducts: vi.fn(() => mockListQuery("product")),
     useAdminOrders: vi.fn(() => mockListQuery("order")),
     useAdminShippingOptions: vi.fn(() => mockListQuery("shipping_option")),
+    useAdminReturnReasons: vi.fn(() => mockListQuery("return_reason")),
     // Mutations
     useAdminCreateClaim: vi.fn(() => mockMutation),
   }
 })
 
 const mockMutation = {
-  mutate: vi.fn(),
+  mutate: vi.fn().mockImplementation((data) => console.log(data)),
   mutateAsync: vi.fn(),
   isLoading: false,
 }

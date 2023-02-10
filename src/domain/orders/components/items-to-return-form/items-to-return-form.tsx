@@ -1,6 +1,11 @@
 import { Order } from "@medusajs/medusa"
 import { useMemo } from "react"
-import { FieldArrayWithId, useFieldArray, useWatch } from "react-hook-form"
+import {
+  Controller,
+  FieldArrayWithId,
+  useFieldArray,
+  useWatch,
+} from "react-hook-form"
 import InputError from "../../../../components/atoms/input-error"
 import IndeterminateCheckbox from "../../../../components/molecules/indeterminate-checkbox"
 import { FormImage, Option } from "../../../../types/shared"
@@ -20,6 +25,7 @@ export type ReturnItem = {
   variant_title: string
   quantity: number
   original_quantity: number
+  total: number
   refundable?: number | null
   return_reason_details: ReturnReasonDetails
   return: boolean
@@ -60,10 +66,11 @@ export const ItemsToReturnForm = ({ form, order, isClaim = false }: Props) => {
   const watchedReturnItems = useWatch({
     control,
     name: path("items"),
+    defaultValue: [],
   })
 
   const areAllSelected = useMemo(() => {
-    return watchedReturnItems.every((item) => item.return)
+    return watchedReturnItems?.every((item) => item.return)
   }, [watchedReturnItems])
 
   const indeterminateAllSelected = useMemo(() => {
@@ -81,7 +88,9 @@ export const ItemsToReturnForm = ({ form, order, isClaim = false }: Props) => {
 
   return (
     <div className="flex flex-col gap-y-base">
-      <h2 className="inter-base-semibold">Items to return</h2>
+      <h2 className="inter-base-semibold">
+        Items to {isClaim ? "claim" : "return"}
+      </h2>
       <div className="flex flex-col gap-y-small">
         <div>
           <div className="flex items-center inter-small-semibold text-grey-50 border-t border-grey-20 h-10">
@@ -103,20 +112,28 @@ export const ItemsToReturnForm = ({ form, order, isClaim = false }: Props) => {
             </div>
             <div className="min-w-[50px]" />
           </div>
-          <div>
-            {fields.map((field, index) => {
+          <Controller
+            name={path("items")}
+            control={control}
+            render={() => {
               return (
-                <ReturnItemField
-                  form={form}
-                  key={field.fieldId}
-                  nestedItem={field}
-                  order={order}
-                  index={index}
-                  isClaim={isClaim}
-                />
+                <div>
+                  {fields.map((field, index) => {
+                    return (
+                      <ReturnItemField
+                        form={form}
+                        key={field.fieldId}
+                        nestedItem={field}
+                        order={order}
+                        index={index}
+                        isClaim={isClaim}
+                      />
+                    )
+                  })}
+                </div>
               )
-            })}
-          </div>
+            }}
+          />
         </div>
         <InputError errors={errors} name="return_items" />
       </div>

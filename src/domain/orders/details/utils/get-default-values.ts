@@ -1,15 +1,17 @@
-import { ClaimItem, LineItem, Order } from "@medusajs/medusa"
+import { ClaimItem, LineItem, Order, Return } from "@medusajs/medusa"
 import { AddressPayload } from "../../../../components/templates/address-form"
 import { Subset } from "../../../../types/shared"
 import { isoAlpha2Countries } from "../../../../utils/countries"
 import { isLineItemNotReturnable } from "../../../../utils/is-line-item"
 import { ClaimTypeFormType } from "../../components/claim-type-form"
+import { ItemsToReceiveFormType } from "../../components/items-to-receive-form"
 import { ItemsToReturnFormType } from "../../components/items-to-return-form"
 import { ItemsToSendFormType } from "../../components/items-to-send-form"
 
 import { SendNotificationFormType } from "../../components/send-notification-form"
 import { ShippingFormType } from "../../components/shipping-form"
 import { CreateClaimFormType } from "../claim/register-claim-menu"
+import { ReceiveReturnFormType } from "../receive-return/receive-return-menu"
 
 const getDefaultShippingAddressValues = (
   order: Order
@@ -155,6 +157,7 @@ const getReturnableItemsValues = (
       variant_title: item.variant.title,
       quantity: returnableQuantity,
       original_quantity: returnableQuantity,
+      total: item.total || item.unit_price * item.quantity,
       return_reason_details: {
         note: undefined,
         reason: undefined,
@@ -166,40 +169,40 @@ const getReturnableItemsValues = (
   return returnItems
 }
 
-// const getReceiveableItemsValues = (
-//   order: Order,
-//   returnRequest: Return
-// ): Subset<ItemsToReceiveFormType> => {
-//   const returnableItems = getReturnableItemsValues(order, false)
+const getReceiveableItemsValues = (
+  order: Order,
+  returnRequest: Return
+): Subset<ItemsToReceiveFormType> => {
+  const returnableItems = getReturnableItemsValues(order, false)
 
-//   const returnItems = {
-//     items: returnableItems?.items?.reduce((acc, item) => {
-//       if (!item) {
-//         return acc
-//       }
+  const returnItems = {
+    items: returnableItems?.items?.reduce((acc, item) => {
+      if (!item) {
+        return acc
+      }
 
-//       const indexOfRequestedItem = returnRequest.items.findIndex(
-//         (i) => i.item_id === item.item_id
-//       )
+      const indexOfRequestedItem = returnRequest.items.findIndex(
+        (i) => i.item_id === item.item_id
+      )
 
-//       if (item?.item_id && indexOfRequestedItem > -1) {
-//         const requestedItem = returnRequest.items[indexOfRequestedItem]
+      if (item?.item_id && indexOfRequestedItem > -1) {
+        const requestedItem = returnRequest.items[indexOfRequestedItem]
 
-//         const adjustedQuantity =
-//           requestedItem.requested_quantity - requestedItem.received_quantity
+        const adjustedQuantity =
+          requestedItem.requested_quantity - requestedItem.received_quantity
 
-//         acc.push({
-//           ...item,
-//           quantity: adjustedQuantity,
-//           original_quantity: adjustedQuantity,
-//         })
-//       }
-//       return acc
-//     }, [] as Subset<ItemsToReceiveFormType["items"]>),
-//   }
+        acc.push({
+          ...item,
+          quantity: adjustedQuantity,
+          original_quantity: adjustedQuantity,
+        })
+      }
+      return acc
+    }, [] as Subset<ItemsToReceiveFormType["items"]>),
+  }
 
-//   return returnItems
-// }
+  return returnItems
+}
 
 // export const getDefaultSwapValues = (
 //   order: Order
@@ -223,14 +226,14 @@ const getReturnableItemsValues = (
 //   }
 // }
 
-// export const getDefaultReceiveReturnValues = (
-//   order: Order,
-//   returnRequest: Return
-// ): Subset<ReceiveReturnFormType> => {
-//   return {
-//     receive_items: getReceiveableItemsValues(order, returnRequest),
-//   }
-// }
+export const getDefaultReceiveReturnValues = (
+  order: Order,
+  returnRequest: Return
+): Subset<ReceiveReturnFormType> => {
+  return {
+    receive_items: getReceiveableItemsValues(order, returnRequest),
+  }
+}
 
 export const getDefaultClaimValues = (
   order: Order

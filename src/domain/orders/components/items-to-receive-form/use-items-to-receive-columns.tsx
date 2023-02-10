@@ -1,5 +1,6 @@
 import { createColumnHelper } from "@tanstack/react-table"
-import { useCallback, useMemo } from "react"
+import React, { ChangeEvent, useCallback, useMemo } from "react"
+import { Controller, useWatch } from "react-hook-form"
 import Thumbnail from "../../../../components/atoms/thumbnail"
 import IndeterminateCheckbox from "../../../../components/molecules/indeterminate-checkbox"
 import { NestedForm } from "../../../../utils/nested-form"
@@ -30,6 +31,22 @@ export const useItemsToReceiveColumns = ({ form, orderCurrency }: Props) => {
     [getValues, path, setValue]
   )
 
+  const items = useWatch({
+    control,
+    name: path("items"),
+  })
+
+  const toggleAllRowsSelected = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      items.forEach((_item, index) => {
+        setValue(path(`items.${index}.return`), e.target.checked, {
+          shouldDirty: true,
+        })
+      })
+    },
+    [items, path, setValue]
+  )
+
   const colums = useMemo(
     () => [
       columnHelper.display({
@@ -40,23 +57,34 @@ export const useItemsToReceiveColumns = ({ form, orderCurrency }: Props) => {
             <div className="pl-base pr-large">
               <IndeterminateCheckbox
                 checked={table.getIsAllRowsSelected()}
-                onChange={table.getToggleAllRowsSelectedHandler()}
-                indeterminate={table.getIsSomePageRowsSelected()}
+                onChange={(e) => {
+                  table.toggleAllRowsSelected(e.target.checked)
+                  toggleAllRowsSelected(e)
+                }}
+                indeterminate={table.getIsSomeRowsSelected()}
               />
             </div>
           )
         },
-        cell: ({
-          row: { getIsSelected, getIsSomeSelected, getToggleSelectedHandler },
-        }) => {
+        cell: ({ row: { index, getToggleSelectedHandler } }) => {
           return (
-            <div className="pl-base pr-large">
-              <IndeterminateCheckbox
-                checked={getIsSelected()}
-                indeterminate={getIsSomeSelected()}
-                onChange={getToggleSelectedHandler()}
-              />
-            </div>
+            <Controller
+              control={control}
+              name={path(`items.${index}.return`)}
+              render={({ field: { value, onChange } }) => {
+                return (
+                  <div className="pl-base pr-large">
+                    <IndeterminateCheckbox
+                      checked={value}
+                      onChange={(v: React.ChangeEvent<HTMLInputElement>) => {
+                        getToggleSelectedHandler()(v)
+                        onChange(v)
+                      }}
+                    />
+                  </div>
+                )
+              }}
+            />
           )
         },
       }),
@@ -64,14 +92,13 @@ export const useItemsToReceiveColumns = ({ form, orderCurrency }: Props) => {
         header: "Product",
         cell: ({ getValue, row: { original } }) => {
           return (
-            <div className="inter-small-regular flex items-center gap-base py-xsmall">
-              <Thumbnail src={original.thumbnail} />
+            <div className="flex items-center gap-x-base py-xsmall">
               <div>
-                <p>
-                  {original.product_title}{" "}
-                  <span className="text-grey-50">({getValue()})</span>
-                </p>
-                {original.sku && <p className="text-grey-50">{original.sku}</p>}
+                <Thumbnail src={original.thumbnail} />
+              </div>
+              <div className="inter-small-regular">
+                <p>{original.product_title}</p>
+                <p className="text-grey-50">{getValue()}</p>
               </div>
             </div>
           )
@@ -130,7 +157,7 @@ export const useItemsToReceiveColumns = ({ form, orderCurrency }: Props) => {
         },
       }),
     ],
-    [control, orderCurrency, path, updateQuantity]
+    [control, orderCurrency, path, toggleAllRowsSelected, updateQuantity]
   )
 
   return colums

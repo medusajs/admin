@@ -99,8 +99,8 @@ function ClaimItems(event: ClaimEvent) {
     <div className="flex flex-col gap-y-small">
       <span className="inter-small-regular text-grey-50">Claimed items</span>
       <div>
-        {event.claimItems.map((i) => (
-          <EventItemContainer item={i} />
+        {event.claimItems.map((i, index) => (
+          <EventItemContainer item={i} key={index} />
         ))}
       </div>
     </div>
@@ -126,8 +126,8 @@ function ClaimRefundOrReplacement(event: ClaimEvent) {
     <div className="flex flex-col gap-y-small">
       <span className="inter-small-regular text-grey-50">New items</span>
       <div>
-        {event.newItems.map((i) => (
-          <EventItemContainer item={i} />
+        {event.newItems.map((i, index) => (
+          <EventItemContainer item={i} key={index} />
         ))}
       </div>
     </div>
@@ -140,7 +140,7 @@ function ClaimRefundOrReplacement(event: ClaimEvent) {
       } amount:`}</span>
       <span className="inter-small-semibold">
         {formatAmountWithSymbol({
-          amount: event.refundAmount,
+          amount: event.refundAmount || 0,
           currency: event.currencyCode,
         })}
       </span>

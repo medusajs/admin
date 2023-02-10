@@ -1,6 +1,7 @@
 import { Order } from "@medusajs/medusa"
 import React from "react"
 import { Controller, useWatch } from "react-hook-form"
+import InputError from "../../../../components/atoms/input-error"
 import Thumbnail from "../../../../components/atoms/thumbnail"
 import Button from "../../../../components/fundamentals/button"
 import MinusIcon from "../../../../components/fundamentals/icons/minus-icon"
@@ -30,7 +31,13 @@ export const ReturnItemField = ({
   isClaim = false,
   index,
 }: Props) => {
-  const { control, path, setValue } = form
+  const {
+    control,
+    path,
+    setValue,
+    clearErrors,
+    formState: { errors },
+  } = form
   const { quantity, thumbnail, product_title, variant_title, refundable } =
     nestedItem
 
@@ -51,6 +58,10 @@ export const ReturnItemField = ({
 
   const addReasonDetails = (index: number, details: ReturnReasonDetails) => {
     setValue(path(`items.${index}.return_reason_details`), details)
+
+    if (details.reason) {
+      clearErrors(path(`items.${index}.return_reason_details`))
+    }
   }
 
   const [disableDecrease, disableIncrease] = React.useMemo(() => {
@@ -81,10 +92,12 @@ export const ReturnItemField = ({
           <Controller
             control={control}
             name={path(`items.${index}.return`)}
-            render={({ field: { value, onChange } }) => {
+            render={({ field: { value, onChange, name, ref } }) => {
               return (
                 <IndeterminateCheckbox
+                  name={name}
                   checked={value}
+                  ref={ref}
                   onChange={onChange}
                   data-testid={`return_item_checkbox_${index}`}
                 />
@@ -109,17 +122,20 @@ export const ReturnItemField = ({
                 size="small"
                 type="button"
                 onClick={() => updateQuantity(-1)}
+                aria-label="Decrease quantity"
                 disabled={disableDecrease}
                 className="disabled:text-grey-30 w-large h-large rounded-base"
               >
                 <MinusIcon size={16} />
               </Button>
               <div className="flex items-center justify-center">
-                <p>{selectedQuantity}</p>
+                <p aria-label="Quantity to return">{selectedQuantity}</p>
               </div>
               <Button
                 variant="ghost"
                 size="small"
+                type="button"
+                aria-label="Increase quantity"
                 onClick={() => updateQuantity(1)}
                 disabled={disableIncrease}
                 className="disabled:text-grey-30 w-large h-large rounded-base"
@@ -151,19 +167,47 @@ export const ReturnItemField = ({
       {isSelected && (
         <div className="w-full grid grid-cols-[4rem,1fr,1fr] pb-small">
           <span />
-          <p className="inter-small-semibold">{reasonDetails.reason?.label}</p>
+          <div className="flex items-center">
+            <p className="inter-small-semibold">
+              {reasonDetails.reason?.label}
+            </p>
+          </div>
           <div className="flex justify-end">
-            <Button
-              variant="secondary"
-              size="small"
-              type="button"
-              className="max-w-[120px]"
-              onClick={() =>
-                pushScreen({ reasonDetails, index, isClaim, addReasonDetails })
-              }
-            >
-              Select reason
-            </Button>
+            <div className="flex flex-col items-end">
+              <Controller
+                control={control}
+                name={path(`items.${index}.return_reason_details`)}
+                render={({ field: { ref }, fieldState: { error } }) => {
+                  return (
+                    <Button
+                      ref={ref}
+                      variant={error ? "danger" : "secondary"}
+                      size="small"
+                      type="button"
+                      className="max-w-[120px]"
+                      onClick={() =>
+                        pushScreen({
+                          reasonDetails,
+                          index,
+                          isClaim,
+                          addReasonDetails,
+                        })
+                      }
+                    >
+                      <span>
+                        {reasonDetails.reason ? "Edit" : "Select"} reason
+                      </span>
+                    </Button>
+                  )
+                }}
+              />
+              {!reasonDetails.reason && (
+                <InputError
+                  errors={errors}
+                  name={path(`items.${index}.return_reason_details`)}
+                />
+              )}
+            </div>
           </div>
         </div>
       )}

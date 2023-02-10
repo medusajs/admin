@@ -1,5 +1,5 @@
 import clsx from "clsx"
-import React, { useContext } from "react"
+import { Fragment, useContext } from "react"
 import Button from "../../../../components/fundamentals/button"
 import InputField from "../../../../components/molecules/input"
 import Modal from "../../../../components/molecules/modal"
@@ -44,10 +44,10 @@ const ClaimDetails = ({ claim, order, onDismiss }) => {
                 <Table.HeadCell></Table.HeadCell>
               </Table.HeadRow>
               <Table.Body>
-                {claim.claim_items?.map((claimItem) => {
+                {claim.claim_items?.map((claimItem, index) => {
                   const { item } = claimItem
                   return (
-                    <>
+                    <Fragment key={index}>
                       <Table.Row
                         className={clsx("border-b-grey-0 hover:bg-grey-0")}
                       >
@@ -128,7 +128,7 @@ const ClaimDetails = ({ claim, order, onDismiss }) => {
                           </div>
                         </Table.Cell>
                       </Table.Row>
-                    </>
+                    </Fragment>
                   )
                 })}
               </Table.Body>

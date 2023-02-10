@@ -1,15 +1,16 @@
 import clsx from "clsx"
-import React, { ChangeEvent, useImperativeHandle } from "react"
+import React, { useImperativeHandle } from "react"
 
 import CheckIcon from "../../fundamentals/icons/check-icon"
 
 type IndeterminateCheckboxProps = {
   type?: "checkbox" | "radio"
-  onChange?: (e: ChangeEvent) => void
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
   checked?: boolean
   title?: string
   indeterminate?: boolean
   className?: React.HTMLAttributes<HTMLInputElement>["className"]
+  name?: string
   disabled?: boolean // NOTE: only visual, still have to filter disabled ids out
 }
 
@@ -70,7 +71,7 @@ const IndeterminateCheckbox = React.forwardRef<
       <input
         type="checkbox"
         className={clsx("hidden", className)}
-        checked={checked}
+        defaultChecked={checked}
         ref={innerRef}
         {...rest}
       />

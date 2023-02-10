@@ -1,4 +1,5 @@
 import { Order } from "@medusajs/medusa"
+import { PricedShippingOption } from "@medusajs/medusa/dist/types/pricing"
 import { useAdminShippingOptions } from "medusa-react"
 import { useMemo } from "react"
 import { Controller, useWatch } from "react-hook-form"
@@ -7,6 +8,7 @@ import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import { NextSelect } from "../../../components/molecules/select/next-select"
 import { Option } from "../../../types/shared"
 import { NestedForm } from "../../../utils/nested-form"
+import { formatAmountWithSymbol } from "../../../utils/prices"
 import PriceFormInput from "../../products/components/prices-form/price-form-input"
 
 export type ShippingFormType = {
@@ -18,6 +20,7 @@ type Props = {
   form: NestedForm<ShippingFormType>
   order: Order
   isReturn?: boolean
+  isClaim?: boolean
   required?: boolean
 }
 
@@ -25,6 +28,7 @@ const ShippingForm = ({
   form,
   order,
   isReturn = false,
+  isClaim = false,
   required = false,
 }: Props) => {
   const {
@@ -44,9 +48,20 @@ const ShippingForm = ({
       returnOptions?.map((o) => ({
         label: o.name,
         value: o.id,
+        suffix: (
+          <span>
+            {formatAmountWithSymbol({
+              amount:
+                (o as unknown as PricedShippingOption).price_incl_tax ||
+                o.amount ||
+                0,
+              currency: order.currency_code,
+            })}
+          </span>
+        ),
       })) || []
     )
-  }, [returnOptions])
+  }, [order.currency_code, returnOptions])
 
   const selectedReturnOption = useWatch({
     control,
@@ -78,12 +93,7 @@ const ShippingForm = ({
         <h2 className="inter-base-semibold">
           Shipping for {isReturn ? "return" : "replacement"} items
         </h2>
-        {!isReturn && (
-          <p className="text-grey-50 inter-small-regular">
-            Shipping replacement items is free by default. Add a custom price,
-            if this is not the case.
-          </p>
-        )}
+        <ShippingFormHelper isClaim={isClaim} isReturn={isReturn} />
       </div>
       <Controller
         control={control}
@@ -105,7 +115,7 @@ const ShippingForm = ({
           )
         }}
       />
-      {selectedReturnOption && (
+      {selectedReturnOption && !(isClaim && isReturn) && (
         <div className="w-full justify-end flex items-center">
           {selectedReturnOptionPrice !== undefined ? (
             <div className="flex items-center justify-end w-full">
@@ -151,6 +161,29 @@ const ShippingForm = ({
       )}
     </div>
   )
+}
+
+const ShippingFormHelper = ({
+  isClaim = false,
+  isReturn = false,
+}: Pick<Props, "isClaim" | "isReturn">) => {
+  const text = useMemo(() => {
+    if (isClaim && isReturn) {
+      return "Return shipping for items claimed by the customer due to a defect is complimentary."
+    }
+
+    if (!isReturn) {
+      return "Replacement item shipping is complimentary by default. If otherwise, specify a custom shipping fee."
+    }
+
+    return undefined
+  }, [isClaim, isReturn])
+
+  if (!text) {
+    return null
+  }
+
+  return <p className="text-grey-50 inter-small-regular">{text}</p>
 }
 
 export default ShippingForm

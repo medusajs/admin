@@ -802,7 +802,7 @@
             "barcode": null,
             "ean": null,
             "upc": null,
-            "inventory_quantity": 1,
+            "inventory_quantity": 10,
             "allow_backorder": false,
             "manage_inventory": true,
             "hs_code": null,

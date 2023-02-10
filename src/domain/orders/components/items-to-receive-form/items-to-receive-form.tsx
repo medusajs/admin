@@ -1,6 +1,7 @@
 import { Order } from "@medusajs/medusa"
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table"
-import { FieldArrayWithId, useFieldArray } from "react-hook-form"
+import { useEffect } from "react"
+import { FieldArrayWithId, useFieldArray, useWatch } from "react-hook-form"
 import { NestedForm } from "../../../../utils/nested-form"
 import { ItemsToReceiveTable } from "./items-to-receive-table"
 import { useItemsToReceiveColumns } from "./use-items-to-receive-columns"
@@ -36,6 +37,15 @@ type Props = {
 
 export const ItemsToReceiveForm = ({ form, order }: Props) => {
   const { control, path } = form
+
+  const c = useWatch({
+    control,
+    name: path("items"),
+  })
+
+  useEffect(() => {
+    console.log(c)
+  }, [c])
 
   const { fields } = useFieldArray({
     control,
