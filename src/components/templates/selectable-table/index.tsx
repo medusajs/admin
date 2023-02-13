@@ -42,10 +42,6 @@ type SelectableTableProps<T extends object> = {
   }) => React.ReactElement
 } & ReturnType<typeof useQueryFilters>
 
-let a: Omit<TableProps, "filteringOptions"> & {
-  filters?: Pick<TableProps, "filteringOptions">
-}
-
 export const SelectableTable = <
   T extends
     | Product

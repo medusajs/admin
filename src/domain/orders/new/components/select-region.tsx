@@ -8,7 +8,9 @@ import { useNewOrderForm } from "../form"
 const SelectRegionScreen = () => {
   const { enableNextPage, disableNextPage } = React.useContext(SteppedContext)
 
-  const { control } = useNewOrderForm()
+  const {
+    form: { control },
+  } = useNewOrderForm()
 
   const reg = useWatch({
     control,
