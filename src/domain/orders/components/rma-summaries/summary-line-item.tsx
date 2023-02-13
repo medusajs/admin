@@ -1,3 +1,4 @@
+import clsx from "clsx"
 import Thumbnail from "../../../../components/atoms/thumbnail"
 import { formatAmountWithSymbol } from "../../../../utils/prices"
 
@@ -9,6 +10,7 @@ type SummaryLineProps = {
   price: number
   total: number
   currencyCode: string
+  isFree?: boolean
 }
 
 export const SummaryLineItem = ({
@@ -19,6 +21,7 @@ export const SummaryLineItem = ({
   price,
   total,
   currencyCode,
+  isFree = false,
 }: SummaryLineProps) => {
   return (
     <div className="flex items-center justify-between">
@@ -39,7 +42,11 @@ export const SummaryLineItem = ({
           })}
         </p>
         <p className="text-grey-40">x {quantity}</p>
-        <p>
+        <p
+          className={clsx({
+            "line-through": isFree,
+          })}
+        >
           {formatAmountWithSymbol({
             amount: total,
             currency: currencyCode,

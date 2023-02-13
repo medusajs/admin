@@ -16,6 +16,7 @@ export type ReceiveReturnItem = {
   original_quantity: number
   refundable?: number | null
   return: boolean
+  price: number
 }
 
 export type ItemsToReceiveFormType = {

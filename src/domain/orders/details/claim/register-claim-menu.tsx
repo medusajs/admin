@@ -92,6 +92,22 @@ const RegisterClaimMenu = ({ order, onClose }: Props) => {
     const returnShipping = data.return_shipping
     const refundAmount = data.refund_amount?.amount
 
+    const replacementShipping =
+      type === "replace" && data.replacement_shipping.option
+        ? {
+            option_id: data.replacement_shipping.option.value.id,
+            price: data.replacement_shipping.price
+              ? /**
+                 * We need to calculate the price of the shipping method based on the tax rate
+                 */
+                Math.round(
+                  data.replacement_shipping.price /
+                    data.replacement_shipping.option.value.taxRate
+                )
+              : 0,
+          }
+        : undefined
+
     const items = data.return_items.items
       .filter((item) => item.return)
       .map((item) => ({
@@ -126,8 +142,7 @@ const RegisterClaimMenu = ({ order, onClose }: Props) => {
         type: type,
         return_shipping: returnShipping.option
           ? {
-              option_id: returnShipping.option.value,
-              price: returnShipping.price,
+              option_id: returnShipping.option.value.id,
             }
           : undefined,
         additional_items:
@@ -155,15 +170,9 @@ const RegisterClaimMenu = ({ order, onClose }: Props) => {
                 province: data.shipping_address.province || undefined,
               }
             : undefined,
-        shipping_methods:
-          type === "replace"
-            ? [
-                {
-                  option_id: data.replacement_shipping.option?.value,
-                  price: data.replacement_shipping.price,
-                },
-              ]
-            : undefined,
+        shipping_methods: replacementShipping
+          ? [replacementShipping]
+          : undefined,
       },
       {
         onSuccess: () => {
@@ -237,12 +246,12 @@ const RegisterClaimMenu = ({ order, onClose }: Props) => {
             </div>
           </Modal.Content>
           <Modal.Footer>
-            <div className="w-full flex items-center justify-between">
+            <div className="flex w-full items-center justify-between">
               <SendNotificationForm
                 form={nestedForm(form, "notification")}
                 type="claim"
               />
-              <div className="items-center flex justify-end gap-x-xsmall">
+              <div className="flex items-center justify-end gap-x-xsmall">
                 <Button
                   variant="secondary"
                   size="small"

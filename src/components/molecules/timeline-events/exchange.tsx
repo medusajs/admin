@@ -1,3 +1,4 @@
+import { ReturnItem } from "@medusajs/medusa"
 import {
   useAdminCancelReturn,
   useAdminCancelSwap,
@@ -5,11 +6,10 @@ import {
   useAdminReceiveReturn,
   useAdminStore,
 } from "medusa-react"
-import { ReturnItem } from "@medusajs/medusa"
 import React, { useEffect, useState } from "react"
 
 import CreateFulfillmentModal from "../../../domain/orders/details/create-fulfillment"
-import ReceiveMenu from "../../../domain/orders/details/returns/receive-menu"
+import { ReceiveReturnMenu } from "../../../domain/orders/details/receive-return/receive-return-menu"
 import { ExchangeEvent } from "../../../hooks/use-build-timeline"
 import useNotification from "../../../hooks/use-notification"
 import Medusa from "../../../services/api"
@@ -41,7 +41,7 @@ const ExchangeStatus: React.FC<ExchangeStatusProps> = ({ event }) => {
   const divider = <div className="h-11 w-px bg-grey-20" />
 
   return (
-    <div className="flex items-center inter-small-regular gap-x-base">
+    <div className="inter-small-regular flex items-center gap-x-base">
       <div className="flex flex-col gap-y-2xsmall">
         <span className="text-grey-50">Payment:</span>
         <PaymentStatus paymentStatus={event.paymentStatus} />
@@ -205,7 +205,7 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
       <div className="flex flex-col gap-y-base">
         {event.canceledAt && (
           <div>
-            <span className="mr-2 inter-small-semibold">Requested on:</span>
+            <span className="inter-small-semibold mr-2">Requested on:</span>
             <span className="text-grey-50">
               {new Date(event.time).toUTCString()}
             </span>
@@ -262,11 +262,10 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
         />
       )}
       {showReceiveReturn && order && (
-        <ReceiveMenu
+        <ReceiveReturnMenu
           order={order}
           returnRequest={event.raw.return_order}
-          onReceiveSwap={handleReceiveReturn}
-          onDismiss={() => setShowReceiveReturn(false)}
+          onClose={() => setShowReceiveReturn(false)}
         />
       )}
       {showCreateFulfillment && (
@@ -300,7 +299,7 @@ function getPaymentLink(
   exchangeCartId: string | undefined
 ) {
   return payable ? (
-    <div className="inter-small-regular text-grey-50 flex flex-col gap-y-xsmall">
+    <div className="inter-small-regular flex flex-col gap-y-xsmall text-grey-50">
       <div className="flex items-center gap-x-xsmall">
         {paymentFormatWarning && <IconTooltip content={paymentFormatWarning} />}
         <span>Payment link:</span>

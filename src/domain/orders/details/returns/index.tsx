@@ -209,17 +209,17 @@ const ReturnMenu: React.FC<ReturnMenuProps> = ({ order, onDismiss }) => {
           {refundable >= 0 && (
             <div className="mt-10">
               {!useCustomShippingPrice && shippingMethod && (
-                <div className="flex mb-4 inter-small-regular justify-between">
+                <div className="inter-small-regular mb-4 flex justify-between">
                   <span>Shipping</span>
                   <div>
                     {displayAmount(order.currency_code, shippingPrice || 0)}{" "}
-                    <span className="text-grey-40 ml-3">
+                    <span className="ml-3 text-grey-40">
                       {order.currency_code.toUpperCase()}
                     </span>
                   </div>
                 </div>
               )}
-              <div className="flex inter-base-semibold justify-between w-full">
+              <div className="inter-base-semibold flex w-full justify-between">
                 <span>Total Refund</span>
                 <div className="flex items-center">
                   {!refundEdited && (
@@ -258,11 +258,11 @@ const ReturnMenu: React.FC<ReturnMenuProps> = ({ order, onDismiss }) => {
         <Modal.Footer>
           <div className="flex w-full justify-between">
             <div
-              className="items-center h-full flex cursor-pointer"
+              className="flex h-full cursor-pointer items-center"
               onClick={() => setNoNotification(!noNotification)}
             >
               <div
-                className={`w-5 h-5 flex justify-center text-grey-0 border-grey-30 border rounded-base ${
+                className={`flex h-5 w-5 justify-center rounded-base border border-grey-30 text-grey-0 ${
                   !noNotification && "bg-violet-60"
                 }`}
               >
@@ -278,7 +278,7 @@ const ReturnMenu: React.FC<ReturnMenuProps> = ({ order, onDismiss }) => {
                 onChange={() => setNoNotification(!noNotification)}
                 type="checkbox"
               />
-              <span className="ml-3 flex items-center text-grey-90 gap-x-xsmall">
+              <span className="ml-3 flex items-center gap-x-xsmall text-grey-90">
                 Send notifications
                 <IconTooltip content="Notify customer of created return" />
               </span>

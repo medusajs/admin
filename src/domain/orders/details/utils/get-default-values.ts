@@ -111,12 +111,6 @@ const getDefaultAdditionalItemsValues = (): ItemsToSendFormType => {
   }
 }
 
-// const getDefaultReceiveValues = (): ReceiveNowFormType => {
-//   return {
-//     receive_now: false,
-//   }
-// }
-
 const getDefaultClaimTypeValues = (): ClaimTypeFormType => {
   return {
     type: "refund",
@@ -150,13 +144,11 @@ const getReturnableItemsValues = (
     returnItems.items.push({
       item_id: item.id,
       thumbnail: item.thumbnail,
-      refundable: item.refundable
-        ? (item.refundable / item.quantity) * returnableQuantity
-        : 0,
+      refundable: item.refundable || 0,
       product_title: item.variant.product.title,
       variant_title: item.variant.title,
       quantity: returnableQuantity,
-      original_quantity: returnableQuantity,
+      original_quantity: item.quantity,
       total: item.total || item.unit_price * item.quantity,
       return_reason_details: {
         note: undefined,
@@ -181,18 +173,32 @@ const getReceiveableItemsValues = (
         return acc
       }
 
+      const indexOfLineItem = order.items.findIndex(
+        (i) => i.id === item.item_id
+      )
+
       const indexOfRequestedItem = returnRequest.items.findIndex(
         (i) => i.item_id === item.item_id
       )
 
       if (item?.item_id && indexOfRequestedItem > -1) {
         const requestedItem = returnRequest.items[indexOfRequestedItem]
+        const lineItem = order.items[indexOfLineItem]
 
         const adjustedQuantity =
           requestedItem.requested_quantity - requestedItem.received_quantity
 
+        /**
+         * We need to know the paid price per item, so we can display
+         * the correct expcted refund amount. This requires us to
+         * find the original quantity on the order line items,
+         * as any previous returns will have adjusted the quantity.
+         */
+        const price = (item.total || 0) / lineItem.quantity
+
         acc.push({
           ...item,
+          price,
           quantity: adjustedQuantity,
           original_quantity: adjustedQuantity,
         })

@@ -37,10 +37,8 @@ export const ClaimSummary = ({ form, order }: Props) => {
 
   const replacementItems = useWatch({
     control: control,
-    name: "additional_items",
-    defaultValue: {
-      items: [],
-    },
+    name: "additional_items.items",
+    defaultValue: [],
   })
 
   const replacementItemShipping = useWatch({
@@ -58,14 +56,16 @@ export const ClaimSummary = ({ form, order }: Props) => {
       return acc + (item.total / item.original_quantity) * item.quantity
     }, 0)
 
-    const replacementItemsCost = replacementItems.items.reduce((acc, item) => {
+    const replacementItemsCost = replacementItems.reduce((acc, item) => {
       return acc + item.price * item.quantity
     }, 0)
 
     const refundTotal =
-      claimItemsRefund -
-      replacementItemsCost -
-      (replacementItemShipping?.price ?? 0)
+      claimType.type === "refund"
+        ? claimItemsRefund
+        : claimItemsRefund -
+          replacementItemsCost -
+          (replacementItemShipping?.price ?? 0)
 
     return {
       claimedItems: formatAmountWithSymbol({
@@ -102,11 +102,12 @@ export const ClaimSummary = ({ form, order }: Props) => {
   }, [
     selectedClaimItems,
     replacementItems,
-    replacementItemShipping,
+    claimType.type,
+    replacementItemShipping.price,
     order.currency_code,
   ])
 
-  if (!(selectedClaimItems.length > 0 || replacementItems.items?.length > 0)) {
+  if (!(selectedClaimItems.length > 0 || replacementItems.length > 0)) {
     return null
   }
 
@@ -144,11 +145,11 @@ export const ClaimSummary = ({ form, order }: Props) => {
             </div>
           </div>
         )}
-        {replacementItems.items?.length > 0 && (
+        {replacementItems.length > 0 && (
           <div>
             <p className="inter-base-semibold mb-small">Replacement items</p>
             <div className="flex flex-col gap-y-xsmall">
-              {replacementItems.items.map((item, index) => {
+              {replacementItems.map((item, index) => {
                 return (
                   <SummaryLineItem
                     key={index}
@@ -159,6 +160,7 @@ export const ClaimSummary = ({ form, order }: Props) => {
                     total={item.price * item.quantity}
                     variantTitle={item.variant_title}
                     thumbnail={item.thumbnail}
+                    isFree
                   />
                 )
               })}

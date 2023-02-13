@@ -6,13 +6,18 @@ import { Controller, useWatch } from "react-hook-form"
 import Button from "../../../components/fundamentals/button"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import { NextSelect } from "../../../components/molecules/select/next-select"
-import { Option } from "../../../types/shared"
 import { NestedForm } from "../../../utils/nested-form"
 import { formatAmountWithSymbol } from "../../../utils/prices"
 import PriceFormInput from "../../products/components/prices-form/price-form-input"
 
 export type ShippingFormType = {
-  option: Option | null
+  option: {
+    label: string
+    value: {
+      id: string
+      taxRate: number
+    }
+  } | null
   price?: number
 }
 
@@ -47,7 +52,14 @@ const ShippingForm = ({
     return (
       returnOptions?.map((o) => ({
         label: o.name,
-        value: o.id,
+        value: {
+          id: o.id,
+          taxRate:
+            (o as unknown as PricedShippingOption).tax_rates?.reduce(
+              (acc, cur) => acc + (cur.rate || 0) / 100,
+              0
+            ) || 0,
+        },
         suffix: (
           <span>
             {formatAmountWithSymbol({
@@ -76,10 +88,15 @@ const ShippingForm = ({
   const setCustomPrice = () => {
     if (selectedReturnOption) {
       const option = returnOptions?.find(
-        (ro) => ro.id === selectedReturnOption.value
+        (ro) => ro.id === selectedReturnOption.value.id
       )
 
-      setValue(path("price"), option?.amount || 0)
+      setValue(
+        path("price"),
+        Math.round(
+          (option?.amount || 0) * (1 + selectedReturnOption.value.taxRate)
+        )
+      )
     }
   }
 
@@ -93,7 +110,7 @@ const ShippingForm = ({
         <h2 className="inter-base-semibold">
           Shipping for {isReturn ? "return" : "replacement"} items
         </h2>
-        <ShippingFormHelper isClaim={isClaim} isReturn={isReturn} />
+        <ShippingFormHelpText isClaim={isClaim} isReturn={isReturn} />
       </div>
       <Controller
         control={control}
@@ -116,9 +133,9 @@ const ShippingForm = ({
         }}
       />
       {selectedReturnOption && !(isClaim && isReturn) && (
-        <div className="w-full justify-end flex items-center">
+        <div className="flex w-full items-center justify-end">
           {selectedReturnOptionPrice !== undefined ? (
-            <div className="flex items-center justify-end w-full">
+            <div className="flex w-full items-center justify-end">
               <div className="grid grid-cols-[1fr_40px] gap-x-xsmall">
                 <Controller
                   control={control}
@@ -138,7 +155,7 @@ const ShippingForm = ({
                 <Button
                   variant="secondary"
                   size="small"
-                  className="w-10 h-10 flex items-center justify-center"
+                  className="flex h-10 w-10 items-center justify-center"
                   type="button"
                   onClick={deleteCustomPrice}
                 >
@@ -163,7 +180,7 @@ const ShippingForm = ({
   )
 }
 
-const ShippingFormHelper = ({
+const ShippingFormHelpText = ({
   isClaim = false,
   isReturn = false,
 }: Pick<Props, "isClaim" | "isReturn">) => {
@@ -183,7 +200,7 @@ const ShippingFormHelper = ({
     return null
   }
 
-  return <p className="text-grey-50 inter-small-regular">{text}</p>
+  return <p className="inter-small-regular text-grey-50">{text}</p>
 }
 
 export default ShippingForm
