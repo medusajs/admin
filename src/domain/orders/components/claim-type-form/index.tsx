@@ -1,6 +1,6 @@
 import { Controller } from "react-hook-form"
-import RadioGroup from "../../../components/organisms/radio-group"
-import { NestedForm } from "../../../utils/nested-form"
+import RadioGroup from "../../../../components/organisms/radio-group"
+import { NestedForm } from "../../../../utils/nested-form"
 
 export type ClaimTypeFormType = {
   type: "replace" | "refund"
