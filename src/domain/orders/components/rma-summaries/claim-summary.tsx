@@ -174,7 +174,7 @@ export const ClaimSummary = ({ form, order }: Props) => {
           </div>
         )}
       </div>
-      <div className="pt-large flex flex-col gap-y-xsmall">
+      <div className="flex flex-col gap-y-xsmall pt-large">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-x-xsmall">
             <p>Difference</p>
@@ -202,7 +202,7 @@ export const ClaimSummary = ({ form, order }: Props) => {
           </p>
         </div>
         <div
-          className="flex items-center justify-between inter-large-semibold"
+          className="inter-large-semibold flex items-center justify-between"
           data-testid="refund-amount-container"
         >
           <p className="inter-base-semibold">Refund amount</p>

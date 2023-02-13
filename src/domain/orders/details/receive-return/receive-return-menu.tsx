@@ -1,5 +1,5 @@
 import { Order, Return } from "@medusajs/medusa"
-import { useAdminReceiveReturn } from "medusa-react"
+import { useAdminOrder, useAdminReceiveReturn } from "medusa-react"
 import { useEffect, useMemo } from "react"
 import { useForm } from "react-hook-form"
 import Button from "../../../../components/fundamentals/button"
@@ -25,6 +25,7 @@ export type ReceiveReturnFormType = {
 
 export const ReceiveReturnMenu = ({ order, returnRequest, onClose }: Props) => {
   const { mutate, isLoading } = useAdminReceiveReturn(returnRequest.id)
+  const { refetch } = useAdminOrder(order.id)
 
   const wasRefunded = useMemo(() => {
     if (returnRequest.claim_order_id) {
@@ -71,14 +72,6 @@ export const ReceiveReturnMenu = ({ order, returnRequest, onClose }: Props) => {
         ? data.refund_amount.amount
         : undefined
 
-    console.log(
-      refundAmount,
-      data.receive_items.items.map((i) => ({
-        item_id: i.item_id,
-        quantity: i.quantity,
-      }))
-    )
-
     mutate(
       {
         items: data.receive_items.items.map((i) => ({
@@ -94,6 +87,10 @@ export const ReceiveReturnMenu = ({ order, returnRequest, onClose }: Props) => {
             `Received return for order #${order.display_id}`,
             "success"
           )
+
+          // We need to refetch the order to get the updated state
+          refetch()
+
           onClose()
         },
         onError: (error) => {
@@ -119,10 +116,9 @@ export const ReceiveReturnMenu = ({ order, returnRequest, onClose }: Props) => {
               order={order}
               form={nestedForm(form, "receive_items")}
             />
-            <div>Was already refunded {wasRefunded ? "true" : false}</div>
           </Modal.Content>
           <Modal.Footer>
-            <div className="flex items-center w-full justify-end gap-x-xsmall">
+            <div className="flex w-full items-center justify-end gap-x-xsmall">
               <Button size="small" variant="secondary">
                 Cancel
               </Button>

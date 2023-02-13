@@ -112,7 +112,6 @@ export const useItemsToReceiveColumns = ({ form, orderCurrency }: Props) => {
           row: {
             index,
             original: { original_quantity },
-            getIsSelected,
           },
         }) => {
           return (
@@ -120,7 +119,6 @@ export const useItemsToReceiveColumns = ({ form, orderCurrency }: Props) => {
               {...{
                 index,
                 maxQuantity: original_quantity,
-                isSelected: getIsSelected(),
                 control,
                 path,
                 updateQuantity,
@@ -150,7 +148,7 @@ export const useItemsToReceiveColumns = ({ form, orderCurrency }: Props) => {
         maxSize: 20,
         cell: () => {
           return (
-            <p className="text-grey-50 pl-base">
+            <p className="pl-base text-grey-50">
               {orderCurrency.toUpperCase()}
             </p>
           )

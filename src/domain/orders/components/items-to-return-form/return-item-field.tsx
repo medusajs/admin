@@ -87,7 +87,7 @@ export const ReturnItemField = ({
 
   return (
     <div>
-      <div className="grid grid-cols-[1fr_120px_120px_50px] gap-xsmall py-small border-t border-grey-20">
+      <div className="grid grid-cols-[1fr_120px_120px_50px] gap-xsmall border-t border-grey-20 py-small">
         <div className="flex items-center gap-x-large pl-base">
           <Controller
             control={control}
@@ -116,7 +116,7 @@ export const ReturnItemField = ({
         </div>
         <div className="flex items-center justify-end">
           {isSelected ? (
-            <div className="inter-small-regular text-grey-50 grid grid-cols-3 gap-x-2xsmall">
+            <div className="inter-small-regular grid grid-cols-3 gap-x-2xsmall text-grey-50">
               <Button
                 variant="ghost"
                 size="small"
@@ -124,7 +124,7 @@ export const ReturnItemField = ({
                 onClick={() => updateQuantity(-1)}
                 aria-label="Decrease quantity"
                 disabled={disableDecrease}
-                className="disabled:text-grey-30 w-large h-large rounded-base"
+                className="h-large w-large rounded-base disabled:text-grey-30"
               >
                 <MinusIcon size={16} />
               </Button>
@@ -138,7 +138,7 @@ export const ReturnItemField = ({
                 aria-label="Increase quantity"
                 onClick={() => updateQuantity(1)}
                 disabled={disableIncrease}
-                className="disabled:text-grey-30 w-large h-large rounded-base"
+                className="h-large w-large rounded-base disabled:text-grey-30"
               >
                 <PlusIcon size={16} />
               </Button>
@@ -165,11 +165,11 @@ export const ReturnItemField = ({
         </div>
       </div>
       {isSelected && (
-        <div className="w-full grid grid-cols-[4rem,1fr,1fr] pb-small">
+        <div className="grid w-full grid-cols-[4rem,1fr,1fr] pb-small">
           <span />
           <div className="flex items-center">
             <p className="inter-small-semibold">
-              {reasonDetails.reason?.label}
+              {reasonDetails?.reason?.label}
             </p>
           </div>
           <div className="flex justify-end">
@@ -195,13 +195,13 @@ export const ReturnItemField = ({
                       }
                     >
                       <span>
-                        {reasonDetails.reason ? "Edit" : "Select"} reason
+                        {reasonDetails?.reason ? "Edit" : "Select"} reason
                       </span>
                     </Button>
                   )
                 }}
               />
-              {!reasonDetails.reason && (
+              {!reasonDetails?.reason && (
                 <InputError
                   errors={errors}
                   name={path(`items.${index}.return_reason_details`)}

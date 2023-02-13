@@ -1,5 +1,5 @@
 import { Order } from "@medusajs/medusa"
-import { useMemo } from "react"
+import React, { useMemo } from "react"
 import {
   Controller,
   FieldArrayWithId,
@@ -80,7 +80,11 @@ export const ItemsToReturnForm = ({ form, order, isClaim = false }: Props) => {
     )
   }, [watchedReturnItems])
 
-  const toggleSelectAllRows = () => {
+  const toggleSelectAllRows = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault()
+
+    console.log(e.target.checked, e.target.indeterminate)
+
     fields.forEach((_item, index) => {
       form.setValue(path(`items.${index}.return`), !areAllSelected)
     })
@@ -93,7 +97,7 @@ export const ItemsToReturnForm = ({ form, order, isClaim = false }: Props) => {
       </h2>
       <div className="flex flex-col gap-y-small">
         <div>
-          <div className="flex items-center inter-small-semibold text-grey-50 border-t border-grey-20 h-10">
+          <div className="inter-small-semibold flex h-10 items-center border-t border-grey-20 text-grey-50">
             <div className="pl-base pr-large">
               <IndeterminateCheckbox
                 checked={areAllSelected}
