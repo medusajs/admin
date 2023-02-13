@@ -818,8 +818,8 @@
             "deleted_at": null,
             "metadata": null
           },
-          "quantity": 1,
-          "fulfilled_quantity": 1,
+          "quantity": 5,
+          "fulfilled_quantity": 5,
           "returned_quantity": null,
           "shipped_quantity": null,
           "created_at": "2021-03-16T21:24:35.871Z",

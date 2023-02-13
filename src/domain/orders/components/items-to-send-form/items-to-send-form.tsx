@@ -72,7 +72,7 @@ export const ItemsToSendForm = ({ form, order }: Props) => {
       </div>
       {fields.length > 0 && <AdditionalItemsTable instance={tableInstance} />}
 
-      <div className="flex w-full justify-end items-center">
+      <div className="flex w-full items-center justify-end">
         <Button
           variant="secondary"
           size="small"

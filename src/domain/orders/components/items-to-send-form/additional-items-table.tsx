@@ -42,7 +42,7 @@ export const AdditionalItemsTable = ({ instance }: Props) => {
             return (
               <Table.Row
                 key={row.id}
-                className="last-of-type:border-b-0 py-small"
+                className="py-small last-of-type:border-b-0"
               >
                 {row.getVisibleCells().map((cell) => {
                   return (

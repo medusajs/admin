@@ -72,12 +72,12 @@ export const useAddAdditionalItemsColumns = (order: Order) => {
           },
         }) => (
           <div
-            className="flex items-center cursor-pointer"
+            className="flex cursor-pointer items-center"
             onClick={getToggleSortingHandler()}
           >
             <p className="select-none">Title</p>
             <div
-              className="w-large h-large flex items-center justify-center"
+              className="flex h-large w-large items-center justify-center"
               onClick={getToggleSortingHandler()}
             >
               <SortingIcon size={16} isSorted={getIsSorted()} />
@@ -124,7 +124,7 @@ export const useAddAdditionalItemsColumns = (order: Order) => {
       }),
       columnHelper.accessor("inventory_quantity", {
         maxSize: 20,
-        header: () => <p className="text-right select-none">Stock</p>,
+        header: () => <p className="select-none text-right">Stock</p>,
         cell: ({ cell: { getValue }, row: { getCanSelect } }) => {
           const isSelectable = getCanSelect()
 
@@ -157,7 +157,7 @@ export const useAddAdditionalItemsColumns = (order: Order) => {
                   content="The price has been overridden in a price list, that is applicable to this order."
                   side="top"
                 >
-                  <p className="text-grey-40 line-through cursor-default">
+                  <p className="cursor-default text-grey-40 line-through">
                     {formatAmountWithSymbol({
                       amount: original_price_incl_tax || 0,
                       currency: order.currency_code,
@@ -180,7 +180,7 @@ export const useAddAdditionalItemsColumns = (order: Order) => {
         maxSize: 24,
         cell: () => {
           return (
-            <p className="text-grey-50 pl-base">
+            <p className="pl-base text-grey-50">
               {order.currency_code.toUpperCase()}
             </p>
           )

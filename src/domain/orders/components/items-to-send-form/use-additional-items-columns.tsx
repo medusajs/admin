@@ -100,7 +100,7 @@ export const useAdditionalItemsColumns = ({
                   content="The price has been overridden in a price list, that is applicable to this order."
                   side="top"
                 >
-                  <p className="text-grey-40 line-through cursor-default">
+                  <p className="cursor-default text-grey-40 line-through">
                     {formatAmountWithSymbol({
                       amount: original_price,
                       currency: orderCurrency,
@@ -123,7 +123,7 @@ export const useAdditionalItemsColumns = ({
         maxSize: 20,
         cell: () => {
           return (
-            <p className="text-grey-50 pl-base">
+            <p className="pl-base text-grey-50">
               {orderCurrency.toUpperCase()}
             </p>
           )
@@ -138,7 +138,7 @@ export const useAdditionalItemsColumns = ({
               <Button
                 variant="ghost"
                 size="small"
-                className="w-xlarge h-xlarge text-grey-40"
+                className="h-xlarge w-xlarge text-grey-40"
                 type="button"
                 onClick={() => removeItem(index)}
               >

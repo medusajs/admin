@@ -1,7 +1,8 @@
 import { Order, ShippingOption } from "@medusajs/medusa"
+import { renderHook, screen } from "@testing-library/react"
 import { useForm } from "react-hook-form"
 import { fixtures } from "../../../../../test/mocks/data"
-import { render, renderHook, screen } from "../../../../../test/test-utils"
+import { renderWithProviders } from "../../../../../test/test-utils"
 import { CreateClaimFormType } from "../../../details/claim/register-claim-menu"
 import { ClaimSummary } from "../claim-summary"
 
@@ -39,14 +40,20 @@ describe("ClaimSummary", () => {
             price: 100,
             option: {
               label: so.name,
-              value: so.id,
+              value: {
+                id: so.id,
+                taxRate: 0,
+              },
             },
           },
           return_shipping: {
             price: 0,
             option: {
               label: so.name,
-              value: so.id,
+              value: {
+                id: so.id,
+                taxRate: 0,
+              },
             },
           },
           claim_type: {
@@ -56,7 +63,7 @@ describe("ClaimSummary", () => {
       })
     )
 
-    render(<ClaimSummary order={order} form={result.current} />)
+    renderWithProviders(<ClaimSummary order={order} form={result.current} />)
 
     // Should display a warning tooltip
     expect(
@@ -95,14 +102,20 @@ describe("ClaimSummary", () => {
             price: 100,
             option: {
               label: so.name,
-              value: so.id,
+              value: {
+                id: so.id,
+                taxRate: 0,
+              },
             },
           },
           return_shipping: {
             price: 0,
             option: {
               label: so.name,
-              value: so.id,
+              value: {
+                id: so.id,
+                taxRate: 0,
+              },
             },
           },
           claim_type: {
@@ -112,7 +125,7 @@ describe("ClaimSummary", () => {
       })
     )
 
-    render(<ClaimSummary order={order} form={result.current} />)
+    renderWithProviders(<ClaimSummary order={order} form={result.current} />)
 
     // Should not display a warning tooltip
     expect(
@@ -148,14 +161,20 @@ describe("ClaimSummary", () => {
             price: 1750,
             option: {
               label: so.name,
-              value: so.id,
+              value: {
+                id: so.id,
+                taxRate: 0,
+              },
             },
           },
           return_shipping: {
             price: 0,
             option: {
               label: so.name,
-              value: so.id,
+              value: {
+                id: so.id,
+                taxRate: 0,
+              },
             },
           },
           claim_type: {
@@ -165,7 +184,7 @@ describe("ClaimSummary", () => {
       })
     )
 
-    render(<ClaimSummary order={order} form={result.current} />)
+    renderWithProviders(<ClaimSummary order={order} form={result.current} />)
 
     expect(screen.getAllByText(so.name)).toHaveLength(2)
 

@@ -1,6 +1,7 @@
 import { render, RenderOptions } from "@testing-library/react"
 import { MedusaProvider } from "medusa-react"
 import { PropsWithChildren, ReactElement } from "react"
+import { BrowserRouter } from "react-router-dom"
 import { LayeredModalProvider } from "../components/molecules/modal/layered-modal"
 import { SteppedProvider } from "../components/molecules/modal/stepped-modal"
 
@@ -11,18 +12,20 @@ import queryClient from "../services/queryClient"
 
 const Providers = ({ children }: PropsWithChildren) => {
   return (
-    <MedusaProvider
-      baseUrl={medusaUrl}
-      queryClientProviderProps={{
-        client: queryClient,
-      }}
-    >
-      <FeatureFlagProvider>
-        <SteppedProvider>
-          <LayeredModalProvider>{children}</LayeredModalProvider>
-        </SteppedProvider>
-      </FeatureFlagProvider>
-    </MedusaProvider>
+    <BrowserRouter>
+      <MedusaProvider
+        baseUrl={medusaUrl}
+        queryClientProviderProps={{
+          client: queryClient,
+        }}
+      >
+        <FeatureFlagProvider>
+          <SteppedProvider>
+            <LayeredModalProvider>{children}</LayeredModalProvider>
+          </SteppedProvider>
+        </FeatureFlagProvider>
+      </MedusaProvider>
+    </BrowserRouter>
   )
 }
 
@@ -31,5 +34,12 @@ const customRender = (
   options?: Omit<RenderOptions, "wrapper">
 ) => render(ui, { wrapper: Providers, ...options })
 
-export * from "@testing-library/react"
-export { customRender as render }
+export const renderWithProviders = (
+  ui: ReactElement,
+  { route = "/" } = {},
+  options?: Omit<RenderOptions, "wrapper">
+) => {
+  window.history.pushState({}, "Test page", route)
+
+  return customRender(ui, options)
+}

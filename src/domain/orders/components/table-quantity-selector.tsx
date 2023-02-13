@@ -46,11 +46,12 @@ const TableQuantitySelector = <
             onClick={() => updateQuantity(index, -1)}
             disabled={currentQuantity === 1}
             className="h-large w-large rounded-base disabled:text-grey-30"
+            aria-label="Decrease quantity"
           >
             <MinusIcon size={16} />
           </Button>
           <div className="flex items-center justify-center">
-            <p>{currentQuantity}</p>
+            <p aria-label="Quantity">{currentQuantity}</p>
           </div>
           <Button
             variant="ghost"
@@ -59,6 +60,7 @@ const TableQuantitySelector = <
             onClick={() => updateQuantity(index, 1)}
             disabled={maxQuantity ? currentQuantity === maxQuantity : undefined}
             className="h-large w-large rounded-base disabled:text-grey-30"
+            aria-label="Increase quantity"
           >
             <PlusIcon size={16} />
           </Button>
