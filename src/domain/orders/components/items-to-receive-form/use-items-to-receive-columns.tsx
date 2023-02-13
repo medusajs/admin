@@ -39,7 +39,7 @@ export const useItemsToReceiveColumns = ({ form, orderCurrency }: Props) => {
   const toggleAllRowsSelected = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       items.forEach((_item, index) => {
-        setValue(path(`items.${index}.return`), e.target.checked, {
+        setValue(path(`items.${index}.receive`), e.target.checked, {
           shouldDirty: true,
         })
       })
@@ -70,7 +70,7 @@ export const useItemsToReceiveColumns = ({ form, orderCurrency }: Props) => {
           return (
             <Controller
               control={control}
-              name={path(`items.${index}.return`)}
+              name={path(`items.${index}.receive`)}
               render={({ field: { value, onChange } }) => {
                 return (
                   <div className="pl-base pr-large">

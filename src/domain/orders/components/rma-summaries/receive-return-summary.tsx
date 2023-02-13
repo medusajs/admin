@@ -22,12 +22,12 @@ export const ReceiveReturnSummary = ({ form, order, returnRequest }: Props) => {
   })
 
   const itemToReceive = useMemo(() => {
-    return items.filter((i) => i.return)
+    return items.filter((i) => i.receive)
   }, [items])
 
   const itemSubTotal = useMemo(() => {
     return items
-      .filter((i) => i.return)
+      .filter((i) => i.receive)
       .reduce((acc, item) => {
         return acc + item.price * item.quantity
       }, 0)
