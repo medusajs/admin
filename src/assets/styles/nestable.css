@@ -1,0 +1,40 @@
+.nestable-list .nestable-list {
+  padding-left: 30px;
+}
+
+.nestable-item-name {
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.nestable-item-name .item-text {
+  margin-left: 20px;
+}
+
+.nestable-item {
+/*  padding: 10px 0;*/
+}
+
+.nestable {
+  color: #687076;
+  font-size: 13px;
+}
+
+.nestable .with-nesting, .nestable .root-node {
+  color: #000;
+}
+
+.nestable-item-handler {
+  cursor: pointer;
+  margin-right: 45px;
+}
+
+.nestable .is-dragging {
+  background: #F3F4F6;
+}
+
+.nestable .collapsable {
+  position: absolute;
+  left: 35px;
+  top: 2px;
+}

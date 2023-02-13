@@ -1,5 +1,8 @@
-import BodyCard from "../../components/organisms/body-card"
 import { Route, Routes } from "react-router-dom"
+import { useAdminProductCategories } from "medusa-react"
+
+import BodyCard from "../../components/organisms/body-card"
+import Draggable from "./draggable"
 
 const ProductCategoryEmptyState = () => (
   <div className="flex items-center justify-center min-h-[600px]">
@@ -11,8 +14,18 @@ const ProductCategoryEmptyState = () => (
 )
 
 const ProductCategoryIndex = () => {
-  // TODO: Replace this with the categories from API
-  const categories = []
+  const {
+    isLoading: isLoadingProductCategories,
+    count,
+    product_categories: productCategories = [],
+    refetch,
+  } = useAdminProductCategories(
+    { parent_category_id: "null" },
+    {
+      keepPreviousData: true,
+    }
+  )
+
   const actions = [
     {
       label: "Add category",
@@ -31,7 +44,8 @@ const ProductCategoryIndex = () => {
           setBorders={true}
           footerMinHeight={40}
         >
-          { !categories.length && <ProductCategoryEmptyState /> }
+          { !productCategories.length && <ProductCategoryEmptyState /> }
+          { productCategories.length && <Draggable items={productCategories} /> }
         </BodyCard>
       </div>
     </div>
