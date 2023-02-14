@@ -35,7 +35,7 @@ export const ReceiveReturnMenu = ({ order, returnRequest, onClose }: Props) => {
    * it will be handled as part of the swap process. Due to this the receive will
    * not issue a refund on completion.
    */
-  const isSwapOrRefunded = useMemo(() => {
+  const isRefundedClaim = useMemo(() => {
     if (returnRequest.claim_order_id) {
       const claim = order.claims.find(
         (c) => c.id === returnRequest.claim_order_id
@@ -47,12 +47,16 @@ export const ReceiveReturnMenu = ({ order, returnRequest, onClose }: Props) => {
       return claim.payment_status === "refunded"
     }
 
-    if (returnRequest.swap_id) {
-      return true
-    }
-
     return false
-  }, [order.claims, returnRequest.claim_order_id, returnRequest.swap_id])
+  }, [order.claims, returnRequest.claim_order_id])
+
+  const isSwap = useMemo(() => {
+    return Boolean(returnRequest.swap_id)
+  }, [returnRequest.swap_id])
+
+  const isSwapOrRefundedClaim = useMemo(() => {
+    return isRefundedClaim || isSwap
+  }, [isRefundedClaim, isSwap])
 
   const form = useForm<ReceiveReturnFormType>({
     defaultValues: getDefaultReceiveReturnValues(order, returnRequest),
@@ -70,12 +74,23 @@ export const ReceiveReturnMenu = ({ order, returnRequest, onClose }: Props) => {
   }, [order, returnRequest, reset])
 
   const onSubmit = handleSubmit((data) => {
-    const refundAmount =
-      data.refund_amount?.amount !== undefined && !isSwapOrRefunded
-        ? data.refund_amount.amount
-        : isSwapOrRefunded
-        ? 0
-        : undefined
+    let refundAmount: number | undefined = undefined
+
+    /**
+     * If the return was not refunded as part of a refund claim, or was not created as a
+     * result of a swap, we allow the user to specify a refund amount.
+     */
+    if (data.refund_amount?.amount !== undefined && !isSwapOrRefundedClaim) {
+      refundAmount = data.refund_amount.amount
+    }
+
+    /**
+     * If the return was refunded as part of a refund claim, we set the refund amount to 0.
+     * This is a workaround to ensure that the refund is not issued twice.
+     */
+    if (isRefundedClaim) {
+      refundAmount = 0
+    }
 
     mutate(
       {
@@ -122,7 +137,7 @@ export const ReceiveReturnMenu = ({ order, returnRequest, onClose }: Props) => {
                 order={order}
                 form={nestedForm(form, "receive_items")}
               />
-              {!isSwapOrRefunded && (
+              {!isSwapOrRefundedClaim && (
                 <ReceiveReturnSummary
                   form={form}
                   order={order}
