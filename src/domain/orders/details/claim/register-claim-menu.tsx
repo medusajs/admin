@@ -154,7 +154,9 @@ const RegisterClaimMenu = ({ order, onClose }: Props) => {
             : undefined,
         no_notification: !data.notification.send_notification,
         refund_amount:
-          type === "refund" && refundAmount ? refundAmount : undefined,
+          type === "refund" && refundAmount !== undefined
+            ? refundAmount
+            : undefined,
         shipping_address:
           type === "replace"
             ? {

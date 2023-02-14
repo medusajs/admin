@@ -6,7 +6,7 @@ import IconTooltip from "../../../../components/molecules/icon-tooltip"
 import { nestedForm } from "../../../../utils/nested-form"
 import { formatAmountWithSymbol } from "../../../../utils/prices"
 import { CreateClaimFormType } from "../../details/claim/register-claim-menu"
-import { RefundAmountForm } from "../refund-amount-form"
+import RefundAmountForm from "../refund-amount-form"
 import { SummaryLineItem } from "./summary-line-item"
 import { SummaryShippingLine } from "./summary-shipping-line"
 

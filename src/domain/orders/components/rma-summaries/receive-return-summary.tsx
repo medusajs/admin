@@ -3,7 +3,7 @@ import { useMemo } from "react"
 import { UseFormReturn, useWatch } from "react-hook-form"
 import { nestedForm } from "../../../../utils/nested-form"
 import { ReceiveReturnFormType } from "../../details/receive-return/receive-return-menu"
-import { RefundAmountForm } from "../refund-amount-form"
+import RefundAmountForm from "../refund-amount-form"
 import { SummaryLineItem } from "./summary-line-item"
 import { SummaryShippingLine } from "./summary-shipping-line"
 

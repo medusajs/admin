@@ -9,7 +9,7 @@ import { ReceiveReturnFormType } from "../../../details/receive-return/receive-r
 import { getDefaultReceiveReturnValues } from "../../../details/utils/get-default-values"
 import { ItemsToReceiveForm } from "../items-to-receive-form"
 
-describe("ItemsToReceiveForm", () => {
+describe("ItemsToReceiveForm with ReceiveReturnMenu", () => {
   let form: UseFormReturn<ReceiveReturnFormType, any>
 
   beforeEach(() => {

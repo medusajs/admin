@@ -16,7 +16,7 @@ import Modal from "../../../../../components/molecules/modal"
 import { useLayeredModal } from "../../../../../components/molecules/modal/layered-modal"
 import TablePagination from "../../../../../components/molecules/table-pagination"
 import { useDebounce } from "../../../../../hooks/use-debounce"
-import { AdditionalItem } from "../items-to-send-form"
+import { AdditionalItem } from "../index"
 import { AddAdditionalItemsTable } from "./add-additional-items-table"
 import { useAddAdditionalItemsColumns } from "./use-add-additional-items-columns"
 

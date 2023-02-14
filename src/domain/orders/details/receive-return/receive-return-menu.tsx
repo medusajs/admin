@@ -71,8 +71,10 @@ export const ReceiveReturnMenu = ({ order, returnRequest, onClose }: Props) => {
 
   const onSubmit = handleSubmit((data) => {
     const refundAmount =
-      data.refund_amount?.amount && !isSwapOrRefunded
+      data.refund_amount?.amount !== undefined && !isSwapOrRefunded
         ? data.refund_amount.amount
+        : isSwapOrRefunded
+        ? 0
         : undefined
 
     mutate(

@@ -323,6 +323,7 @@ function getReturnItems(event: ExchangeEvent) {
           .filter((i) => !!i)
           .map((i: ReturnItem) => (
             <EventItemContainer
+              key={i.id}
               item={{ ...i, quantity: i.requestedQuantity }}
             />
           ))}

@@ -10,7 +10,7 @@ type Props = {
   order: Order
 }
 
-export const ShippingAddressForm = ({ form, order }: Props) => {
+const ShippingAddressForm = ({ form, order }: Props) => {
   const { control, path } = form
   const { pushScreen } = useShippingAddressFormScreen()
 
@@ -55,3 +55,5 @@ export const ShippingAddressForm = ({ form, order }: Props) => {
     </div>
   )
 }
+
+export default ShippingAddressForm

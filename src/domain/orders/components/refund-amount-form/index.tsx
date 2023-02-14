@@ -1,11 +1,11 @@
 import { Order } from "@medusajs/medusa"
 import { Controller, useWatch } from "react-hook-form"
-import Button from "../../../components/fundamentals/button"
-import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
-import EditIcon from "../../../components/fundamentals/icons/edit-icon"
-import { AmountInput } from "../../../components/molecules/amount-input"
-import { NestedForm } from "../../../utils/nested-form"
-import { formatAmountWithSymbol } from "../../../utils/prices"
+import Button from "../../../../components/fundamentals/button"
+import CrossIcon from "../../../../components/fundamentals/icons/cross-icon"
+import EditIcon from "../../../../components/fundamentals/icons/edit-icon"
+import { AmountInput } from "../../../../components/molecules/amount-input"
+import { NestedForm } from "../../../../utils/nested-form"
+import { formatAmountWithSymbol } from "../../../../utils/prices"
 
 type Props = {
   form: NestedForm<RefundAmountFormType>
@@ -17,7 +17,7 @@ export type RefundAmountFormType = {
   amount?: number
 }
 
-export const RefundAmountForm = ({ form, initialValue = 0, order }: Props) => {
+const RefundAmountForm = ({ form, initialValue = 0, order }: Props) => {
   const {
     control,
     path,
@@ -41,14 +41,14 @@ export const RefundAmountForm = ({ form, initialValue = 0, order }: Props) => {
   }
 
   return (
-    <div className="grid grid-cols-[40px_1fr] gap-x-xsmall justify-end">
+    <div className="grid grid-cols-[40px_1fr] justify-end gap-x-xsmall">
       <div className="flex flex-shrink justify-end">
         {refundAmount !== undefined ? (
           <Button
             variant="secondary"
             size="small"
             type="button"
-            className="w-10 h-10"
+            className="h-10 w-10"
             onClick={disableEdit}
           >
             <CrossIcon size={16} className="text-grey-40" />
@@ -59,7 +59,7 @@ export const RefundAmountForm = ({ form, initialValue = 0, order }: Props) => {
             size="small"
             type="button"
             onClick={enableEdit}
-            className="w-10 h-10"
+            className="h-10 w-10"
           >
             <EditIcon size={16} className="text-grey-40" />
           </Button>
@@ -77,7 +77,7 @@ export const RefundAmountForm = ({ form, initialValue = 0, order }: Props) => {
               },
               required: true,
               validate: (value) => {
-                if (!value) {
+                if (value === undefined || !(value >= 0)) {
                   return "The refund amount must be at least 0"
                 }
               },
@@ -95,7 +95,7 @@ export const RefundAmountForm = ({ form, initialValue = 0, order }: Props) => {
             }}
           />
         ) : (
-          <div className="flex items-center h-10">
+          <div className="flex h-10 items-center">
             <p>
               {formatAmountWithSymbol({
                 amount: initialValue,
@@ -108,3 +108,5 @@ export const RefundAmountForm = ({ form, initialValue = 0, order }: Props) => {
     </div>
   )
 }
+
+export default RefundAmountForm

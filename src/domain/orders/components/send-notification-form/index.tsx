@@ -1,7 +1,7 @@
 import { Controller } from "react-hook-form"
-import IconTooltip from "../../../components/molecules/icon-tooltip"
-import IndeterminateCheckbox from "../../../components/molecules/indeterminate-checkbox"
-import { NestedForm } from "../../../utils/nested-form"
+import IconTooltip from "../../../../components/molecules/icon-tooltip"
+import IndeterminateCheckbox from "../../../../components/molecules/indeterminate-checkbox"
+import { NestedForm } from "../../../../utils/nested-form"
 
 export type SendNotificationFormType = {
   send_notification: boolean

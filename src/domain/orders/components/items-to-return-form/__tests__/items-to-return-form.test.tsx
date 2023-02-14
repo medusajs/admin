@@ -11,7 +11,7 @@ import { ItemsToReturnForm } from "../items-to-return-form"
 
 const order = fixtures.get("order") as unknown as Order
 
-describe("ItemsToSendForm", () => {
+describe("ItemsToSendForm with RegisterClaimMenu", () => {
   let form: UseFormReturn<CreateClaimFormType, any>
 
   beforeEach(() => {

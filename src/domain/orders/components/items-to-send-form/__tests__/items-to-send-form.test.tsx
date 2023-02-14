@@ -2,16 +2,16 @@ import { Order } from "@medusajs/medusa"
 import { renderHook, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { useForm, UseFormReturn } from "react-hook-form"
+import ItemsToSendForm from ".."
 import { fixtures } from "../../../../../test/mocks/data"
 import { renderWithProviders } from "../../../../../test/test-utils"
 import { nestedForm } from "../../../../../utils/nested-form"
 import { CreateClaimFormType } from "../../../details/claim/register-claim-menu"
 import { getDefaultClaimValues } from "../../../details/utils/get-default-values"
-import { ItemsToSendForm } from "../items-to-send-form"
 
 const order = fixtures.get("order") as unknown as Order
 
-describe("ItemsToSendForm", () => {
+describe("ItemsToSendForm with RegisterClaimMenu", () => {
   let form: UseFormReturn<CreateClaimFormType, any>
 
   beforeEach(() => {

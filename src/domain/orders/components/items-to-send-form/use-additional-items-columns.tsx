@@ -7,7 +7,7 @@ import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
 import { NestedForm } from "../../../../utils/nested-form"
 import { formatAmountWithSymbol } from "../../../../utils/prices"
 import TableQuantitySelector from "../table-quantity-selector"
-import { AdditionalItemObject, ItemsToSendFormType } from "./items-to-send-form"
+import { AdditionalItemObject, ItemsToSendFormType } from "./index"
 
 const columnHelper = createColumnHelper<AdditionalItemObject>()
 

@@ -1,6 +1,6 @@
 import { flexRender, Table as Instance } from "@tanstack/react-table"
 import Table from "../../../../components/molecules/table"
-import { AdditionalItemObject } from "./items-to-send-form"
+import { AdditionalItemObject } from "./index"
 
 type Props = {
   instance: Instance<AdditionalItemObject>
