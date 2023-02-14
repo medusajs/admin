@@ -1,24 +1,21 @@
 import { createColumnHelper } from "@tanstack/react-table"
-import React, { ChangeEvent, useCallback, useMemo } from "react"
+import React, { useCallback, useMemo } from "react"
 import { Controller, useWatch } from "react-hook-form"
-import Thumbnail from "../../../../components/atoms/thumbnail"
+import { ItemsToReturnFormType, ReturnItemObject } from "."
+import { Thumbnail } from "../../../../components/atoms/thumbnail/thumbnail"
 import IndeterminateCheckbox from "../../../../components/molecules/indeterminate-checkbox"
 import { NestedForm } from "../../../../utils/nested-form"
 import { formatAmountWithSymbol } from "../../../../utils/prices"
 import TableQuantitySelector from "../table-quantity-selector"
-import {
-  ItemsToReceiveFormType,
-  ReceiveReturnObject,
-} from "./items-to-receive-form"
 
-const columnHelper = createColumnHelper<ReceiveReturnObject>()
+const columnHelper = createColumnHelper<ReturnItemObject>()
 
 type Props = {
-  form: NestedForm<ItemsToReceiveFormType>
+  form: NestedForm<ItemsToReturnFormType>
   orderCurrency: string
 }
 
-export const useItemsToReceiveColumns = ({ form, orderCurrency }: Props) => {
+export const useItemsToReturnColumns = ({ form, orderCurrency }: Props) => {
   const { control, setValue, getValues, path } = form
 
   const updateQuantity = useCallback(
@@ -27,6 +24,12 @@ export const useItemsToReceiveColumns = ({ form, orderCurrency }: Props) => {
       const selectedQuantity = getValues(pathToQuantity)
 
       setValue(pathToQuantity, selectedQuantity + change)
+
+      if (selectedQuantity + change === 0) {
+        setValue(path(`items.${index}.return`), false, {
+          shouldDirty: true,
+        })
+      }
     },
     [getValues, path, setValue]
   )
@@ -37,9 +40,9 @@ export const useItemsToReceiveColumns = ({ form, orderCurrency }: Props) => {
   })
 
   const toggleAllRowsSelected = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
+    (e: React.ChangeEvent<HTMLInputElement>) => {
       items.forEach((_item, index) => {
-        setValue(path(`items.${index}.receive`), e.target.checked, {
+        setValue(path(`items.${index}.return`), e.target.checked, {
           shouldDirty: true,
         })
       })
@@ -59,6 +62,7 @@ export const useItemsToReceiveColumns = ({ form, orderCurrency }: Props) => {
                 checked={table.getIsAllRowsSelected()}
                 onChange={(e) => {
                   table.toggleAllRowsSelected(e.target.checked)
+                  table.toggleAllRowsExpanded(e.target.checked)
                   toggleAllRowsSelected(e)
                 }}
                 indeterminate={table.getIsSomeRowsSelected()}
@@ -66,11 +70,13 @@ export const useItemsToReceiveColumns = ({ form, orderCurrency }: Props) => {
             </div>
           )
         },
-        cell: ({ row: { index, getToggleSelectedHandler } }) => {
+        cell: ({
+          row: { index, getToggleSelectedHandler, toggleExpanded },
+        }) => {
           return (
             <Controller
               control={control}
-              name={path(`items.${index}.receive`)}
+              name={path(`items.${index}.return`)}
               render={({ field: { value, onChange } }) => {
                 return (
                   <div className="pl-base pr-large">
@@ -78,6 +84,7 @@ export const useItemsToReceiveColumns = ({ form, orderCurrency }: Props) => {
                       checked={value}
                       onChange={(v: React.ChangeEvent<HTMLInputElement>) => {
                         getToggleSelectedHandler()(v)
+                        toggleExpanded(v.target.checked)
                         onChange(v)
                       }}
                     />
@@ -119,12 +126,12 @@ export const useItemsToReceiveColumns = ({ form, orderCurrency }: Props) => {
               {...{
                 index,
                 maxQuantity: original_quantity,
+                isSelectable: true,
                 control,
                 path,
                 updateQuantity,
-                isSelectable: true,
-                isSelectedPath: path(`items.${index}.receive`),
                 name: path(`items.${index}.quantity`),
+                isSelectedPath: path(`items.${index}.return`),
               }}
               key={index}
             />

@@ -1,5 +1,4 @@
 import { Order } from "@medusajs/medusa"
-import clsx from "clsx"
 import { useMemo } from "react"
 import { UseFormReturn, useWatch } from "react-hook-form"
 import IconTooltip from "../../../../components/molecules/icon-tooltip"
@@ -48,7 +47,7 @@ export const ClaimSummary = ({ form, order }: Props) => {
 
   const claimType = useWatch({
     control: control,
-    name: "claim_type",
+    name: "claim_type.type",
   })
 
   const refundAmount = useMemo(() => {
@@ -56,56 +55,20 @@ export const ClaimSummary = ({ form, order }: Props) => {
       return acc + (item.total / item.original_quantity) * item.quantity
     }, 0)
 
-    const replacementItemsCost = replacementItems.reduce((acc, item) => {
-      return acc + item.price * item.quantity
-    }, 0)
-
-    const refundTotal =
-      claimType.type === "refund"
-        ? claimItemsRefund
-        : claimItemsRefund -
-          replacementItemsCost -
-          (replacementItemShipping?.price ?? 0)
-
     return {
-      claimedItems: formatAmountWithSymbol({
-        amount: claimItemsRefund,
-        currency: order.currency_code,
-      }),
-      replacementItems: formatAmountWithSymbol({
-        amount: replacementItemsCost,
-        currency: order.currency_code,
-      }),
-      replacementShipping: replacementItemShipping?.price
-        ? formatAmountWithSymbol({
-            amount: replacementItemShipping.price,
-            currency: order.currency_code,
-          })
-        : "Free",
-      total: formatAmountWithSymbol({
-        amount: refundTotal,
-        currency: order.currency_code,
-      }),
-      actualTotal:
-        refundTotal < 0
+      total:
+        claimItemsRefund < 0
           ? formatAmountWithSymbol({
               amount: 0,
               currency: order.currency_code,
             })
           : formatAmountWithSymbol({
-              amount: refundTotal,
+              amount: claimItemsRefund,
               currency: order.currency_code,
             }),
-      actualTotalAsNumber: refundTotal < 0 ? 0 : refundTotal,
-      isNegative: refundTotal < 0,
+      totalAsNumber: claimItemsRefund < 0 ? 0 : claimItemsRefund,
     }
-  }, [
-    selectedClaimItems,
-    replacementItems,
-    claimType.type,
-    replacementItemShipping.price,
-    order.currency_code,
-  ])
+  }, [selectedClaimItems, order.currency_code])
 
   if (!(selectedClaimItems.length > 0 || replacementItems.length > 0)) {
     return null
@@ -145,9 +108,17 @@ export const ClaimSummary = ({ form, order }: Props) => {
             </div>
           </div>
         )}
-        {replacementItems.length > 0 && (
+        {claimType !== "refund" && replacementItems.length > 0 && (
           <div>
-            <p className="inter-base-semibold mb-small">Replacement items</p>
+            <div className="mb-small flex items-center gap-x-2xsmall">
+              <p className="inter-base-semibold">Replacement items</p>
+              <IconTooltip
+                type="warning"
+                content={
+                  "The customer will receive a full refund for the claimed items, as the cost of replacement items and shipping will not be deducted. Alternatively, you can choose to set a custom refund amount when you receive the returned items or create an exchange instead."
+                }
+              />
+            </div>
             <div className="flex flex-col gap-y-xsmall">
               {replacementItems.map((item, index) => {
                 return (
@@ -176,47 +147,31 @@ export const ClaimSummary = ({ form, order }: Props) => {
           </div>
         )}
       </div>
-      <div className="flex flex-col gap-y-xsmall pt-large">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-x-xsmall">
-            <p>Difference</p>
-            {refundAmount.isNegative && (
-              <div data-testid="negative-difference-tooltip">
-                <IconTooltip
-                  type="warning"
-                  side="top"
-                  content={
-                    "Customers cannot make supplementary payments for claims. To account for differences in item cost, create an exchange instead."
-                  }
-                />
-              </div>
-            )}
-          </div>
-          <p
-            className={clsx({
-              "text-rose-50": refundAmount.isNegative,
-              "text-emerald-50":
-                !refundAmount.isNegative &&
-                refundAmount.actualTotalAsNumber > 0,
-            })}
-          >
-            {refundAmount.total}
-          </p>
-        </div>
+      <div className="pt-large">
         <div
           className="inter-large-semibold flex items-center justify-between"
           data-testid="refund-amount-container"
         >
-          <p className="inter-base-semibold">Refund amount</p>
+          <div className="flex items-center gap-x-2xsmall">
+            <p className="inter-base-semibold">Refund amount</p>
+            <IconTooltip
+              type="info"
+              content={
+                claimType === "replace" && claimItemShipping.option
+                  ? "The customer will be refunded once the returned items are received"
+                  : "The customer will be refunded immediately"
+              }
+            />
+          </div>
           <div className="flex items-center">
-            {claimType.type === "refund" ? (
+            {claimType === "refund" ? (
               <RefundAmountForm
                 form={nestedForm(form, "refund_amount")}
                 order={order}
-                initialValue={refundAmount.actualTotalAsNumber}
+                initialValue={refundAmount.totalAsNumber}
               />
             ) : (
-              <p>{refundAmount.actualTotal}</p>
+              <p>{refundAmount.total}</p>
             )}
           </div>
         </div>

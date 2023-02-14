@@ -51,19 +51,19 @@ export const getAllReturnableItems = (
   let claimedItems: ClaimItem[] = []
 
   if (order.claims && order.claims.length) {
-    for (const s of order.claims) {
-      s.claim_items = s.claim_items || []
-      claimedItems = [...claimedItems, ...s.claim_items]
+    for (const claim of order.claims) {
+      claim.claim_items = claim.claim_items ?? []
+      claimedItems = [...claimedItems, ...claim.claim_items]
 
       if (
-        s.fulfillment_status === "not_fulfilled" &&
-        s.payment_status === "na"
+        claim.fulfillment_status === "not_fulfilled" &&
+        claim.payment_status === "na"
       ) {
         continue
       }
 
-      if (s.additional_items && s.additional_items.length) {
-        orderItems = s.additional_items
+      if (claim.additional_items && claim.additional_items.length) {
+        orderItems = claim.additional_items
           .filter(
             (it) =>
               it.shipped_quantity ||
@@ -76,8 +76,8 @@ export const getAllReturnableItems = (
 
   if (!isClaim) {
     if (order.swaps && order.swaps.length) {
-      for (const s of order.swaps) {
-        orderItems = s.additional_items.reduce(
+      for (const swap of order.swaps) {
+        orderItems = swap.additional_items.reduce(
           (map, obj) =>
             map.set(obj.id, {
               ...obj,
@@ -90,8 +90,9 @@ export const getAllReturnableItems = (
 
   for (const item of claimedItems) {
     const i = orderItems.get(item.item_id)
+
     if (i) {
-      i.quantity = i.quantity - item.quantity
+      i.quantity = i.quantity - (item.item.returned_quantity || 0)
       i.quantity !== 0 ? orderItems.set(i.id, i) : orderItems.delete(i.id)
     }
   }

@@ -1,5 +1,5 @@
 import { Order, ShippingOption } from "@medusajs/medusa"
-import { fireEvent, renderHook, screen, waitFor } from "@testing-library/react"
+import { renderHook, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { UserEvent } from "@testing-library/user-event/dist/types/setup/setup"
 import { useForm, UseFormReturn } from "react-hook-form"
@@ -144,62 +144,5 @@ describe("ShippingForm return shipping", () => {
   it("should render correctly when type is replace", async () => {
     expect(screen.getByText("Shipping for replacement items"))
     expect(screen.queryByText("Shipping for return items")).toBeNull()
-  })
-
-  it("should not display override button when no option is selected", async () => {
-    expect(screen.queryByText("Add custom price")).toBeNull()
-  })
-
-  it("should display button to override shipping price when an option is selected", async () => {
-    const user = userEvent.setup()
-    await selectFirstOption(user)
-
-    expect(screen.getByText("Add custom price")).toBeInTheDocument()
-  })
-
-  it("should display input to override shipping price when button is clicked", async () => {
-    const user = userEvent.setup()
-    await selectFirstOption(user)
-
-    const button = screen.getByText("Add custom price")
-
-    await user.click(button)
-
-    expect(screen.queryByPlaceholderText("-")).toBeInTheDocument()
-  })
-
-  it("should update the shipping price when input is changed", async () => {
-    const user = userEvent.setup()
-    await selectFirstOption(user)
-
-    const button = screen.getByText("Add custom price")
-
-    await user.click(button)
-
-    const input = screen.getByPlaceholderText("-")
-
-    fireEvent.change(input, { target: { value: 5 } })
-
-    expect(form.getValues().replacement_shipping.price).toEqual(500)
-  })
-
-  it("should remove the input when the clear button is clicked", async () => {
-    const user = userEvent.setup()
-
-    await selectFirstOption(user)
-
-    const button = screen.getByText("Add custom price")
-
-    await user.click(button)
-
-    const clearButton = screen.queryByRole("button")
-
-    if (clearButton) {
-      await user.click(clearButton)
-    }
-
-    await waitFor(() => {
-      expect(screen.queryByPlaceholderText("-")).toBeNull()
-    })
   })
 })

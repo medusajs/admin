@@ -1,6 +1,7 @@
 import { Order } from "@medusajs/medusa"
 import React from "react"
 import { Controller, useWatch } from "react-hook-form"
+import { ItemsToReturnFormType, ReturnItemObject, ReturnReasonDetails } from "."
 import InputError from "../../../../components/atoms/input-error"
 import Thumbnail from "../../../../components/atoms/thumbnail"
 import Button from "../../../../components/fundamentals/button"
@@ -9,12 +10,7 @@ import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
 import IndeterminateCheckbox from "../../../../components/molecules/indeterminate-checkbox"
 import { NestedForm } from "../../../../utils/nested-form"
 import { formatAmountWithSymbol } from "../../../../utils/prices"
-import { useAddReasonScreen } from "./add-return-reason-screen"
-import {
-  ItemsToReturnFormType,
-  ReturnItemObject,
-  ReturnReasonDetails,
-} from "./items-to-return-form"
+import { useAddReasonScreen } from "./add-return-reason/add-return-reason-screen"
 
 type Props = {
   form: NestedForm<ItemsToReturnFormType>

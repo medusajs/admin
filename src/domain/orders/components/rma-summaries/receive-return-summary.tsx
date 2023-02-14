@@ -34,7 +34,8 @@ export const ReceiveReturnSummary = ({ form, order, returnRequest }: Props) => {
   }, [items])
 
   const shipping = useMemo(() => {
-    if (!returnRequest.shipping_method) {
+    // If the return is part of a claim, we do not want to display the shipping
+    if (!returnRequest.shipping_method || returnRequest.claim_order_id) {
       return null
     }
 

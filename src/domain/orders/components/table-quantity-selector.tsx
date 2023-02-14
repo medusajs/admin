@@ -1,3 +1,4 @@
+import { useMemo } from "react"
 import { Control, FieldPath, FieldValues, useWatch } from "react-hook-form"
 import Button from "../../../components/fundamentals/button"
 import MinusIcon from "../../../components/fundamentals/icons/minus-icon"
@@ -8,12 +9,20 @@ type TableQuantitySelectorProps<
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
 > = {
   index: number
-  isSelectable?: boolean
   updateQuantity: (index: number, change: number) => void
   control: Control<TFieldValues>
   name: TFieldName
   maxQuantity?: number
-}
+} & (
+  | {
+      isSelectable: true
+      isSelectedPath: TFieldName
+    }
+  | {
+      isSelectable?: false
+      isSelectedPath?: never
+    }
+)
 
 const TableQuantitySelector = <
   TFieldValues extends FieldValues = FieldValues,
@@ -21,6 +30,7 @@ const TableQuantitySelector = <
 >({
   control,
   name,
+  isSelectedPath,
   isSelectable = false,
   updateQuantity,
   index,
@@ -31,9 +41,15 @@ const TableQuantitySelector = <
     name: name,
   })
 
-  const quantityFlag = isSelectable
-    ? isSelectable && maxQuantity !== 1
-    : maxQuantity !== 1
+  const isSelected = useWatch({
+    control,
+    name: isSelectedPath as TFieldName,
+    disabled: !isSelectedPath || !isSelectable,
+  })
+
+  const quantityFlag = useMemo(() => {
+    return isSelectable ? isSelected && (maxQuantity ?? 0) > 1 : true
+  }, [isSelectable, isSelected, maxQuantity])
 
   return (
     <div className="flex items-center justify-end">

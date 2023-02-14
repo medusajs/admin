@@ -58,6 +58,7 @@ export const ReceiveReturnMenu = ({ order, returnRequest, onClose }: Props) => {
   const form = useForm<ReceiveReturnFormType>({
     defaultValues: getDefaultReceiveReturnValues(order, returnRequest),
   })
+
   const {
     handleSubmit,
     reset,

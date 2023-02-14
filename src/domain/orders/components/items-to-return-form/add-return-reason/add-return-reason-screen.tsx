@@ -1,12 +1,12 @@
 import { useAdminReturnReasons } from "medusa-react"
 import { useMemo } from "react"
 import { Controller, useForm } from "react-hook-form"
-import Button from "../../../../components/fundamentals/button"
-import Modal from "../../../../components/molecules/modal"
-import { useLayeredModal } from "../../../../components/molecules/modal/layered-modal"
-import { NextSelect } from "../../../../components/molecules/select/next-select"
-import TextArea from "../../../../components/molecules/textarea"
-import { ReturnReasonDetails } from "./items-to-return-form"
+import { ReturnReasonDetails } from ".."
+import Button from "../../../../../components/fundamentals/button"
+import Modal from "../../../../../components/molecules/modal"
+import { useLayeredModal } from "../../../../../components/molecules/modal/layered-modal"
+import { NextSelect } from "../../../../../components/molecules/select/next-select"
+import TextArea from "../../../../../components/molecules/textarea"
 
 type Props = {
   reasonDetails: ReturnReasonDetails
@@ -98,7 +98,7 @@ const AddReasonScreen = ({
         </div>
       </Modal.Content>
       <Modal.Footer>
-        <div className="w-full flex items-center justify-end gap-x-xsmall">
+        <div className="flex w-full items-center justify-end gap-x-xsmall">
           <Button size="small" variant="secondary" onClick={pop} type="button">
             Cancel
           </Button>

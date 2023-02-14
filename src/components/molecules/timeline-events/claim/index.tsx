@@ -110,12 +110,12 @@ function ClaimItems(event: ClaimEvent) {
 function ClaimStatus(event: ClaimEvent) {
   return event.claimType === "refund" && event.refundStatus ? (
     <div>
-      <span className="text-grey-50 mb-2xsmall">Refund:</span>
+      <span className="mb-2xsmall text-grey-50">Refund:</span>
       <RefundStatus refundStatus={event.refundStatus} />
     </div>
   ) : event.claimType === "return" && event.fulfillmentStatus ? (
     <div>
-      <span className="text-grey-50 mb-2xsmall">Fulfillment:</span>
+      <span className="mb-2xsmall text-grey-50">Fulfillment:</span>
       <FulfillmentStatus fulfillmentStatus={event.fulfillmentStatus} />
     </div>
   ) : null
@@ -133,7 +133,7 @@ function ClaimRefundOrReplacement(event: ClaimEvent) {
     </div>
   ) : (
     <div className="flex flex-col">
-      <span className="text-grey-50 mb-2xsmall">{`${
+      <span className="mb-2xsmall text-grey-50">{`${
         event.refundStatus && event.refundStatus === "refunded"
           ? "Refunded"
           : "Refund"

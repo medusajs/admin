@@ -136,6 +136,18 @@ const RegisterClaimMenu = ({ order, onClose }: Props) => {
       return
     }
 
+    if (type === "replace" && !data.replacement_shipping.option) {
+      setError(
+        `replacement_shipping.option`,
+        {
+          type: "manual",
+          message: "A shipping method for replacement items is required",
+        },
+        { shouldFocus: true }
+      )
+      return
+    }
+
     mutate(
       {
         claim_items: items,
@@ -240,6 +252,7 @@ const RegisterClaimMenu = ({ order, onClose }: Props) => {
                   />
                   <ShippingForm
                     form={nestedForm(form, "replacement_shipping")}
+                    isClaim={true}
                     order={order}
                   />
                 </>

@@ -76,6 +76,7 @@ export const useAdditionalItemsColumns = ({
                 control,
                 updateQuantity,
                 name: path(`items.${index}.quantity`),
+                isSelectable: false,
               }}
               key={index}
             />

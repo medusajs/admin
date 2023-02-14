@@ -1,5 +1,6 @@
 import { Order } from "@medusajs/medusa"
 import { PricedShippingOption } from "@medusajs/medusa/dist/types/pricing"
+import clsx from "clsx"
 import { useAdminShippingOptions } from "medusa-react"
 import { useMemo } from "react"
 import { Controller, useWatch } from "react-hook-form"
@@ -43,14 +44,14 @@ const ShippingForm = ({
     formState: { errors },
   } = form
 
-  const { shipping_options: returnOptions } = useAdminShippingOptions({
+  const { shipping_options: shippingOptions } = useAdminShippingOptions({
     region_id: order.region_id,
     is_return: isReturn,
   })
 
   const returnShippingOptions = useMemo(() => {
     return (
-      returnOptions?.map((o) => ({
+      shippingOptions?.map((o) => ({
         label: o.name,
         value: {
           id: o.id,
@@ -61,7 +62,11 @@ const ShippingForm = ({
             ) || 0,
         },
         suffix: (
-          <span>
+          <span
+            className={clsx({
+              "line-through": isClaim && o.amount !== 0,
+            })}
+          >
             {formatAmountWithSymbol({
               amount:
                 (o as unknown as PricedShippingOption).price_incl_tax ||
@@ -73,29 +78,27 @@ const ShippingForm = ({
         ),
       })) || []
     )
-  }, [order.currency_code, returnOptions])
+  }, [isClaim, order.currency_code, shippingOptions])
 
-  const selectedReturnOption = useWatch({
+  const selectedOption = useWatch({
     control,
     name: path("option"),
   })
 
-  const selectedReturnOptionPrice = useWatch({
+  const selectedOptionPrice = useWatch({
     control,
     name: path("price"),
   })
 
   const setCustomPrice = () => {
-    if (selectedReturnOption) {
-      const option = returnOptions?.find(
-        (ro) => ro.id === selectedReturnOption.value.id
+    if (selectedOption) {
+      const option = shippingOptions?.find(
+        (ro) => ro.id === selectedOption.value.id
       )
 
       setValue(
         path("price"),
-        Math.round(
-          (option?.amount || 0) * (1 + selectedReturnOption.value.taxRate)
-        )
+        Math.round((option?.amount || 0) * (1 + selectedOption.value.taxRate))
       )
     }
   }
@@ -128,13 +131,14 @@ const ShippingForm = ({
               onChange={onChange}
               onBlur={onBlur}
               isClearable
+              errors={errors}
             />
           )
         }}
       />
-      {selectedReturnOption && !(isClaim && isReturn) && (
+      {selectedOption && !isClaim && (
         <div className="flex w-full items-center justify-end">
-          {selectedReturnOptionPrice !== undefined ? (
+          {selectedOptionPrice !== undefined ? (
             <div className="flex w-full items-center justify-end">
               <div className="grid grid-cols-[1fr_40px] gap-x-xsmall">
                 <Controller
@@ -190,7 +194,7 @@ const ShippingFormHelpText = ({
     }
 
     if (!isReturn) {
-      return "Replacement item shipping is complimentary by default. If otherwise, specify a custom shipping fee."
+      return "Replacement item shipping is complimentary by default."
     }
 
     return undefined
