@@ -49,6 +49,7 @@ const RefundAmountForm = ({ form, initialValue = 0, order }: Props) => {
             size="small"
             type="button"
             className="h-10 w-10"
+            aria-label="Cancel editing refund amount"
             onClick={disableEdit}
           >
             <CrossIcon size={16} className="text-grey-40" />
@@ -59,6 +60,7 @@ const RefundAmountForm = ({ form, initialValue = 0, order }: Props) => {
             size="small"
             type="button"
             onClick={enableEdit}
+            aria-label="Edit refund amount"
             className="h-10 w-10"
           >
             <EditIcon size={16} className="text-grey-40" />
