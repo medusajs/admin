@@ -52,6 +52,7 @@ describe("RefundAmountForm refund claim", () => {
         refund_amount: { amount },
       } = form.getValues()
 
+      // We enter 100, but the value should be 10000 since we are transforming from dollars to cents
       expect(amount).toEqual(10000)
     })
   })
