@@ -29,11 +29,8 @@ export const ReceiveReturnMenu = ({ order, returnRequest, onClose }: Props) => {
   const { refetch } = useAdminOrder(order.id)
 
   /**
-   * If the return was refunded as part of a refund claim, or was created as a
-   * result of a swap, we don't need to show the summary. This is because the
-   * refund was either already handled as part of the claim process, or because
-   * it will be handled as part of the swap process. Due to this the receive will
-   * not issue a refund on completion.
+   * If the return was refunded as part of a refund claim, we do not allow the user to
+   * specify a refund amount, or want to display a summary.
    */
   const isRefundedClaim = useMemo(() => {
     if (returnRequest.claim_order_id) {
@@ -50,13 +47,13 @@ export const ReceiveReturnMenu = ({ order, returnRequest, onClose }: Props) => {
     return false
   }, [order.claims, returnRequest.claim_order_id])
 
-  const isSwap = useMemo(() => {
-    return Boolean(returnRequest.swap_id)
-  }, [returnRequest.swap_id])
-
+  /**
+   * If the return was created as a result of a swap, we do not allow the user to
+   * specify a refund amount, or want to display a summary.
+   */
   const isSwapOrRefundedClaim = useMemo(() => {
-    return isRefundedClaim || isSwap
-  }, [isRefundedClaim, isSwap])
+    return isRefundedClaim || Boolean(returnRequest.swap_id)
+  }, [isRefundedClaim, returnRequest.swap_id])
 
   const form = useForm<ReceiveReturnFormType>({
     defaultValues: getDefaultReceiveReturnValues(order, returnRequest),
