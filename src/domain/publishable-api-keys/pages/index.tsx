@@ -4,7 +4,6 @@ import { PublishableApiKey, SalesChannel } from "@medusajs/medusa"
 import {
   useAdminAddPublishableKeySalesChannelsBatch,
   useAdminCreatePublishableApiKey,
-  useAdminPublishableApiKeySalesChannels,
 } from "medusa-react"
 
 import Breadcrumb from "../../../components/molecules/breadcrumb"
