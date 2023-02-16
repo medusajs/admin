@@ -7,6 +7,7 @@ import Button from "../../../components/fundamentals/button"
 import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
 import InputField from "../../../components/molecules/input"
 import Select from "../../../components/molecules/select"
+import { ProductCategory } from "@medusajs/medusa"
 
 const visibilityOptions = [
   {
@@ -23,7 +24,7 @@ const statusOptions = [
 
 type CreateProductCategoryProps = {
   closeModal: () => void
-  parentCategory?: string
+  parentCategory?: ProductCategory
 }
 
 /**
@@ -46,7 +47,7 @@ function CreateProductCategory(props: CreateProductCategoryProps) {
         name,
         is_active: isActive,
         is_internal: !isPublic,
-        parent_category_id: parentCategory ?? null,
+        parent_category_id: parentCategory?.id ?? null,
       })
       closeModal()
       notification("Success", "Created a new product category", "success")
@@ -79,7 +80,7 @@ function CreateProductCategory(props: CreateProductCategoryProps) {
       <FocusModal.Main className="w-full no-scrollbar flex justify-center">
         <div className="medium:w-7/12 large:w-6/12 small:w-4/5 max-w-[700px] my-16">
           <h1 className="inter-xlarge-semibold text-grey-90 pb-8">
-            Add category
+            Add category {parentCategory && `to ${parentCategory.name}`}
           </h1>
           <h4 className="inter-large-semibold text-grey-90 pb-1">Details</h4>
 

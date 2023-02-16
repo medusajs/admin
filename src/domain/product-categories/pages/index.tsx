@@ -1,8 +1,13 @@
+import { createContext, useState } from "react"
+
+import { ProductCategory } from "@medusajs/medusa"
+
 import useToggleState from "../../../hooks/use-toggle-state"
 import BodyCard from "../../../components/organisms/body-card"
 import CreateProductCategory from "../modals/add-product-category"
-import { useAdminProductCategories } from "../../../../../medusa/packages/medusa-react"
 import ProductCategoriesList from "../components/product-categories-list"
+import { useAdminProductCategories } from "../../../../../medusa/packages/medusa-react"
+import EditProductCategoriesSideModal from "../modals/edit-product-category"
 
 /**
  * Product categories empty state placeholder.
@@ -18,6 +23,11 @@ function ProductCategoriesEmptyState() {
   )
 }
 
+export const ProductCategoriesContext = createContext<{
+  editCategory: (category: ProductCategory) => void
+  createSubCategory: (category: ProductCategory) => void
+}>({} as any)
+
 /**
  * Product category index page container.
  */
@@ -28,8 +38,17 @@ function ProductCategoryPage() {
     close: hideCreateModal,
   } = useToggleState()
 
+  const {
+    state: isEditModalVisible,
+    open: showEditModal,
+    close: hideEditModal,
+  } = useToggleState()
+
+  const [activeCategory, setActiveCategory] = useState<ProductCategory>()
+
   const { product_categories: categories, isLoading } =
     useAdminProductCategories({
+      expand: "category_children",
       // TODO: doesn't work
       // parent_category_id: null,
     })
@@ -43,28 +62,56 @@ function ProductCategoryPage() {
 
   const showList = !isLoading && categories?.length
 
+  const editCategory = (category: ProductCategory) => {
+    setActiveCategory(category)
+    showEditModal()
+  }
+
+  const createSubCategory = (category: ProductCategory) => {
+    setActiveCategory(category)
+    showCreateModal()
+  }
+
+  const context = {
+    editCategory,
+    createSubCategory,
+  }
+
   return (
-    <div className="flex flex-col grow h-full">
-      <div className="w-full flex flex-col grow">
-        <BodyCard
-          className="h-full"
-          title="Product Categories"
-          subtitle="Helps you to keep your products organized."
-          actionables={actions}
-          footerMinHeight={40}
-          setBorders
-        >
-          {showList ? (
-            <ProductCategoriesList categories={categories!} />
-          ) : (
-            <ProductCategoriesEmptyState />
+    <ProductCategoriesContext.Provider value={context}>
+      <div className="flex flex-col grow h-full">
+        <div className="w-full flex flex-col grow">
+          <BodyCard
+            className="h-full"
+            title="Product Categories"
+            subtitle="Helps you to keep your products organized."
+            actionables={actions}
+            footerMinHeight={40}
+            setBorders
+          >
+            {showList ? (
+              <ProductCategoriesList categories={categories!} />
+            ) : (
+              <ProductCategoriesEmptyState />
+            )}
+          </BodyCard>
+          {isCreateModalVisible && (
+            <CreateProductCategory
+              parentCategory={activeCategory}
+              closeModal={() => {
+                hideCreateModal()
+                setActiveCategory(undefined)
+              }}
+            />
           )}
-        </BodyCard>
-        {isCreateModalVisible && (
-          <CreateProductCategory closeModal={hideCreateModal} />
-        )}
+
+          <EditProductCategoriesSideModal
+            isVisible={isEditModalVisible}
+            close={hideEditModal}
+          />
+        </div>
       </div>
-    </div>
+    </ProductCategoriesContext.Provider>
   )
 }
 
