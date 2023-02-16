@@ -51,18 +51,6 @@ const EditSalesChannels = ({
         })
       ),
     ])
-    // for (const channelToRemove of channelsToRemove) {
-    //   await removeLocationFromSalesChannel({
-    //     sales_channel_id: channelToRemove.id,
-    //     location_id: location.id,
-    //   })
-    // }
-    // for (const channelToAdd of channelsToAdd) {
-    //   await addLocationToSalesChannel({
-    //     sales_channel_id: channelToAdd.id,
-    //     location_id: location.id,
-    //   })
-    // }
   }
 
   return (
