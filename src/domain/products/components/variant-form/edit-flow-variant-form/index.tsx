@@ -1,3 +1,4 @@
+import { AdminGetVariantsVariantInventoryRes } from "@medusajs/medusa"
 import React from "react"
 import { useFieldArray, UseFormReturn } from "react-hook-form"
 import IconTooltip from "../../../../../components/molecules/icon-tooltip"
@@ -32,6 +33,7 @@ export type EditFlowVariantFormType = {
 
 type Props = {
   form: UseFormReturn<EditFlowVariantFormType, any>
+  inventory?: AdminGetVariantsVariantInventoryRes["inventory"]
 }
 
 /**

@@ -95,13 +95,13 @@ const VariantStockForm = ({ form }: Props) => {
             product being sold out
           </p>
         </div>
-        <div className="flex flex-col gap-y-2xsmall">
+        {/* <div className="flex flex-col gap-y-2xsmall">
           <h3 className="inter-base-semibold mb-2xsmall">Quantity</h3>
           <div className="flex items-center justify-between">
             <p className="inter-base-regular text-grey-50">Location</p>
             <p className="inter-base-regular text-grey-50">In Stock</p>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   )

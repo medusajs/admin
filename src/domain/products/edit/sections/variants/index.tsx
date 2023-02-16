@@ -8,6 +8,7 @@ import Section from "../../../../../components/organisms/section"
 import useToggleState from "../../../../../hooks/use-toggle-state"
 import useEditProductActions from "../../hooks/use-edit-product-actions"
 import AddVariantModal from "./add-variant-modal"
+import EditVariantInventoryModal from "./edit-variant-inventory-modal"
 import EditVariantModal from "./edit-variant-modal"
 import EditVariantsModal from "./edit-variants-modal"
 import OptionsModal from "./options-modal"
@@ -20,7 +21,15 @@ type Props = {
 
 const VariantsSection = ({ product }: Props) => {
   const [variantToEdit, setVariantToEdit] = useState<
-    { base: ProductVariant; isDuplicate: boolean } | undefined
+    | {
+        base: ProductVariant
+        isDuplicate: boolean
+      }
+    | undefined
+  >(undefined)
+
+  const [variantInventoryToEdit, setVariantInventoryToEdit] = useState<
+    { base: ProductVariant } | undefined
   >(undefined)
 
   const {
@@ -74,6 +83,10 @@ const VariantsSection = ({ product }: Props) => {
     setVariantToEdit({ base: { ...variant, options: [] }, isDuplicate: true })
   }
 
+  const handleEditVariantInventory = (variant: ProductVariant) => {
+    setVariantInventoryToEdit({ base: variant })
+  }
+
   return (
     <OptionsProvider product={product}>
       <Section title="Variants" actions={actions}>
@@ -91,6 +104,7 @@ const VariantsSection = ({ product }: Props) => {
               deleteVariant: handleDeleteVariant,
               updateVariant: handleEditVariant,
               duplicateVariant: handleDuplicateVariant,
+              updateVariantInventory: handleEditVariantInventory,
             }}
           />
         </div>
@@ -118,6 +132,13 @@ const VariantsSection = ({ product }: Props) => {
           onClose={() => setVariantToEdit(undefined)}
         />
       )}
+      {variantInventoryToEdit && (
+        <EditVariantInventoryModal
+          variant={variantInventoryToEdit.base}
+          product={product}
+          onClose={() => setVariantInventoryToEdit(undefined)}
+        />
+      )}
     </OptionsProvider>
   )
 }
@@ -131,15 +152,15 @@ const ProductOptions = () => {
 
   if (status === "loading" || !options) {
     return (
-      <div className="mt-base grid grid-cols-3 gap-x-8">
+      <div className="grid grid-cols-3 mt-base gap-x-8">
         {Array.from(Array(2)).map((_, i) => {
           return (
             <div key={i}>
-              <div className="bg-grey-30 h-6 w-9 animate-pulse mb-xsmall"></div>
+              <div className="h-6 bg-grey-30 w-9 animate-pulse mb-xsmall"></div>
               <ul className="flex flex-wrap items-center gap-1">
                 {Array.from(Array(3)).map((_, j) => (
                   <li key={j}>
-                    <div className="text-grey-50 bg-grey-10 h-8 w-12 animate-pulse rounded-rounded">
+                    <div className="w-12 h-8 text-grey-50 bg-grey-10 animate-pulse rounded-rounded">
                       {j}
                     </div>
                   </li>
@@ -153,7 +174,7 @@ const ProductOptions = () => {
   }
 
   return (
-    <div className="mt-base flex items-center flex-wrap gap-8">
+    <div className="flex flex-wrap items-center gap-8 mt-base">
       {options.map((option) => {
         return (
           <div key={option.id}>
