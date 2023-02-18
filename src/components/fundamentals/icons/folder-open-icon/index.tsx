@@ -2,7 +2,7 @@ import React from "react"
 import IconProps from "../types/icon-type"
 
 const FolderOpenIcon: React.FC<IconProps> = ({
-  size = "24px",
+  size = "20px",
   color = "currentColor",
   ...attributes
 }) => {
@@ -10,7 +10,7 @@ const FolderOpenIcon: React.FC<IconProps> = ({
     <svg
       width={size}
       height={size}
-      viewBox="0 0 24 24"
+      viewBox="0 0 20 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       {...attributes}

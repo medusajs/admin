@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Reorder, useDragControls, useMotionValue } from "framer-motion"
 
 import { ProductCategory } from "@medusajs/medusa"
@@ -7,15 +7,19 @@ import { useRaisedShadow } from "../utils/use-raised-shadow"
 import ReorderIcon from "../../../components/fundamentals/icons/reorder-icon"
 import ProductCategoryListItemDetails from "./product-category-list-item-details"
 
-type ProductCategoriesListItemProps = {
-  item: ProductCategory
+type DraggableListItem = {
   depth: number
+  category: ProductCategory
+}
+
+type ProductCategoriesListItemProps = {
+  isOpen: boolean
+  item: DraggableListItem
+  toggleCategory: () => void
 }
 
 function ProductCategoriesListItem(props: ProductCategoriesListItemProps) {
-  const { depth, item } = props
-
-  const [showChildren, setShowChildren] = useState(true)
+  const { item, isOpen, toggleCategory } = props
 
   const y = useMotionValue(0)
   const boxShadow = useRaisedShadow(y)
@@ -24,8 +28,8 @@ function ProductCategoriesListItem(props: ProductCategoriesListItemProps) {
   return (
     <>
       <Reorder.Item
-        id={item.id}
         value={item}
+        id={item.category.id}
         style={{ boxShadow, y }}
         dragControls={dragControls}
         dragListener={false}
@@ -33,13 +37,13 @@ function ProductCategoriesListItem(props: ProductCategoriesListItemProps) {
       >
         <div className="flex items-center h-[40px] gap-4">
           <ReorderIcon onPointerDown={(event) => dragControls.start(event)} />
-          <ProductCategoryListItemDetails category={item} depth={depth} />
+          <ProductCategoryListItemDetails
+            {...item}
+            isOpen={isOpen}
+            toggleCategory={toggleCategory}
+          />
         </div>
       </Reorder.Item>
-      {!!item.category_children?.length &&
-        item.category_children.map((c) => (
-          <ProductCategoriesListItem key={c.id} depth={depth + 1} item={c} />
-        ))}
     </>
   )
 }
@@ -52,43 +56,75 @@ type ProductCategoriesListProps = {
  * Draggable list that renders product categories tree view.
  */
 function ProductCategoriesList(props: ProductCategoriesListProps) {
-  const [categories, setCategories] = useState(props.categories)
-  const { flatCategoriesList, rootCategories } = useMemo(() => {
-    const res = []
-    const allCategories = {}
+  const flatCategoriesList = useMemo(() => {
+    const categoriesMap = {}
+    const flatCategoriesList: DraggableListItem[] = []
 
-    categories.forEach((c) => (allCategories[c.id] = c))
+    props.categories.forEach((c) => (categoriesMap[c.id] = c))
 
-    const topLevelCategories = categories.filter((c) => !c.parent_category_id)
+    const visit = (active, depth) => {
+      const node = categoriesMap[active.id]
 
-    const go = (active) => {
-      const node = allCategories[active.id]
-      if (!node) {
-        return
-      }
       node.category_children?.forEach((ch) =>
-        Object.assign(ch, allCategories[ch.id])
+        Object.assign(ch, categoriesMap[ch.id])
       )
-      res.push(node)
-      node.category_children?.forEach(go)
+
+      flatCategoriesList.push({ depth, category: node })
+
+      node.category_children?.forEach((c) => visit(c, depth + 1))
     }
 
-    topLevelCategories.forEach(go)
+    props.categories
+      .filter((c) => !c.parent_category_id)
+      .forEach((c) => visit(c, 0))
 
-    return { flatCategoriesList: res, rootCategories: topLevelCategories }
-  }, [categories])
+    return flatCategoriesList
+  }, [props.categories])
+
+  const [openCategories, setOpenCategories] = useState({})
+
+  const [items, _setItems] = useState<DraggableListItem[]>(flatCategoriesList)
+
+  useEffect(() => {
+    setItems((ii) =>
+      flatCategoriesList
+        .sort(
+          (a, b) =>
+            ii.map((i) => i.category.id).indexOf(b) -
+            ii.map((i) => i.category.id).indexOf(a)
+        )
+        .filter(
+          (c) =>
+            c.category.parent_category_id in openCategories ||
+            !c.category.parent_category_id
+        )
+    )
+  }, [flatCategoriesList, openCategories])
+
+  const setItems = (newItems) => {
+    // flatCategoriesList.sort((a, b) => newItems.indexOf(a) - newItems.indexOf(b))
+    _setItems(newItems)
+    // TODO: set new order of `ìtems` to `flatCategoriesList`
+  }
+
+  const toggleCategory = (categoryId: string) => {
+    const temp = { ...openCategories }
+    if (temp[categoryId]) {
+      delete temp[categoryId]
+    } else {
+      temp[categoryId] = true
+    }
+    setOpenCategories(temp)
+  }
 
   return (
-    <Reorder.Group
-      axis="y"
-      onReorder={setCategories}
-      values={flatCategoriesList}
-    >
-      {rootCategories.map((category) => (
+    <Reorder.Group axis="y" onReorder={setItems} values={items}>
+      {items.map((item) => (
         <ProductCategoriesListItem
-          key={category.id}
-          item={category}
-          depth={0}
+          item={item}
+          key={item.category.id}
+          isOpen={openCategories[item.category.id]}
+          toggleCategory={() => toggleCategory(item.category.id)}
         />
       ))}
     </Reorder.Group>

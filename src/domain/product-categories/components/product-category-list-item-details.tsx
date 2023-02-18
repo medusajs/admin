@@ -10,16 +10,22 @@ import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import EditIcon from "../../../components/fundamentals/icons/edit-icon"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import { useAdminDeleteProductCategory } from "../../../../../medusa/packages/medusa-react"
+import FolderOpenIcon from "../../../components/fundamentals/icons/folder-open-icon"
+import TriangleMiniIcon from "../../../components/fundamentals/icons/triangle-mini-icon"
 
 type ProductCategoryListItemDetailsProps = {
   depth: number
+  isOpen: boolean
   category: ProductCategory
+  toggleCategory: () => void
 }
 
 function ProductCategoryListItemDetails(
   props: ProductCategoryListItemDetailsProps
 ) {
-  const { category, depth } = props
+  const { category, depth, isOpen, toggleCategory } = props
+
+  const hasChildren = !!category.category_children?.length
 
   const productCategoriesPageContext = useContext(ProductCategoriesContext)
 
@@ -38,6 +44,7 @@ function ProductCategoryListItemDetails(
       variant: "danger",
       onClick: deleteCategory,
       icon: <TrashIcon size={20} />,
+      disabled: !!category.category_children?.length,
     },
   ]
 
@@ -46,7 +53,14 @@ function ProductCategoryListItemDetails(
       style={{ paddingLeft: depth * 32 }}
       className="flex justify-between items-center w-full"
     >
-      <div>
+      <div onClick={toggleCategory} className="flex gap-2 items-center">
+        {hasChildren && (
+          <TriangleMiniIcon
+            style={{ top: -2, transform: isOpen ? "" : "rotate(270deg)" }}
+            size={16}
+          />
+        )}
+        {hasChildren && <FolderOpenIcon size={18} />}
         <span className="select-none font-medium text-xs">{category.name}</span>
       </div>
 
