@@ -52,7 +52,7 @@ function CreateProductCategory(props: CreateProductCategoryProps) {
       closeModal()
       notification("Success", "Created a new product category", "success")
     } catch (e) {
-      notification("Error", "Failed to create a new API key", "error")
+      notification("Error", "Failed to create a new product category", "error")
     }
   }
 

@@ -106,8 +106,9 @@ function ProductCategoryPage() {
           )}
 
           <EditProductCategoriesSideModal
-            isVisible={isEditModalVisible}
             close={hideEditModal}
+            activeCategory={activeCategory}
+            isVisible={!!activeCategory && isEditModalVisible}
           />
         </div>
       </div>

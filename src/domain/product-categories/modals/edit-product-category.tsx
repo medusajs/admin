@@ -1,12 +1,30 @@
-import React, { useRef, useState } from "react"
-import { useAdminSalesChannels } from "medusa-react"
-import { SalesChannel } from "@medusajs/medusa"
+import React, { useEffect, useState } from "react"
+
+import { ProductCategory } from "@medusajs/medusa"
 
 import SideModal from "../../../components/molecules/modal/side-modal"
 import Button from "../../../components/fundamentals/button"
 import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
+import { useAdminUpdateProductCategory } from "../../../../../medusa/packages/medusa-react"
+import InputField from "../../../components/molecules/input"
+import Select from "../../../components/molecules/select"
+import useNotification from "../../../hooks/use-notification"
+
+const visibilityOptions = [
+  {
+    label: "Public",
+    value: "public",
+  },
+  { label: "Private", value: "private" },
+]
+
+const statusOptions = [
+  { label: "Active", value: "active" },
+  { label: "Inactive", value: "inactive" },
+]
 
 type EditProductCategoriesSideModalProps = {
+  activeCategory: ProductCategory
   close: () => void
   isVisible: boolean
 }
@@ -17,9 +35,43 @@ type EditProductCategoriesSideModalProps = {
 function EditProductCategoriesSideModal(
   props: EditProductCategoriesSideModalProps
 ) {
-  const { isVisible, close } = props
+  const { isVisible, close, activeCategory } = props
 
-  const onSave = () => {
+  const [name, setName] = useState("")
+  const [handle, setHandle] = useState("")
+  const [isActive, setIsActive] = useState(true)
+  const [isPublic, setIsPublic] = useState(true)
+
+  const notification = useNotification()
+
+  const { mutateAsync: updateCategory } = useAdminUpdateProductCategory(
+    activeCategory?.id
+  )
+
+  useEffect(() => {
+    if (activeCategory) {
+      setName(activeCategory.name)
+      setHandle(activeCategory.handle)
+      setIsActive(activeCategory.is_active)
+      setIsPublic(!activeCategory.is_internal)
+    }
+  }, [activeCategory])
+
+  const onSave = async () => {
+    try {
+      await updateCategory({
+        name,
+        handle,
+        is_active: isActive,
+        is_internal: !isPublic,
+      })
+
+      // TODO: check on the BD, when we send update partial children of the category are lost
+
+      notification("Success", "Product category updated", "success")
+    } catch (e) {
+      notification("Error", "Failed to update the category", "error")
+    }
     close()
   }
 
@@ -47,7 +99,41 @@ function EditProductCategoriesSideModal(
         {/* === DIVIDER === */}
 
         <div className="flex-grow">
-          <div className="my-6"></div>
+          <div className="my-6">
+            <InputField
+              label="Name"
+              type="string"
+              name="name"
+              value={name}
+              className="w-[338px]"
+              placeholder="Give this category a name"
+              onChange={(ev) => setName(ev.target.value)}
+            />
+
+            <InputField
+              label="Handle"
+              type="string"
+              name="handle"
+              value={handle}
+              className="w-[338px]"
+              placeholder="Custom handle"
+              onChange={(ev) => setHandle(ev.target.value)}
+            />
+
+            <Select
+              label="Status"
+              options={statusOptions}
+              value={statusOptions[isActive ? 0 : 1]}
+              onChange={(o) => setIsActive(o.value === "active")}
+            />
+          </div>
+
+          <Select
+            label="Visibility"
+            options={visibilityOptions}
+            value={visibilityOptions[isPublic ? 0 : 1]}
+            onChange={(o) => setIsPublic(o.value === "public")}
+          />
         </div>
         {/* === DIVIDER === */}
 
