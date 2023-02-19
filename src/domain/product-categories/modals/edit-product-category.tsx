@@ -105,7 +105,6 @@ function EditProductCategoriesSideModal(
               type="string"
               name="name"
               value={name}
-              className="w-[338px]"
               placeholder="Give this category a name"
               onChange={(ev) => setName(ev.target.value)}
             />
@@ -115,7 +114,6 @@ function EditProductCategoriesSideModal(
               type="string"
               name="handle"
               value={handle}
-              className="w-[338px]"
               placeholder="Custom handle"
               onChange={(ev) => setHandle(ev.target.value)}
             />
