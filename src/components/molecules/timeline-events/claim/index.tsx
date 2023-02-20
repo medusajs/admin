@@ -55,7 +55,7 @@ const Claim: React.FC<ClaimProps> = ({ event, refetch }) => {
     title: event.canceledAt ? "Claim Canceled" : "Claim Created",
     topNode: actions,
     children: [
-      <div className="flex flex-col gap-y-base">
+      <div className="flex flex-col gap-y-base" key={event.id}>
         {!event.canceledAt && (
           <>
             {claimStatus}

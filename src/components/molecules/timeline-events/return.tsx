@@ -1,9 +1,5 @@
 import clsx from "clsx"
-import {
-  useAdminCancelReturn,
-  useAdminOrder,
-  useAdminReceiveReturn,
-} from "medusa-react"
+import { useAdminCancelReturn, useAdminOrder } from "medusa-react"
 import React, { useState } from "react"
 import { ReceiveReturnMenu } from "../../../domain/orders/details/receive-return/receive-return-menu"
 import { ReturnEvent } from "../../../hooks/use-build-timeline"
@@ -44,23 +40,11 @@ const Return: React.FC<ReturnRequestedProps> = ({ event, refetch }) => {
     })
   }
 
-  const { mutateAsync: receiveReturn } = useAdminReceiveReturn(event.id)
-
-  const handleReceiveReturn = async (
-    items: { item_id: string; quantity: number }[],
-    refund?: number
-  ) => {
-    await receiveReturn(
-      { items, refund },
-      {
-        onSuccess: () => {
-          refetch()
-        },
-      }
-    )
-  }
-
   const args = buildReturn(event, handleCancel, openReceiveReturnMenu)
+
+  if (event.raw?.claim_order_id) {
+    return null
+  }
 
   return (
     <>

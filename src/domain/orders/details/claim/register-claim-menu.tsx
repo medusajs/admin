@@ -96,15 +96,14 @@ const RegisterClaimMenu = ({ order, onClose }: Props) => {
       type === "replace" && data.replacement_shipping.option
         ? {
             option_id: data.replacement_shipping.option.value.id,
-            price: data.replacement_shipping.price
-              ? /**
-                 * We need to calculate the price of the shipping method based on the tax rate
-                 */
-                Math.round(
-                  data.replacement_shipping.price /
-                    data.replacement_shipping.option.value.taxRate
-                )
-              : 0,
+            /**
+             * We set the price to 0 as we don't want to make the shippng price
+             * affect the refund amount currently. This is a temporary solution,
+             * and users should instead use the refund amount field to specify
+             * the amount to refund when they receive the returned items if they
+             * wish to deduct the cost of shipping.
+             */
+            price: 0,
           }
         : undefined
 
@@ -155,6 +154,7 @@ const RegisterClaimMenu = ({ order, onClose }: Props) => {
         return_shipping: returnShipping.option
           ? {
               option_id: returnShipping.option.value.id,
+              price: 0,
             }
           : undefined,
         additional_items:

@@ -190,11 +190,11 @@ const ShippingFormHelpText = ({
 }: Pick<Props, "isClaim" | "isReturn">) => {
   const text = useMemo(() => {
     if (isClaim && isReturn) {
-      return "Return shipping for items claimed by the customer due to a defect is complimentary."
+      return "Return shipping for items claimed by the customer is complimentary."
     }
 
     if (!isReturn) {
-      return "Replacement item shipping is complimentary by default."
+      return "Shipping for replacement items is complimentary."
     }
 
     return undefined

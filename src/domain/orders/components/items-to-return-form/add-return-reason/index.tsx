@@ -41,7 +41,7 @@ const AddReturnReason = ({ row, form, isClaim = false }: Props) => {
   }
 
   return (
-    <div className="grid w-full grid-cols-[4rem,1fr,1fr] pb-small">
+    <div className="grid w-full grid-cols-[74px,1fr,1fr] pb-small">
       <span />
       <div className="flex items-center">
         <p className="inter-small-semibold">{reasonDetails?.reason?.label}</p>

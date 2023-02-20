@@ -142,6 +142,20 @@ const getReturnableItemsValues = (
 
     const returnableQuantity = item.quantity - (item.returned_quantity || 0)
 
+    let total: number
+
+    if (item.total) {
+      total = item.total
+    } else if (item.tax_lines?.length > 0) {
+      const taxRate = item.tax_lines.reduce((acc, line) => {
+        return acc + line.rate / 100
+      }, 0)
+
+      total = item.unit_price * item.quantity * (1 + taxRate)
+    } else {
+      total = item.unit_price * item.quantity
+    }
+
     returnItems.items.push({
       item_id: item.id,
       thumbnail: item.thumbnail,
@@ -150,7 +164,7 @@ const getReturnableItemsValues = (
       variant_title: item.variant.title,
       quantity: returnableQuantity,
       original_quantity: item.quantity,
-      total: item.total || item.unit_price * item.quantity,
+      total,
       return_reason_details: {
         note: undefined,
         reason: undefined,

@@ -32,7 +32,7 @@ import BackIcon from "../../fundamentals/icons/back-icon"
 import RefreshIcon from "../../fundamentals/icons/refresh-icon"
 import Actionables, { ActionType } from "../../molecules/actionables"
 import NoteInput from "../../molecules/note-input"
-import Claim from "../../molecules/timeline-events/claim"
+import Claim from "../../molecules/timeline-events/claim-event"
 import Exchange from "../../molecules/timeline-events/exchange"
 import ItemsFulfilled from "../../molecules/timeline-events/items-fulfilled"
 import ItemsShipped from "../../molecules/timeline-events/items-shipped"
@@ -174,9 +174,15 @@ function switchOnType(event: TimelineEvent, refetch: () => void) {
     case "return":
       return <Return event={event as ReturnEvent} refetch={refetch} />
     case "exchange":
-      return <Exchange event={event as ExchangeEvent} refetch={refetch} />
+      return (
+        <Exchange
+          key={event.id}
+          event={event as ExchangeEvent}
+          refetch={refetch}
+        />
+      )
     case "claim":
-      return <Claim event={event as ClaimEvent} refetch={refetch} />
+      return <Claim event={event as ClaimEvent} />
     case "notification":
       return <Notification event={event as NotificationEvent} />
     case "refund":

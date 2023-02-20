@@ -3,7 +3,6 @@ import {
   useAdminCancelReturn,
   useAdminCancelSwap,
   useAdminOrder,
-  useAdminReceiveReturn,
   useAdminStore,
 } from "medusa-react"
 import React, { useEffect, useState } from "react"
@@ -77,8 +76,6 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
   const { store } = useAdminStore()
   const { order } = useAdminOrder(event.orderId)
 
-  const { mutateAsync: receiveReturn } = useAdminReceiveReturn(event.returnId)
-
   const notification = useNotification()
 
   useEffect(() => {
@@ -108,7 +105,12 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
         store.swap_link_template?.replace(/\{cart_id\}/, event.exchangeCartId)
       )
     }
-  }, [store?.swap_link_template, event.exchangeCartId, event.paymentStatus])
+  }, [
+    store?.swap_link_template,
+    event.exchangeCartId,
+    event.paymentStatus,
+    store,
+  ])
 
   const paymentLink = getPaymentLink(
     payable,
@@ -125,19 +127,6 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
   const handleCancelReturn = async () => {
     await cancelReturn.mutateAsync()
     refetch()
-  }
-
-  const handleReceiveReturn = async (
-    items: { item_id: string; quantity: number }[]
-  ) => {
-    await receiveReturn(
-      { items },
-      {
-        onSuccess: () => {
-          refetch()
-        },
-      }
-    )
   }
 
   const handleProcessSwapPayment = () => {
@@ -202,7 +191,7 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
     noNotification: event.noNotification,
     topNode: getActions(event, actions),
     children: [
-      <div className="flex flex-col gap-y-base">
+      <div className="flex flex-col gap-y-base" key={event.id}>
         {event.canceledAt && (
           <div>
             <span className="inter-small-semibold mr-2">Requested on:</span>
@@ -284,8 +273,8 @@ function getNewItems(event: ExchangeEvent) {
     <div className="flex flex-col gap-y-small">
       <span className="inter-small-regular text-grey-50">New Items</span>
       <div>
-        {event.newItems.map((i) => (
-          <EventItemContainer item={i} />
+        {event.newItems.map((i, index) => (
+          <EventItemContainer key={index} item={i} />
         ))}
       </div>
     </div>
