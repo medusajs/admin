@@ -25,14 +25,24 @@ function ProductCategoriesListItem(props: ProductCategoriesListItemProps) {
   const boxShadow = useRaisedShadow(y)
   const dragControls = useDragControls()
 
+  /**
+   * When reorder starts close dragged category.
+   */
+  const onDragStart = () => {
+    if (isOpen) {
+      toggleCategory()
+    }
+  }
+
   return (
     <>
       <Reorder.Item
         value={item}
+        dragListener={false}
         id={item.category.id}
         style={{ boxShadow, y }}
         dragControls={dragControls}
-        dragListener={false}
+        onDragStart={onDragStart}
         className="relative bg-white"
       >
         <div className="flex items-center h-[40px] gap-4">
@@ -86,31 +96,39 @@ function ProductCategoriesList(props: ProductCategoriesListProps) {
   const [items, _setItems] = useState<DraggableListItem[]>(flatCategoriesList)
 
   useEffect(() => {
-    setItems((ii) =>
-      flatCategoriesList
-        .sort(
-          (a, b) =>
-            ii.map((i) => i.category.id).indexOf(b) -
-            ii.map((i) => i.category.id).indexOf(a)
-        )
-        .filter(
-          (c) =>
-            c.category.parent_category_id in openCategories ||
-            !c.category.parent_category_id
-        )
+    setItems(
+      flatCategoriesList.filter(
+        (c) =>
+          c.category.parent_category_id in openCategories ||
+          !c.category.parent_category_id
+      )
     )
-  }, [flatCategoriesList, openCategories])
+  }, [openCategories])
 
   const setItems = (newItems) => {
     // flatCategoriesList.sort((a, b) => newItems.indexOf(a) - newItems.indexOf(b))
     _setItems(newItems)
-    // TODO: set new order of `ìtems` to `flatCategoriesList`
+    // TODO: set new order of `items` to `flatCategoriesList`
   }
 
+  /**
+   * Toggle display of subcategories in the list
+   */
   const toggleCategory = (categoryId: string) => {
     const temp = { ...openCategories }
     if (temp[categoryId]) {
       delete temp[categoryId]
+
+      const visit = (node) => {
+        delete temp[node.id]
+
+        node.category_children?.forEach(visit)
+      }
+      const rootNode = flatCategoriesList.find(
+        (c) => c.category.id === categoryId
+      )!.category
+
+      visit(rootNode)
     } else {
       temp[categoryId] = true
     }
