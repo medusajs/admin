@@ -5,7 +5,7 @@ import { useForm, UseFormReturn } from "react-hook-form"
 import { fixtures } from "../../../../../test/mocks/data"
 import { renderWithProviders } from "../../../../../test/test-utils"
 import { nestedForm } from "../../../../../utils/nested-form"
-import { ReceiveReturnFormType } from "../../../details/receive-return/receive-return-menu"
+import { ReceiveReturnFormType } from "../../../details/receive-return"
 import { getDefaultReceiveReturnValues } from "../../../details/utils/get-default-values"
 import { ItemsToReceiveForm } from "../items-to-receive-form"
 
@@ -34,8 +34,8 @@ describe("ItemsToReceiveForm with ReceiveReturnMenu", () => {
 
   it("should render correctly", async () => {
     expect(screen.getByText("Items to receive")).toBeInTheDocument()
-    expect(screen.getByText("test product")).toBeInTheDocument()
-    expect(screen.getByText("test variant")).toBeInTheDocument()
+    expect(screen.getByText("Medusa Shorts")).toBeInTheDocument()
+    expect(screen.getByText("S")).toBeInTheDocument()
     expect(screen.getByText("1")).toBeInTheDocument()
   })
 

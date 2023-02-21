@@ -1,6 +1,6 @@
 import { Fragment } from "react"
 import CreateFulfillmentModal from "../../../../domain/orders/details/create-fulfillment"
-import ReceiveReturn from "../../../../domain/orders/details/receive-return"
+import { ReceiveReturnMenu } from "../../../../domain/orders/details/receive-return"
 import { ClaimEvent } from "../../../../hooks/use-build-timeline"
 import useToggleState from "../../../../hooks/use-toggle-state"
 import Button from "../../../fundamentals/button"
@@ -77,7 +77,7 @@ const Claim = ({ event }: Props) => {
           )}
         </div>
         {stateReceiveMenu && (
-          <ReceiveReturn
+          <ReceiveReturnMenu
             onClose={closeReceiveMenu}
             order={event.order}
             returnRequest={event.claim.return_order}

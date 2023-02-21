@@ -32,9 +32,9 @@ describe("ShippingAddressForm with RegisterClaimMenu", () => {
 
   it("should render the initial address correctly", async () => {
     expect(screen.getByText("Shipping address")).toBeInTheDocument()
-    expect(screen.getByText("123 Main St")).toBeInTheDocument()
-    expect(screen.getByText("44113 Cleveland")).toBeInTheDocument()
-    expect(screen.getByText("OH, United States")).toBeInTheDocument()
+    expect(screen.getByText("Faker Street 1, 3 Floor")).toBeInTheDocument()
+    expect(screen.getByText("Medusa JS, 2100 Copenhagen")).toBeInTheDocument()
+    expect(screen.getByText("Denmark")).toBeInTheDocument()
   })
 
   it("should render the address correctly when the address is changed", async () => {

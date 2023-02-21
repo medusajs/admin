@@ -2,7 +2,6 @@ import { ClaimItem, LineItem, Order, Return } from "@medusajs/medusa"
 import { AddressPayload } from "../../../../components/templates/address-form"
 import { Subset } from "../../../../types/shared"
 import { isoAlpha2Countries } from "../../../../utils/countries"
-import { isLineItemNotReturnable } from "../../../../utils/is-line-item"
 import { ClaimTypeFormType } from "../../components/claim-type-form"
 import { ItemsToReceiveFormType } from "../../components/items-to-receive-form"
 import { ItemsToReturnFormType } from "../../components/items-to-return-form"
@@ -11,7 +10,7 @@ import { ItemsToSendFormType } from "../../components/items-to-send-form"
 import { SendNotificationFormType } from "../../components/send-notification-form"
 import { ShippingFormType } from "../../components/shipping-form"
 import { CreateClaimFormType } from "../claim/register-claim-menu"
-import { ReceiveReturnFormType } from "../receive-return/receive-return-menu"
+import { ReceiveReturnFormType } from "../receive-return"
 
 const getDefaultShippingAddressValues = (
   order: Order
@@ -125,36 +124,68 @@ const getDefaultShippingValues = (): Subset<ShippingFormType> => {
   }
 }
 
-const getReturnableItemsValues = (
-  order: Order,
-  isClaim = false
-): Subset<ItemsToReturnFormType> => {
+// const getReturnableItemsValues = (
+//   order: Order,
+//   isClaim = false
+// ): Subset<ItemsToReturnFormType> => {
+//   const returnItems: ItemsToReturnFormType = {
+//     items: [],
+//   }
+
+//   const returnableItems = getAllReturnableItems(order, isClaim)
+
+//   returnableItems.forEach((item) => {
+//     if (isLineItemNotReturnable(item, order)) {
+//       return // If item in not returnable either because it's already returned or the line item has been cancelled, we skip it.
+//     }
+
+//     const returnableQuantity = item.quantity - (item.returned_quantity || 0)
+
+//     let total: number
+
+//     if (item.total) {
+//       total = item.total
+//     } else if (item.tax_lines?.length > 0) {
+//       const taxRate = item.tax_lines.reduce((acc, line) => {
+//         return acc + line.rate / 100
+//       }, 0)
+
+//       total = item.unit_price * item.quantity * (1 + taxRate)
+//     } else {
+//       total = item.unit_price * item.quantity
+//     }
+
+//     returnItems.items.push({
+//       item_id: item.id,
+//       thumbnail: item.thumbnail,
+//       refundable: item.refundable || 0,
+//       product_title: item.variant.product.title,
+//       variant_title: item.variant.title,
+//       quantity: returnableQuantity,
+//       original_quantity: item.quantity,
+//       total,
+//       return_reason_details: {
+//         note: undefined,
+//         reason: undefined,
+//       },
+//       return: false,
+//     })
+//   })
+
+//   return returnItems
+// }
+
+const getReturnableItemsValues = (order: Order) => {
   const returnItems: ItemsToReturnFormType = {
     items: [],
   }
 
-  const returnableItems = getAllReturnableItems(order, isClaim)
+  if (!order.returnable_items?.length) {
+    return returnItems
+  }
 
-  returnableItems.forEach((item) => {
-    if (isLineItemNotReturnable(item, order)) {
-      return // If item in not returnable either because it's already returned or the line item has been cancelled, we skip it.
-    }
-
+  order.returnable_items.forEach((item) => {
     const returnableQuantity = item.quantity - (item.returned_quantity || 0)
-
-    let total: number
-
-    if (item.total) {
-      total = item.total
-    } else if (item.tax_lines?.length > 0) {
-      const taxRate = item.tax_lines.reduce((acc, line) => {
-        return acc + line.rate / 100
-      }, 0)
-
-      total = item.unit_price * item.quantity * (1 + taxRate)
-    } else {
-      total = item.unit_price * item.quantity
-    }
 
     returnItems.items.push({
       item_id: item.id,
@@ -164,7 +195,7 @@ const getReturnableItemsValues = (
       variant_title: item.variant.title,
       quantity: returnableQuantity,
       original_quantity: item.quantity,
-      total,
+      total: item.total || 0,
       return_reason_details: {
         note: undefined,
         reason: undefined,
@@ -180,7 +211,7 @@ const getReceiveableItemsValues = (
   order: Order,
   returnRequest: Return
 ): Subset<ItemsToReceiveFormType> => {
-  const returnableItems = getReturnableItemsValues(order, false)
+  const returnableItems = getReturnableItemsValues(order)
 
   const returnItems = {
     items: returnableItems?.items?.reduce((acc, item) => {
@@ -188,17 +219,12 @@ const getReceiveableItemsValues = (
         return acc
       }
 
-      const indexOfLineItem = order.items.findIndex(
-        (i) => i.id === item.item_id
-      )
-
       const indexOfRequestedItem = returnRequest.items.findIndex(
         (i) => i.item_id === item.item_id
       )
 
-      if (item?.item_id && indexOfRequestedItem > -1) {
+      if (item.item_id && indexOfRequestedItem > -1) {
         const requestedItem = returnRequest.items[indexOfRequestedItem]
-        const lineItem = order.items[indexOfLineItem]
 
         const adjustedQuantity =
           requestedItem.requested_quantity - requestedItem.received_quantity
@@ -209,7 +235,7 @@ const getReceiveableItemsValues = (
          * find the original quantity on the order line items,
          * as any previous returns will have adjusted the quantity.
          */
-        const price = (item.total || 0) / lineItem.quantity
+        const price = (item.total || 0) / item.original_quantity
 
         acc.push({
           ...item,
@@ -263,7 +289,7 @@ export const getDefaultClaimValues = (
     claim_type: getDefaultClaimTypeValues(),
     additional_items: getDefaultAdditionalItemsValues(),
     notification: getDefaultSendNotificationValues(),
-    return_items: getReturnableItemsValues(order, true),
+    return_items: getReturnableItemsValues(order),
     shipping_address: getDefaultShippingAddressValues(order),
     return_shipping: getDefaultShippingValues(),
     replacement_shipping: getDefaultShippingValues(),

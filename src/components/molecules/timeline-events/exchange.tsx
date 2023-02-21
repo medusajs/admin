@@ -8,7 +8,7 @@ import {
 import React, { useEffect, useState } from "react"
 
 import CreateFulfillmentModal from "../../../domain/orders/details/create-fulfillment"
-import { ReceiveReturnMenu } from "../../../domain/orders/details/receive-return/receive-return-menu"
+import { ReceiveReturnMenu } from "../../../domain/orders/details/receive-return"
 import { ExchangeEvent } from "../../../hooks/use-build-timeline"
 import useNotification from "../../../hooks/use-notification"
 import Medusa from "../../../services/api"

@@ -5,6 +5,7 @@ import React, { useState } from "react"
 import RegisterClaimMenu from "../../../domain/orders/details/claim/register-claim-menu"
 import ReturnMenu from "../../../domain/orders/details/returns"
 import SwapMenu from "../../../domain/orders/details/swap/create"
+import { orderReturnableFields } from "../../../domain/orders/details/utils/order-returnable-fields"
 import useOrdersExpandParam from "../../../domain/orders/details/utils/use-admin-expand-paramter"
 import {
   ClaimEvent,
@@ -62,7 +63,9 @@ const Timeline: React.FC<TimelineProps> = ({ orderId }) => {
   const createNote = useAdminCreateNote()
   const { order } = useAdminOrder(orderId, {
     expand: orderRelations,
+    fields: orderReturnableFields,
   })
+
   const [showRequestReturn, setShowRequestReturn] = useState(false)
   const [showCreateSwap, setshowCreateSwap] = useState(false)
 

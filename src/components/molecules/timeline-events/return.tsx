@@ -1,7 +1,7 @@
 import clsx from "clsx"
-import { useAdminCancelReturn, useAdminOrder } from "medusa-react"
+import { useAdminCancelReturn } from "medusa-react"
 import React, { useState } from "react"
-import { ReceiveReturnMenu } from "../../../domain/orders/details/receive-return/receive-return-menu"
+import { ReceiveReturnMenu } from "../../../domain/orders/details/receive-return"
 import { ReturnEvent } from "../../../hooks/use-build-timeline"
 import useToggleState from "../../../hooks/use-toggle-state"
 import Button from "../../fundamentals/button"
@@ -30,8 +30,6 @@ const Return: React.FC<ReturnRequestedProps> = ({ event, refetch }) => {
     open: openReceiveReturnMenu,
   } = useToggleState()
 
-  const { order } = useAdminOrder(event.orderId)
-
   const handleCancel = () => {
     cancelReturn.mutate(undefined, {
       onSuccess: () => {
@@ -59,10 +57,10 @@ const Return: React.FC<ReturnRequestedProps> = ({ event, refetch }) => {
           text="Are you sure you want to cancel this return?"
         />
       )}
-      {showReceiveReturnMenu && order && (
+      {showReceiveReturnMenu && (
         <ReceiveReturnMenu
           onClose={closeReceiveReturnMenu}
-          order={order}
+          order={event.order}
           returnRequest={event.raw}
         />
       )}

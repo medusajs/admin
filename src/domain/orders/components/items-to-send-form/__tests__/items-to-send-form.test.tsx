@@ -50,7 +50,7 @@ describe("ItemsToSendForm with RegisterClaimMenu", () => {
 
   it("should display products to send correctly", async () => {
     expect(screen.getByText("Test")).toBeInTheDocument()
-    expect(screen.getByText("$100.00")).toBeInTheDocument()
+    expect(screen.getByText("€100.00")).toBeInTheDocument()
     expect(screen.getByText("1")).toBeInTheDocument()
   })
 
