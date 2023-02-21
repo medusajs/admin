@@ -26,3 +26,6 @@ dist-ssr
 # Gatsby compat.
 .cache/
 public
+
+# yarn
+.yarn
