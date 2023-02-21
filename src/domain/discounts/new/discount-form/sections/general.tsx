@@ -21,7 +21,7 @@ const General: React.FC<GeneralProps> = ({ discount }) => {
     string | undefined
   >(initialCurrency)
 
-  const { regions: opts } = useAdminRegions()
+  const { regions: opts, isLoading } = useAdminRegions()
   const { register, control, type } = useDiscountForm()
 
   const regions = useWatch({
@@ -51,20 +51,15 @@ const General: React.FC<GeneralProps> = ({ discount }) => {
     return opts?.map((r) => ({ value: r.id, label: r.name })) || []
   }, [opts])
 
-  const [render, setRender] = useState(false)
-  useEffect(() => {
-    setTimeout(() => setRender(true), 100)
-  }, [])
-
   return (
     <div className="pt-5">
-      {render && (
+      {!isLoading && (
         <>
           <Controller
             name="regions"
             control={control}
             rules={{
-              required: "Atleast one region is required",
+              required: "At least one region is required",
               validate: (value) =>
                 Array.isArray(value) ? value.length > 0 : !!value,
             }}
