@@ -46,7 +46,10 @@ function ProductCategoriesListItem(props: ProductCategoriesListItemProps) {
         className="relative bg-white"
       >
         <div className="flex items-center h-[40px] gap-4">
-          <ReorderIcon onPointerDown={(event) => dragControls.start(event)} />
+          <ReorderIcon
+            color="#889096"
+            onPointerDown={(event) => dragControls.start(event)}
+          />
           <ProductCategoryListItemDetails
             {...item}
             isOpen={isOpen}
