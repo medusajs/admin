@@ -27,5 +27,4 @@ dist-ssr
 .cache/
 public
 
-# yarn
-.yarn
+

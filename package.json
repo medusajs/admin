@@ -125,6 +125,5 @@
   },
   "bugs": {
     "url": "https://github.com/medusajs/admin/issues"
-  },
-  "packageManager": "yarn@3.4.1"
+  }
 }
