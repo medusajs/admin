@@ -427,7 +427,7 @@ export const useBuildTimeline = (orderId: string) => {
             },
           })),
           fulfillmentStatus: claim.fulfillment_status,
-          returnStatus: claim.return_order.status,
+          returnStatus: claim.return_order?.status,
           refundStatus: claim.payment_status,
           refundAmount: claim.refund_amount,
           currencyCode: order.currency_code,
