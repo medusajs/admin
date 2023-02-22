@@ -1,16 +1,27 @@
+import {
+  useAdminCancelClaim,
+  useAdminCancelReturn,
+  useAdminOrder,
+} from "medusa-react"
 import { Fragment } from "react"
 import CreateFulfillmentModal from "../../../../domain/orders/details/create-fulfillment"
 import { ReceiveReturnMenu } from "../../../../domain/orders/details/receive-return"
+import { orderReturnableFields } from "../../../../domain/orders/details/utils/order-returnable-fields"
 import { ClaimEvent } from "../../../../hooks/use-build-timeline"
+import useNotification from "../../../../hooks/use-notification"
 import useToggleState from "../../../../hooks/use-toggle-state"
+import { getErrorMessage } from "../../../../utils/error-messages"
 import Button from "../../../fundamentals/button"
 import AlertIcon from "../../../fundamentals/icons/alert-icon"
 import CancelIcon from "../../../fundamentals/icons/cancel-icon"
+import TrashIcon from "../../../fundamentals/icons/trash-icon"
+import { ActionType } from "../../actionables"
 import {
   FulfillmentStatus,
   RefundStatus,
   ReturnStatus,
 } from "../../order-status"
+import EventActionables from "../event-actionables"
 import EventContainer, {
   EventContainerProps,
   EventIconColor,
@@ -34,23 +45,66 @@ const Claim = ({ event }: Props) => {
     close: closeFulfillMenu,
   } = useToggleState()
 
+  // Orders and returns aren't linked in `medusa-react` so we need to manually refetch the order
+  const { refetch } = useAdminOrder(event.orderId, {
+    fields: orderReturnableFields,
+  })
+
+  const notification = useNotification()
+
   const shouldHaveButtonActions =
     !event.canceledAt &&
-    (event.claim.return_order || event.claim.additional_items?.length > 0)
+    (event.claim?.return_order || event.claim?.additional_items?.length > 0)
 
-  const args: EventContainerProps = {
+  const { mutate: cancelReturn } = useAdminCancelReturn(
+    event.claim?.return_order?.id
+  )
+
+  const { mutate: cancelClaim } = useAdminCancelClaim(event.order?.id)
+
+  const onCancelClaim = () => {
+    cancelClaim(event.claim.id, {
+      onSuccess: () => {
+        notification("Claim canceled", "The claim has been canceled", "success")
+      },
+      onError: (err) => {
+        notification("Failed to cancel claim", getErrorMessage(err), "error")
+      },
+    })
+  }
+
+  const onCancelReturn = () => {
+    cancelReturn(undefined, {
+      onSuccess: () => {
+        notification(
+          "Return canceled",
+          "The return has been canceled",
+          "success"
+        )
+        refetch()
+      },
+      onError: (err) => {
+        notification("Failed to cancel return", getErrorMessage(err), "error")
+      },
+    })
+  }
+
+  const Actions = renderClaimActions(event, onCancelClaim, onCancelReturn)
+
+  const eventContainerArgs: EventContainerProps = {
     icon: event.canceledAt ? <CancelIcon size={20} /> : <AlertIcon size={20} />,
     iconColor: event.canceledAt
       ? EventIconColor.DEFAULT
       : EventIconColor.ORANGE,
     title: event.canceledAt ? "Claim Canceled" : "Claim Created",
     time: event.canceledAt ? event.canceledAt : event.time,
+    topNode: Actions,
     children: [
       <Fragment key={event.id}>
         <div className="flex flex-col gap-y-base">
           <ClaimStatus event={event} />
           {renderClaimItems(event)}
-          {event.claim.additional_items?.length > 0 &&
+          {event.claim?.additional_items?.length > 0 &&
             renderReplacementItems(event)}
           {shouldHaveButtonActions && (
             <div className="flex items-center gap-x-xsmall">
@@ -63,8 +117,8 @@ const Claim = ({ event }: Props) => {
                   Receive Return
                 </Button>
               )}
-              {event.claim.additional_items?.length > 0 &&
-                event.claim.fulfillment_status === "not_fulfilled" && (
+              {event.claim?.additional_items?.length > 0 &&
+                event.claim?.fulfillment_status === "not_fulfilled" && (
                   <Button
                     variant="secondary"
                     size="small"
@@ -94,7 +148,7 @@ const Claim = ({ event }: Props) => {
     ],
   }
 
-  return <EventContainer {...args} />
+  return <EventContainer {...eventContainerArgs} />
 }
 
 export default Claim
@@ -103,16 +157,21 @@ const ClaimStatus = ({ event }: Props) => {
   const divider = <div className="h-11 w-px bg-grey-20" />
 
   const shouldHaveFulfillment =
-    !!event.claim.fulfillment_status && event.claim.additional_items?.length > 0
-  const shouldHaveReturnStatus = !!event.claim.return_order
+    !!event.claim?.fulfillment_status &&
+    event.claim?.additional_items?.length > 0
+  const shouldHaveReturnStatus = !!event.claim?.return_order
 
-  let refundStatus: string = event.claim.payment_status
+  let refundStatus: string = event.claim?.payment_status
 
-  if (event.claim.type === "replace") {
+  if (event.claim?.type === "replace") {
     refundStatus =
-      event.claim.return_order.status === "received"
+      event.claim?.return_order.status === "received"
         ? "refunded"
-        : event.claim.payment_status
+        : event.claim?.payment_status
+  }
+
+  if (event.canceledAt !== null) {
+    refundStatus = "canceled"
   }
 
   return (
@@ -136,7 +195,7 @@ const ClaimStatus = ({ event }: Props) => {
           <div className="flex flex-col gap-y-2xsmall">
             <span className="text-grey-50">Fulfillment:</span>
             <FulfillmentStatus
-              fulfillmentStatus={event.claim.fulfillment_status}
+              fulfillmentStatus={event.claim?.fulfillment_status}
             />
           </div>
         </>
@@ -171,4 +230,37 @@ const renderReplacementItems = (event: ClaimEvent) => {
       </div>
     </div>
   )
+}
+
+const renderClaimActions = (
+  event: ClaimEvent,
+  onCancelClaim: () => void,
+  onCancelReturn: () => void
+) => {
+  const actions: ActionType[] = []
+
+  if (!event.canceledAt && !event.isCanceled) {
+    if (
+      event.claim.return_order &&
+      event.claim.return_order.status === "requested"
+    ) {
+      actions.push({
+        icon: <TrashIcon size={20} />,
+        label: "Cancel return",
+        variant: "danger",
+        onClick: onCancelReturn,
+      })
+    }
+
+    if (event.refundStatus !== "refunded" && !event.isCanceled) {
+      actions.push({
+        icon: <TrashIcon size={20} />,
+        label: "Cancel claim",
+        variant: "danger",
+        onClick: onCancelClaim,
+      })
+    }
+  }
+
+  return actions.length ? <EventActionables actions={actions} /> : null
 }
