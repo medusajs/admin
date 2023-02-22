@@ -76,7 +76,7 @@ export const useShippingOptionFormData = (
   const getRequirementsData = (data: ShippingOptionFormType) => {
     const requirements = Object.entries(data.requirements).reduce(
       (acc, [key, value]) => {
-        if (value?.amount && value.amount > 0) {
+        if (typeof value?.amount === "number" && value.amount >= 0) {
           acc.push({
             type: key,
             amount: value.amount,
