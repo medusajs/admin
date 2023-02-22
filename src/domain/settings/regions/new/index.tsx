@@ -1,6 +1,6 @@
 import { AdminPostRegionsReq } from "@medusajs/medusa"
 import { useAdminCreateRegion } from "medusa-react"
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
 import Button from "../../../../components/fundamentals/button"
@@ -34,17 +34,13 @@ const NewRegion = ({ onClose }: Props) => {
   })
 
   const {
-    formState: { dirtyFields },
+    formState: { isDirty },
     handleSubmit,
     reset,
   } = form
   const { mutate, isLoading } = useAdminCreateRegion()
   const navigate = useNavigate()
   const notification = useNotification()
-
-  const isDirty = useMemo(() => {
-    return Object.keys(dirtyFields).length > 0
-  }, [dirtyFields])
 
   const { isFeatureEnabled } = useFeatureFlag()
 
