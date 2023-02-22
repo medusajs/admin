@@ -6,7 +6,6 @@ import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
 import Avatar from "../../atoms/avatar"
 import Button from "../../fundamentals/button"
-import GearIcon from "../../fundamentals/icons/gear-icon"
 import SignOutIcon from "../../fundamentals/icons/log-out-icon"
 
 const UserMenu: React.FC = () => {
@@ -44,16 +43,18 @@ const UserMenu: React.FC = () => {
           side="bottom"
           className="z-30 ml-large min-w-[200px] rounded-rounded border border-grey-20 bg-grey-0 p-xsmall shadow-dropdown"
         >
-          <DropdownMenu.Item className="mb-1 outline-none last:mb-0">
+          <DropdownMenu.Item className="mb-1 outline-none">
             <Button
               variant="ghost"
               size="small"
-              className={"w-full justify-start"}
-              onClick={() => navigate("/a/settings")}
+              className={"w-full justify-start text-rose-50"}
+              onClick={() => logOut()}
             >
-              <GearIcon />
-              Settings
+              <SignOutIcon size={20} />
+              Sign out
             </Button>
+          </DropdownMenu.Item>
+          <DropdownMenu.Item className="outline-none">
             <Button
               variant="ghost"
               size="small"
