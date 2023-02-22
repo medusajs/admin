@@ -38,7 +38,11 @@ const Return: React.FC<ReturnRequestedProps> = ({ event, refetch }) => {
     })
   }
 
-  const args = buildReturn(event, handleCancel, openReceiveReturnMenu)
+  const eventContainerArgs = buildReturn(
+    event,
+    handleCancel,
+    openReceiveReturnMenu
+  )
 
   if (event.raw?.claim_order_id) {
     return null
@@ -46,7 +50,7 @@ const Return: React.FC<ReturnRequestedProps> = ({ event, refetch }) => {
 
   return (
     <>
-      <EventContainer {...args} />
+      <EventContainer {...eventContainerArgs} />
       {showCancel && (
         <DeletePrompt
           handleClose={() => setShowCancel(false)}
