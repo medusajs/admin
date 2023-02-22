@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import React, { useMemo } from "react"
 import Nestable from "react-nestable"
 
 import "react-nestable/dist/styles/index.css"
@@ -6,39 +6,9 @@ import "../styles/product-categories.css"
 
 import { ProductCategory } from "@medusajs/medusa"
 
-import ReorderIcon from "../../../components/fundamentals/icons/reorder-icon"
+import TriangleMiniIcon from "../../../components/fundamentals/icons/triangle-mini-icon"
 import ProductCategoryListItemDetails from "./product-category-list-item-details"
-
-export type DraggableListItem = {
-  id: string
-  category: ProductCategory
-  children: DraggableListItem[]
-}
-
-type ProductCategoriesListItemProps = {
-  isOpen: boolean
-  item: DraggableListItem
-  toggleCategory: () => void
-}
-
-function ProductCategoriesListItem(props: ProductCategoriesListItemProps) {
-  const { item, isOpen, toggleCategory } = props
-
-  return (
-    <>
-      <div className="bg-white">
-        <div className="flex items-center h-[40px] gap-4">
-          <ReorderIcon color="#889096" />
-          <ProductCategoryListItemDetails
-            item={item}
-            isOpen={isOpen}
-            toggleCategory={toggleCategory}
-          />
-        </div>
-      </div>
-    </>
-  )
-}
+import ReorderIcon from "../../../components/fundamentals/icons/reorder-icon"
 
 type ProductCategoriesListProps = {
   categories: ProductCategory[]
@@ -48,9 +18,11 @@ type ProductCategoriesListProps = {
  * Draggable list that renders product categories tree view.
  */
 function ProductCategoriesList(props: ProductCategoriesListProps) {
-  const flatCategoriesList = useMemo(() => {
+  const categories = useMemo(() => {
+    /**
+     * HACK - for now to properly reference nested children
+     */
     const categoriesMap = {}
-
     props.categories.forEach((c) => (categoriesMap[c.id] = c))
 
     const visit = (active) => {
@@ -60,9 +32,7 @@ function ProductCategoriesList(props: ProductCategoriesListProps) {
         Object.assign(ch, categoriesMap[ch.id])
       )
 
-      const children = node.category_children?.map((c) => visit(c))
-
-      return { id: node.id, category: node, children }
+      return node
     }
 
     return props.categories
@@ -72,8 +42,30 @@ function ProductCategoriesList(props: ProductCategoriesListProps) {
 
   return (
     <Nestable
-      items={flatCategoriesList}
-      renderItem={ProductCategoriesListItem}
+      collapsed
+      items={categories}
+      childrenProp="category_children"
+      renderItem={({ item, depth, handler, collapseIcon }) => (
+        <ProductCategoryListItemDetails
+          item={item}
+          depth={depth}
+          handler={handler}
+          collapseIcon={collapseIcon}
+        />
+      )}
+      handler={<ReorderIcon className="cursor-grab" color="#889096" />}
+      renderCollapseIcon={({ isCollapsed }) => (
+        <TriangleMiniIcon
+          style={{
+            top: -2,
+            width: 32,
+            left: -12,
+            transform: !isCollapsed ? "" : "rotate(270deg)",
+          }}
+          color="#889096"
+          size={18}
+        />
+      )}
     />
   )
 }
