@@ -28,10 +28,10 @@ const UserMenu: React.FC = () => {
     })
   }
   return (
-    <div className="w-large h-large">
+    <div className="h-large w-large">
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild disabled={isLoading}>
-          <div className="w-full h-full cursor-pointer">
+          <div className="h-full w-full cursor-pointer">
             <Avatar
               user={{ ...user }}
               isLoading={isLoading}
@@ -40,10 +40,11 @@ const UserMenu: React.FC = () => {
           </div>
         </DropdownMenu.Trigger>
         <DropdownMenu.Content
-          sideOffset={5}
-          className="border bg-grey-0 border-grey-20 rounded-rounded shadow-dropdown p-xsmall min-w-[200px] z-30"
+          sideOffset={12}
+          side="bottom"
+          className="z-30 ml-large min-w-[200px] rounded-rounded border border-grey-20 bg-grey-0 p-xsmall shadow-dropdown"
         >
-          <DropdownMenu.Item className="mb-1 last:mb-0">
+          <DropdownMenu.Item className="mb-1 outline-none last:mb-0">
             <Button
               variant="ghost"
               size="small"
