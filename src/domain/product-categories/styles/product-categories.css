@@ -1,0 +1,21 @@
+
+
+.nestable-item.is-dragging:before {
+    content: ' ';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: white;
+
+    transition: .3s all;
+
+    /*border: none;*/
+    /*border-radius: 0;*/
+    /*border-bottom: 1px dashed #4682b4;*/
+}
+
+.nestable-item.is-dragging * {
+    /*height: 20px;*/
+}

@@ -1,8 +1,6 @@
 import React, { useContext } from "react"
 import clsx from "clsx"
 
-import { ProductCategory } from "@medusajs/medusa"
-
 import { ProductCategoriesContext } from "../pages"
 import Tooltip from "../../../components/atoms/tooltip"
 import Button from "../../../components/fundamentals/button"
@@ -15,33 +13,32 @@ import FolderOpenIcon from "../../../components/fundamentals/icons/folder-open-i
 import TriangleMiniIcon from "../../../components/fundamentals/icons/triangle-mini-icon"
 import TagIcon from "../../../components/fundamentals/icons/tag-icon"
 import MoreHorizontalIcon from "../../../components/fundamentals/icons/more-horizontal-icon"
+import { DraggableListItem } from "./product-categories-list"
 
 type ProductCategoryListItemDetailsProps = {
   depth: number
   isOpen: boolean
-  category: ProductCategory
+  item: DraggableListItem
   toggleCategory: () => void
 }
 
 function ProductCategoryListItemDetails(
   props: ProductCategoryListItemDetailsProps
 ) {
-  const { category, depth, isOpen, toggleCategory } = props
+  const { item, depth, isOpen, toggleCategory } = props
 
-  const hasChildren = !!category.category_children?.length
+  const hasChildren = !!item.children?.length
 
   const productCategoriesPageContext = useContext(ProductCategoriesContext)
 
-  const { mutateAsync: deleteCategory } = useAdminDeleteProductCategory(
-    category.id
-  )
+  const { mutateAsync: deleteCategory } = useAdminDeleteProductCategory(item.id)
 
   const paddingLeft = hasChildren ? depth * 32 : (depth - 1) * 32 + 64
 
   const actions = [
     {
       label: "Edit",
-      onClick: () => productCategoriesPageContext.editCategory(category),
+      onClick: () => productCategoriesPageContext.editCategory(item),
       icon: <EditIcon size={20} />,
     },
     {
@@ -49,7 +46,7 @@ function ProductCategoryListItemDetails(
       variant: "danger",
       onClick: deleteCategory,
       icon: <TrashIcon size={20} />,
-      disabled: !!category.category_children?.length,
+      disabled: !!item.category?.length,
     },
   ]
 
@@ -77,7 +74,7 @@ function ProductCategoryListItemDetails(
             "text-gray-400 font-normal": !hasChildren,
           })}
         >
-          {category.name}
+          {item.category.name}
         </span>
       </div>
 
@@ -88,7 +85,7 @@ function ProductCategoryListItemDetails(
             <>
               Add category item to{" "}
               <span className="font-semibold text-grey-80">
-                "{category.name}"
+                "{item.category.name}"
               </span>
             </>
           }
@@ -97,7 +94,7 @@ function ProductCategoryListItemDetails(
             size="small"
             variant="ghost"
             onClick={() =>
-              productCategoriesPageContext.createSubCategory(category)
+              productCategoriesPageContext.createSubCategory(item.category)
             }
           >
             <PlusIcon color="#687076" size={18} />
