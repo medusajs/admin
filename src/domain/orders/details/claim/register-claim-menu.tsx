@@ -60,8 +60,6 @@ const RegisterClaimMenu = ({ order, onClose }: Props) => {
     setError,
   } = form
 
-  console.log(getDefaultClaimValues(order))
-
   const notification = useNotification()
   const dialog = useImperativeDialog()
 
