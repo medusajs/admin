@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@hookform/error-message": "^2.0.0",
-    "@medusajs/medusa": "1.7.7",
+    "@medusajs/medusa": "^1.7.7",
     "@radix-ui/react-accordion": "^1.0.1",
     "@radix-ui/react-avatar": "^1.0.1",
     "@radix-ui/react-collapsible": "^1.0.1",

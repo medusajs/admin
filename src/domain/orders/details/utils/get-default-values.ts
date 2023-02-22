@@ -15,6 +15,10 @@ import { ReceiveReturnFormType } from "../receive-return"
 const getDefaultShippingAddressValues = (
   order: Order
 ): Subset<AddressPayload> => {
+  if (!order.shipping_address) {
+    return {}
+  }
+
   const keys = Object.keys(order.shipping_address).map(
     (k) => k
   ) as (keyof AddressPayload)[]
