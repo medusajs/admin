@@ -1,26 +1,28 @@
 import React from "react"
 import Tooltip from "../../atoms/tooltip"
 
-type DelimitedListProps = {
-  list: Record<string, any>[]
+type DelimitedListProps<T = unknown> = {
+  list: Record<string, T>[]
   delimit?: number
-  property?: string
 }
 
 const DelimitedList: React.FC<DelimitedListProps> = ({
   list,
   delimit = 1,
-  property = "name",
 }) => {
   if (!list.length) {
     return <></>
   }
 
+  const itemsToDisplay = list.slice(0, delimit).join(", ")
+  const showExtraItemsInTooltip = list.length > delimit
+  const extraItemsInToolTipCount = list.length - delimit
+
   const ToolTipContent = () => {
     return (
       <div className="flex flex-col">
         {list.slice(delimit).map((listItem) => (
-          <span key={listItem.id}>{listItem[property]}</span>
+          <span key={listItem}>{listItem}</span>
         ))}
       </div>
     )
@@ -28,14 +30,11 @@ const DelimitedList: React.FC<DelimitedListProps> = ({
 
   return (
     <span className="inter-small-regular">
-      {list
-        .slice(0, delimit)
-        .map((listItem) => listItem[property])
-        .join(", ")}
+      {itemsToDisplay}
 
-      {list.length > delimit && (
+      {showExtraItemsInTooltip && (
         <Tooltip content={<ToolTipContent />}>
-          <span className="text-grey-40"> + {list.length - delimit} more</span>
+          <span className="text-grey-40"> + {extraItemsInToolTipCount} more</span>
         </Tooltip>
       )}
     </span>

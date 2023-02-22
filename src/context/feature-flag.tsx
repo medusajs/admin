@@ -2,6 +2,10 @@ import { useAdminStore } from "medusa-react"
 import React, { useContext, useEffect, useState } from "react"
 import { AccountContext } from "./account"
 
+export enum FeatureFlag {
+  PRODUCT_CATEGORIES = "product_categories",
+}
+
 export const defaultFeatureFlagContext: {
   featureToggleList: Record<string, boolean>
   isFeatureEnabled: (flag: string) => boolean

@@ -9,7 +9,7 @@ import SalesChannelsDisplay from "../../../../../components/molecules/sales-chan
 import StatusSelector from "../../../../../components/molecules/status-selector"
 import DelimitedList from "../../../../../components/molecules/delimited-list"
 import Section from "../../../../../components/organisms/section"
-import { useFeatureFlag } from "../../../../../context/feature-flag"
+import { useFeatureFlag, FeatureFlag } from "../../../../../context/feature-flag"
 import useToggleState from "../../../../../hooks/use-toggle-state"
 import useEditProductActions from "../../hooks/use-edit-product-actions"
 import ChannelsModal from "./channels-modal"
@@ -95,20 +95,20 @@ const GeneralSection = ({ product }: Props) => {
 
 type DetailProps = {
   title: string
-  value?: string | null
+  value?: string[] | string | null
 }
 
 const Detail = ({ title, value }: DetailProps) => {
   const DetailValue = () => {
-    if (Array.isArray(value)) {
-      if (value.length) {
-        return <DelimitedList list={value} delimit={2} />
-      } else {
-        return <p>–</p>
-      }
-    } else {
+    if (!Array.isArray(value)) {
       return <p>{value ? value : "–"}</p>
     }
+
+    if (value.length) {
+      return <DelimitedList list={value} delimit={2} />
+    }
+
+    return <p>–</p>
   }
 
   return (
@@ -129,8 +129,11 @@ const ProductDetails = ({ product }: Props) => {
       <Detail title="Handle" value={product.handle} />
       <Detail title="Type" value={product.type?.value} />
       <Detail title="Collection" value={product.collection?.title} />
-      {isFeatureEnabled("product_categories") && (
-        <Detail title="Category" value={product.categories} />
+      {isFeatureEnabled(FeatureFlag.PRODUCT_CATEGORIES) && (
+        <Detail
+          title="Category"
+          value={product.categories.map(c => c.name)}
+        />
       )}
       <Detail
         title="Discountable"
