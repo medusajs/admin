@@ -16,7 +16,18 @@ const getDefaultShippingAddressValues = (
   order: Order
 ): Subset<AddressPayload> => {
   if (!order.shipping_address) {
-    return {}
+    return {
+      address_1: undefined,
+      address_2: undefined,
+      city: undefined,
+      company: undefined,
+      country_code: undefined,
+      first_name: undefined,
+      last_name: undefined,
+      phone: undefined,
+      postal_code: undefined,
+      province: undefined,
+    }
   }
 
   const keys = Object.keys(order.shipping_address).map(
@@ -127,57 +138,6 @@ const getDefaultShippingValues = (): Subset<ShippingFormType> => {
     price: undefined,
   }
 }
-
-// const getReturnableItemsValues = (
-//   order: Order,
-//   isClaim = false
-// ): Subset<ItemsToReturnFormType> => {
-//   const returnItems: ItemsToReturnFormType = {
-//     items: [],
-//   }
-
-//   const returnableItems = getAllReturnableItems(order, isClaim)
-
-//   returnableItems.forEach((item) => {
-//     if (isLineItemNotReturnable(item, order)) {
-//       return // If item in not returnable either because it's already returned or the line item has been cancelled, we skip it.
-//     }
-
-//     const returnableQuantity = item.quantity - (item.returned_quantity || 0)
-
-//     let total: number
-
-//     if (item.total) {
-//       total = item.total
-//     } else if (item.tax_lines?.length > 0) {
-//       const taxRate = item.tax_lines.reduce((acc, line) => {
-//         return acc + line.rate / 100
-//       }, 0)
-
-//       total = item.unit_price * item.quantity * (1 + taxRate)
-//     } else {
-//       total = item.unit_price * item.quantity
-//     }
-
-//     returnItems.items.push({
-//       item_id: item.id,
-//       thumbnail: item.thumbnail,
-//       refundable: item.refundable || 0,
-//       product_title: item.variant.product.title,
-//       variant_title: item.variant.title,
-//       quantity: returnableQuantity,
-//       original_quantity: item.quantity,
-//       total,
-//       return_reason_details: {
-//         note: undefined,
-//         reason: undefined,
-//       },
-//       return: false,
-//     })
-//   })
-
-//   return returnItems
-// }
 
 const getReturnableItemsValues = (order: Order) => {
   const returnItems: ItemsToReturnFormType = {
