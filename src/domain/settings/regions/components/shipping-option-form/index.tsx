@@ -236,7 +236,7 @@ const ShippingOptionForm = ({ form, region, isEdit = false }: Props) => {
                 region.currency_code
               ),
               validate: (value) => {
-                if (!value) {
+                if (value === null) {
                   return true
                 }
 
@@ -260,7 +260,7 @@ const ShippingOptionForm = ({ form, region, isEdit = false }: Props) => {
                     }
                   />
                   <PriceFormInput
-                    amount={value || undefined}
+                    amount={typeof value === "number" ? value : undefined}
                     onChange={onChange}
                     name="requirements.max_subtotal.amount"
                     currencyCode={region.currency_code}
