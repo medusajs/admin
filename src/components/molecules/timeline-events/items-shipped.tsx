@@ -11,7 +11,7 @@ type ItemsShippedProps = {
 const ItemsShipped: React.FC<ItemsShippedProps> = ({ event }) => {
   const title =
     event.sourceType === "claim"
-      ? "Claim Items Shipped"
+      ? "Replacement Items Shipped"
       : event.sourceType === "exchange"
       ? "Exchange Items Shipped"
       : "Items Shipped"

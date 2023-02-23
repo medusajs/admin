@@ -267,7 +267,7 @@ const OrderDetails = () => {
 
   if (!order && isLoading) {
     return (
-      <div className="w-full h-full flex items-center justify-center">
+      <div className="flex h-full w-full items-center justify-center">
         <Spinner size="small" variant="secondary" />
       </div>
     )
@@ -286,19 +286,19 @@ const OrderDetails = () => {
           previousRoute="/a/orders"
         />
         {isLoading || !order ? (
-          <BodyCard className="w-full pt-2xlarge flex items-center justify-center">
+          <BodyCard className="flex w-full items-center justify-center pt-2xlarge">
             <Spinner size={"large"} variant={"secondary"} />
           </BodyCard>
         ) : (
           <>
             <div className="flex space-x-4">
-              <div className="flex flex-col w-7/12 h-full">
+              <div className="flex h-full w-7/12 flex-col">
                 <BodyCard
-                  className={"w-full mb-4 min-h-[200px]"}
+                  className={"mb-4 min-h-[200px] w-full"}
                   customHeader={
                     <Tooltip side="top" content={"Copy ID"}>
                       <button
-                        className="inter-xlarge-semibold text-grey-90 active:text-violet-90 cursor-pointer gap-x-2 flex items-center"
+                        className="inter-xlarge-semibold flex cursor-pointer items-center gap-x-2 text-grey-90 active:text-violet-90"
                         onClick={handleCopy}
                       >
                         #{order.display_id} <ClipboardCopyIcon size={16} />
@@ -319,13 +319,13 @@ const OrderDetails = () => {
                     },
                   ]}
                 >
-                  <div className="flex mt-6 space-x-6 divide-x">
+                  <div className="mt-6 flex space-x-6 divide-x">
                     <div className="flex flex-col">
-                      <div className="inter-smaller-regular text-grey-50 mb-1">
+                      <div className="inter-smaller-regular mb-1 text-grey-50">
                         Email
                       </div>
                       <button
-                        className="text-grey-90 active:text-violet-90 cursor-pointer gap-x-1 flex items-center"
+                        className="flex cursor-pointer items-center gap-x-1 text-grey-90 active:text-violet-90"
                         onClick={handleCopyEmail}
                       >
                         {order.email}
@@ -333,13 +333,13 @@ const OrderDetails = () => {
                       </button>
                     </div>
                     <div className="flex flex-col pl-6">
-                      <div className="inter-smaller-regular text-grey-50 mb-1">
+                      <div className="inter-smaller-regular mb-1 text-grey-50">
                         Phone
                       </div>
                       <div>{order.shipping_address?.phone || "N/A"}</div>
                     </div>
                     <div className="flex flex-col pl-6">
-                      <div className="inter-smaller-regular text-grey-50 mb-1">
+                      <div className="inter-smaller-regular mb-1 text-grey-50">
                         Payment
                       </div>
                       <div>
@@ -353,7 +353,7 @@ const OrderDetails = () => {
                 <OrderEditContext.Consumer>
                   {({ showModal }) => (
                     <BodyCard
-                      className={"w-full mb-4 min-h-0 h-auto"}
+                      className={"mb-4 h-auto min-h-0 w-full"}
                       title="Summary"
                       actionables={
                         isFeatureEnabled("order_editing")
@@ -385,7 +385,7 @@ const OrderDetails = () => {
                             currency={order.currency_code}
                             totalAmount={-1 * order.discount_total}
                             totalTitle={
-                              <div className="flex inter-small-regular text-grey-90 items-center">
+                              <div className="inter-small-regular flex items-center text-grey-90">
                                 Discount:{" "}
                                 <Badge className="ml-3" variant="default">
                                   {discount.code}
@@ -400,7 +400,7 @@ const OrderDetails = () => {
                             currency={order.currency_code}
                             totalAmount={-1 * order.gift_card_total}
                             totalTitle={
-                              <div className="flex inter-small-regular text-grey-90 items-center">
+                              <div className="inter-small-regular flex items-center text-grey-90">
                                 Gift card:
                                 <Badge className="ml-3" variant="default">
                                   {giftCard.code}
@@ -447,7 +447,7 @@ const OrderDetails = () => {
                 </OrderEditContext.Consumer>
 
                 <BodyCard
-                  className={"w-full mb-4 min-h-0 h-auto"}
+                  className={"mb-4 h-auto min-h-0 w-full"}
                   title="Payment"
                   status={
                     <PaymentStatusComponent status={order.payment_status} />
@@ -472,9 +472,9 @@ const OrderDetails = () => {
                           )}`}
                         />
                         {!!payment.amount_refunded && (
-                          <div className="flex justify-between mt-4">
+                          <div className="mt-4 flex justify-between">
                             <div className="flex">
-                              <div className="text-grey-40 mr-2">
+                              <div className="mr-2 text-grey-40">
                                 <CornerDownRightIcon />
                               </div>
                               <div className="inter-small-regular text-grey-90">
@@ -482,7 +482,7 @@ const OrderDetails = () => {
                               </div>
                             </div>
                             <div className="flex">
-                              <div className="inter-small-regular text-grey-90 mr-3">
+                              <div className="inter-small-regular mr-3 text-grey-90">
                                 -
                                 {formatAmountWithSymbol({
                                   amount: payment.amount_refunded,
@@ -497,12 +497,12 @@ const OrderDetails = () => {
                         )}
                       </div>
                     ))}
-                    <div className="flex justify-between mt-4">
+                    <div className="mt-4 flex justify-between">
                       <div className="inter-small-semibold text-grey-90">
                         Total Paid
                       </div>
                       <div className="flex">
-                        <div className="inter-small-semibold text-grey-90 mr-3">
+                        <div className="inter-small-semibold mr-3 text-grey-90">
                           {formatAmountWithSymbol({
                             amount: order.paid_total - order.refunded_total,
                             currency: order.currency_code,
@@ -516,7 +516,7 @@ const OrderDetails = () => {
                   </div>
                 </BodyCard>
                 <BodyCard
-                  className={"w-full mb-4 min-h-0 h-auto"}
+                  className={"mb-4 h-auto min-h-0 w-full"}
                   title="Fulfillment"
                   status={
                     <FulfillmentStatusComponent
@@ -543,15 +543,15 @@ const OrderDetails = () => {
                         <span className="inter-small-regular text-grey-50">
                           Shipping Method
                         </span>
-                        <span className="inter-small-regular text-grey-90 mt-2">
+                        <span className="inter-small-regular mt-2 text-grey-90">
                           {method?.shipping_option?.name || ""}
                         </span>
-                        <div className="flex flex-grow items-center mt-4 w-full">
+                        <div className="mt-4 flex w-full flex-grow items-center">
                           <JSONView data={method?.data} />
                         </div>
                       </div>
                     ))}
-                    <div className="mt-6 inter-small-regular ">
+                    <div className="inter-small-regular mt-6 ">
                       {allFulfillments.map((fulfillmentObj, i) => (
                         <FormattedFulfillment
                           key={i}
@@ -564,13 +564,13 @@ const OrderDetails = () => {
                   </div>
                 </BodyCard>
                 <BodyCard
-                  className={"w-full mb-4 min-h-0 h-auto"}
+                  className={"mb-4 h-auto min-h-0 w-full"}
                   title="Customer"
                   actionables={customerActionables}
                 >
                   <div className="mt-6">
-                    <div className="flex w-full space-x-4 items-center">
-                      <div className="flex w-[40px] h-[40px] ">
+                    <div className="flex w-full items-center space-x-4">
+                      <div className="flex h-[40px] w-[40px] ">
                         <Avatar
                           user={order.customer}
                           font="inter-large-semibold"
@@ -593,12 +593,12 @@ const OrderDetails = () => {
                         )}
                       </div>
                     </div>
-                    <div className="flex mt-6 space-x-6 divide-x">
+                    <div className="mt-6 flex space-x-6 divide-x">
                       <div className="flex flex-col">
-                        <div className="inter-small-regular text-grey-50 mb-1">
+                        <div className="inter-small-regular mb-1 text-grey-50">
                           Contact
                         </div>
-                        <div className="flex flex-col inter-small-regular">
+                        <div className="inter-small-regular flex flex-col">
                           <span>{order.email}</span>
                           <span>{order.shipping_address?.phone || ""}</span>
                         </div>

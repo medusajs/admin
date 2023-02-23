@@ -1,12 +1,12 @@
-import { useContext, useMemo } from "react"
-import { AccountContext } from "../context/account"
+import { useAdminGetSession } from "medusa-react"
+import { useMemo } from "react"
 
 export const useIsMe = (userId: string | undefined) => {
-  const account = useContext(AccountContext)
+  const { user } = useAdminGetSession()
 
   const isMe = useMemo(() => {
-    return !account.id || !userId ? false : account.id === userId
-  }, [account, userId])
+    return user?.id === userId
+  }, [user, userId])
 
   return isMe
 }

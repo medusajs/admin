@@ -14,7 +14,7 @@ export enum EventIconColor {
   DEFAULT = "text-grey-50",
 }
 
-type EventContainerProps = {
+export type EventContainerProps = {
   icon: React.ReactNode
   iconColor?: EventIconColor
   title: string
@@ -72,13 +72,13 @@ const EventContainer: React.FC<EventContainerProps> = ({
         </div>
       </div>
       <div className="flex gap-x-xsmall">
-        <div className="w-5 flex justify-center pt-base">
-          {!isFirst && <div className="w-px min-h-[24px]" />}
+        <div className="flex w-5 justify-center pt-base">
+          {!isFirst && <div className="min-h-[24px] w-px" />}
         </div>
-        <div className="mt-2xsmall w-full inter-small-regular">
+        <div className="inter-small-regular mt-2xsmall w-full">
           <div className="flex items-center">
             <Tooltip content={new Date(time).toUTCString()}>
-              <div className="text-grey-50 inter-small-regular">
+              <div className="inter-small-regular text-grey-50">
                 {moment(time).fromNow()}
               </div>
             </Tooltip>
@@ -99,7 +99,7 @@ const EventContainer: React.FC<EventContainerProps> = ({
 }
 
 const Dot = ({ size = "2px", bg = "bg-grey-50" }) => {
-  return <div className={`w-[2px] h-[2px] aspect-square ${bg} rounded-full`} />
+  return <div className={`aspect-square h-[2px] w-[2px] ${bg} rounded-full`} />
 }
 
 export default EventContainer
