@@ -20,6 +20,7 @@ import ProductsRoute from "../domain/products"
 import SalesChannels from "../domain/sales-channels"
 import Settings from "../domain/settings"
 import PublishableApiKeys from "../domain/publishable-api-keys"
+import Inventory from "../domain/inventory"
 
 const IndexPage = () => {
   const navigate = useNavigate()
@@ -55,6 +56,7 @@ const DashboardRoutes = () => {
               path="publishable-api-keys/*"
               element={<PublishableApiKeys />}
             />
+            <Route path="inventory/*" element={<Inventory />} />
           </Routes>
         </Layout>
       </DndProvider>
