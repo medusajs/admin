@@ -46,6 +46,7 @@ function ProductCategoriesList(props: ProductCategoriesListProps) {
 
     return props.categories
       .filter((c) => !c.parent_category_id)
+      .sort((a, b) => a.name.localeCompare(b.name))
       .map((c) => visit(c))
   }, [props.categories])
 
