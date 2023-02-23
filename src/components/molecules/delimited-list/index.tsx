@@ -1,8 +1,8 @@
 import React from "react"
 import Tooltip from "../../atoms/tooltip"
 
-type DelimitedListProps<T = unknown> = {
-  list: Record<string, T>[]
+type DelimitedListProps = {
+  list: string[]
   delimit?: number
 }
 
