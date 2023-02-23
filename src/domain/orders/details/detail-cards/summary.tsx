@@ -11,6 +11,8 @@ import { sum } from "lodash"
 import { useAdminReservations } from "medusa-react"
 import StatusIndicator from "../../../../components/fundamentals/status-indicator"
 import { ActionType } from "../../../../components/molecules/actionables"
+import useToggleState from "../../../../hooks/use-toggle-state"
+import AllocateItemsModal from "../allocations/allocate-items-modal"
 
 type SummaryCardProps = {
   order: Order
@@ -20,14 +22,20 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
 }: {
   order: Order
 }) => {
+  const {
+    state: allocationModalIsOpen,
+    open: showAllocationModal,
+    close: closeAllocationModal,
+  } = useToggleState()
+
   const { isFeatureEnabled } = useContext(FeatureFlagContext)
   const { showModal } = useContext(OrderEditContext)
-  const { reservations } = useAdminReservations({
+  const { reservations, isLoading } = useAdminReservations({
     line_item_id: order.items.map((item) => item.id),
   })
 
   const reservationItemsMap = useMemo(() => {
-    if (!reservations?.length) {
+    if (!reservations?.length || isLoading) {
       return {}
     }
 
@@ -40,7 +48,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
         : [item]
       return acc
     }, {})
-  }, [reservations])
+  }, [reservations, isLoading])
 
   const allItemsReserved = useMemo(() => {
     return order.items.every((item) => {
@@ -94,11 +102,11 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
     if (isFeatureEnabled("inventoryService")) {
       actionables.push({
         label: "Allocate",
-        onClick: () => {},
+        onClick: showAllocationModal,
       })
     }
     return actionables
-  }, [showModal])
+  }, [showModal, isFeatureEnabled, showAllocationModal])
 
   return (
     <BodyCard
@@ -108,7 +116,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
         isFeatureEnabled("inventoryService") && (
           <StatusIndicator
             variant={allItemsReserved ? "success" : "danger"}
-            title="Awaits allocation"
+            title={allItemsReserved ? "Allocated" : "Awaits allocation"}
             className="rounded-rounded border px-3 py-1.5"
           />
         )
@@ -192,6 +200,13 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
           currency={order.currency_code}
         />
       </div>
+      {allocationModalIsOpen && (
+        <AllocateItemsModal
+          reservationItemsMap={reservationItemsMap}
+          order={order}
+          close={closeAllocationModal}
+        />
+      )}
     </BodyCard>
   )
 }

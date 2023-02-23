@@ -31,7 +31,6 @@ import RawJSON from "../../../components/organisms/raw-json"
 import Timeline from "../../../components/organisms/timeline"
 import { AddressType } from "../../../components/templates/address-form"
 import TransferOrdersModal from "../../../components/templates/transfer-orders-modal"
-import { FeatureFlagContext } from "../../../context/feature-flag"
 import useClipboard from "../../../hooks/use-clipboard"
 import useImperativeDialog from "../../../hooks/use-imperative-dialog"
 import useNotification from "../../../hooks/use-notification"
@@ -117,7 +116,6 @@ const gatherAllFulfillments = (order) => {
 const OrderDetails = () => {
   const { id } = useParams()
 
-  const { isFeatureEnabled } = React.useContext(FeatureFlagContext)
   const dialog = useImperativeDialog()
 
   const [addressModal, setAddressModal] = useState<null | {

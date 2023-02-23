@@ -1,5 +1,6 @@
 import { LineItem, ReservationItemDTO } from "@medusajs/medusa"
-import React, { useContext, useMemo } from "react"
+import { sum } from "lodash"
+import React, { useContext } from "react"
 import Tooltip from "../../../../components/atoms/tooltip"
 import CheckCircleFillIcon from "../../../../components/fundamentals/icons/check-circle-fill-icon"
 import CircleQuaterSolid from "../../../../components/fundamentals/icons/circle-quater-solid"
@@ -10,17 +11,11 @@ import { formatAmountWithSymbol } from "../../../../utils/prices"
 type OrderLineProps = {
   item: LineItem
   currencyCode: string
-  reservation?: ReservationItemDTO
+  reservation?: ReservationItemDTO[]
 }
 
 const OrderLine = ({ item, currencyCode, reservation }: OrderLineProps) => {
-  console.log(reservation)
-
   const { isFeatureEnabled } = useContext(FeatureFlagContext)
-  const inventoryEnabled = useMemo(
-    () => isFeatureEnabled("inventoryService"),
-    []
-  )
   return (
     <div className="mx-[-5px] mb-1 flex h-[64px] justify-between rounded-rounded py-2 px-[5px] hover:bg-grey-5">
       <div className="flex justify-center space-x-4">
@@ -57,7 +52,7 @@ const OrderLine = ({ item, currencyCode, reservation }: OrderLineProps) => {
           <div className="inter-small-regular text-grey-50">
             x {item.quantity}
           </div>
-          {inventoryEnabled && (
+          {isFeatureEnabled("inventoryService") && (
             <ReservationIndicator
               reservation={reservation}
               lineItemQuantity={item.quantity}
@@ -84,10 +79,12 @@ const ReservationIndicator = ({
   reservation,
   lineItemQuantity,
 }: {
-  reservation?: ReservationItemDTO
+  reservation?: ReservationItemDTO[]
   lineItemQuantity: number
 }) => {
-  const awaitingAllocation = lineItemQuantity - (reservation?.quantity || 0)
+  // empty array sums to 0
+  const reservationsSum = sum(reservation?.map((r) => r.quantity) || [])
+  const awaitingAllocation = lineItemQuantity - reservationsSum
   return (
     <div className={awaitingAllocation ? "text-rose-50" : "text-grey-40"}>
       <Tooltip
