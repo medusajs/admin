@@ -33,7 +33,13 @@ export const FeatureFlagProvider = ({ children }) => {
       return
     }
 
-    setFeatureFlags(store["feature_flags"])
+    setFeatureFlags([
+      ...store["feature_flags"],
+      ...store["modules"].map((module) => ({
+        key: module.module,
+        value: true,
+      })),
+    ])
   }, [isFetching, store, isLoggedIn])
 
   const featureToggleList = featureFlags.reduce(
