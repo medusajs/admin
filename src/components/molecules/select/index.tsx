@@ -1,5 +1,6 @@
 import clsx from "clsx"
 import React, {
+  CSSProperties,
   useContext,
   useEffect,
   useImperativeHandle,
@@ -31,6 +32,7 @@ type MultiSelectProps = InputHeaderProps & {
   placeholder?: string
   isMultiSelect?: boolean
   labelledBy?: string
+  menuPortalStyles?: CSSProperties
   options: { label: string; value: string | null; disabled?: boolean }[]
   value:
     | { label: string; value: string }[]
@@ -69,6 +71,7 @@ const SSelect = React.forwardRef(
       placeholder = "Search...",
       options,
       onCreateOption,
+      menuPortalStyles = {},
     }: MultiSelectProps,
     ref
   ) => {
@@ -176,7 +179,9 @@ const SSelect = React.forwardRef(
               }}
               closeMenuOnSelect={!isMultiSelect}
               blurInputOnSelect={!isMultiSelect}
-              styles={{ menuPortal: (base) => ({ ...base, zIndex: 60 }) }}
+              styles={{
+                menuPortal: (base) => ({ ...base, ...menuPortalStyles }),
+              }}
               hideSelectedOptions={false}
               menuPortalTarget={portalRef?.current?.lastChild || document.body}
               menuPlacement="auto"

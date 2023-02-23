@@ -99,36 +99,39 @@ function EditProductCategoriesSideModal(
         {/* === DIVIDER === */}
 
         <div className="flex-grow">
-          <div className="my-6">
-            <InputField
-              label="Name"
-              type="string"
-              name="name"
-              value={name}
-              placeholder="Give this category a name"
-              onChange={(ev) => setName(ev.target.value)}
-            />
+          <InputField
+            label="Name"
+            type="string"
+            name="name"
+            value={name}
+            className="my-6"
+            placeholder="Give this category a name"
+            onChange={(ev) => setName(ev.target.value)}
+          />
 
-            <InputField
-              label="Handle"
-              type="string"
-              name="handle"
-              value={handle}
-              placeholder="Custom handle"
-              onChange={(ev) => setHandle(ev.target.value)}
-            />
-
-            <Select
-              label="Status"
-              options={statusOptions}
-              value={statusOptions[isActive ? 0 : 1]}
-              onChange={(o) => setIsActive(o.value === "active")}
-            />
-          </div>
+          <InputField
+            label="Handle"
+            type="string"
+            name="handle"
+            value={handle}
+            className="my-6"
+            placeholder="Custom handle"
+            onChange={(ev) => setHandle(ev.target.value)}
+          />
 
           <Select
+            label="Status"
+            options={statusOptions}
+            menuPortalStyles={{ zIndex: 300 }}
+            value={statusOptions[isActive ? 0 : 1]}
+            onChange={(o) => setIsActive(o.value === "active")}
+          />
+
+          <Select
+            className="my-6"
             label="Visibility"
             options={visibilityOptions}
+            menuPortalStyles={{ zIndex: 300 }}
             value={visibilityOptions[isPublic ? 0 : 1]}
             onChange={(o) => setIsPublic(o.value === "public")}
           />

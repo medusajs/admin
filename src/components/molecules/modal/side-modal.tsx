@@ -43,7 +43,7 @@ function SideModal(props: SideModalProps) {
               background: "white",
               right: 0,
               top: 0,
-              zIndex: 9999,
+              zIndex: 200,
             }}
             className="rounded border overflow-hidden"
             animate={{ right: 0 }}
