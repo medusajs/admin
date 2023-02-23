@@ -28,3 +28,10 @@ export const isLineItemReturned = (item: Omit<LineItem, "beforeInsert">) => {
     return true
   }
 }
+
+export const isLineItemNotReturnable = (
+  item: Omit<LineItem, "beforeInsert">,
+  order: Order
+) => {
+  return isLineItemCanceled(item, order) || isLineItemReturned(item)
+}

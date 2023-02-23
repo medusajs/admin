@@ -1,4 +1,11 @@
-import { OrderEdit, Return, Swap } from "@medusajs/medusa"
+import {
+  ClaimOrder,
+  Order,
+  OrderEdit,
+  Refund,
+  Return,
+  Swap,
+} from "@medusajs/medusa"
 import {
   useAdminNotes,
   useAdminNotifications,
@@ -7,6 +14,7 @@ import {
 } from "medusa-react"
 import { useContext, useMemo } from "react"
 import { FeatureFlagContext } from "../context/feature-flag"
+import { orderReturnableFields } from "../domain/orders/details/utils/order-returnable-fields"
 
 export interface TimelineEvent {
   id: string
@@ -95,6 +103,7 @@ export interface RefundEvent extends TimelineEvent {
   reason: string
   currencyCode: string
   note?: string
+  refund: Refund
 }
 
 enum ReturnStatus {
@@ -109,6 +118,7 @@ export interface ReturnEvent extends TimelineEvent {
   status: ReturnStatus
   currentStatus?: ReturnStatus
   raw: Return
+  order: Order
   refunded?: boolean
 }
 
@@ -129,15 +139,16 @@ export interface ExchangeEvent extends TimelineEvent, CancelableEvent {
 }
 
 export interface ClaimEvent extends TimelineEvent, CancelableEvent {
+  returnStatus: ReturnStatus
   fulfillmentStatus?: string
-  refundStatus?: string
-  refundAmount?: number
+  refundStatus: string
+  refundAmount: number
   currencyCode: string
   claimItems: OrderItem[]
   newItems: OrderItem[]
   claimType: string
-  claim: any
-  order: any
+  claim: ClaimOrder
+  order: Order
 }
 
 export interface NotificationEvent extends TimelineEvent {
@@ -146,7 +157,9 @@ export interface NotificationEvent extends TimelineEvent {
 }
 
 export const useBuildTimeline = (orderId: string) => {
-  const { order, refetch } = useAdminOrder(orderId, {})
+  const { order, refetch } = useAdminOrder(orderId, {
+    fields: orderReturnableFields,
+  })
 
   const { order_edits: edits } = useAdminOrderEdits({ order_id: orderId })
 
@@ -294,6 +307,7 @@ export const useBuildTimeline = (orderId: string) => {
         reason: event.reason,
         time: event.created_at,
         type: "refund",
+        refund: event,
       } as RefundEvent)
     }
 
@@ -329,6 +343,7 @@ export const useBuildTimeline = (orderId: string) => {
         type: "return",
         noNotification: event.no_notification,
         orderId: order.id,
+        order: order,
         raw: event as unknown as Return,
         refunded: getWasRefundClaim(event.claim_order_id, order),
       } as ReturnEvent)
@@ -340,8 +355,10 @@ export const useBuildTimeline = (orderId: string) => {
           status: "requested",
           time: event.created_at,
           type: "return",
+          raw: event as unknown as Return,
           currentStatus: event.status,
           noNotification: event.no_notification,
+          order: order,
           orderId: order.id,
         } as ReturnEvent)
       }
@@ -410,6 +427,7 @@ export const useBuildTimeline = (orderId: string) => {
             },
           })),
           fulfillmentStatus: claim.fulfillment_status,
+          returnStatus: claim.return_order?.status,
           refundStatus: claim.payment_status,
           refundAmount: claim.refund_amount,
           currencyCode: order.currency_code,

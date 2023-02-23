@@ -22,6 +22,7 @@ export type AddressPayload = {
 export enum AddressType {
   SHIPPING = "shipping",
   BILLING = "billing",
+  LOCATION = "location",
 }
 
 type AddressFormProps = {
@@ -29,6 +30,7 @@ type AddressFormProps = {
   countryOptions: Option[]
   type: AddressType
   required?: boolean
+  noTitle?: boolean
 }
 
 const AddressForm = ({
@@ -36,6 +38,7 @@ const AddressForm = ({
   countryOptions,
   type,
   required = true,
+  noTitle = false,
 }: AddressFormProps) => {
   const {
     register,
@@ -43,55 +46,65 @@ const AddressForm = ({
     control,
     formState: { errors },
   } = form
-
   return (
     <div>
-      <span className="inter-base-semibold">General</span>
-      <div className="grid grid-cols-2 gap-large mt-4 mb-8">
-        <Input
-          {...register(path("first_name"), {
-            required: required ? FormValidator.required("First name") : false,
-            pattern: FormValidator.whiteSpaceRule("First name"),
-          })}
-          placeholder="First Name"
-          label="First Name"
-          required={required}
-          errors={errors}
-        />
-        <Input
-          {...form.register(path("last_name"), {
-            required: required ? FormValidator.required("Last name") : false,
-            pattern: FormValidator.whiteSpaceRule("Last name"),
-          })}
-          placeholder="Last Name"
-          label="Last Name"
-          required={required}
-          errors={errors}
-        />
-        <Input
-          {...form.register(path("company"), {
-            pattern: FormValidator.whiteSpaceRule("Company"),
-          })}
-          placeholder="Company"
-          label="Company"
-          errors={errors}
-        />
-        <Input
-          {...form.register(path("phone"))}
-          placeholder="Phone"
-          label="Phone"
-          errors={errors}
-        />
-      </div>
-
-      <span className="inter-base-semibold">{`${
-        type === AddressType.BILLING
-          ? "Billing Address"
-          : AddressType.SHIPPING
-          ? "Shipping Address"
-          : "Address"
-      }`}</span>
-      <div className="grid grid-cols-1 gap-y-large mt-4">
+      {(type === AddressType.SHIPPING || type === AddressType.BILLING) && (
+        <>
+          <span className="inter-base-semibold">General</span>
+          <div className="grid grid-cols-2 mt-4 mb-8 gap-large">
+            <Input
+              {...register(path("first_name"), {
+                required: required
+                  ? FormValidator.required("First name")
+                  : false,
+                pattern: FormValidator.whiteSpaceRule("First name"),
+              })}
+              placeholder="First Name"
+              label="First Name"
+              required={required}
+              errors={errors}
+            />
+            <Input
+              {...form.register(path("last_name"), {
+                required: required
+                  ? FormValidator.required("Last name")
+                  : false,
+                pattern: FormValidator.whiteSpaceRule("Last name"),
+              })}
+              placeholder="Last Name"
+              label="Last Name"
+              required={required}
+              errors={errors}
+            />
+            <Input
+              {...form.register(path("company"), {
+                pattern: FormValidator.whiteSpaceRule("Company"),
+              })}
+              placeholder="Company"
+              label="Company"
+              errors={errors}
+            />
+            <Input
+              {...form.register(path("phone"))}
+              placeholder="Phone"
+              label="Phone"
+              errors={errors}
+            />
+          </div>
+        </>
+      )}
+      {!noTitle && (
+        <span className="inter-base-semibold">
+          {`${
+            type === AddressType.BILLING
+              ? "Billing Address"
+              : type === AddressType.SHIPPING
+              ? "Shipping Address"
+              : "Address"
+          }`}
+        </span>
+      )}
+      <div className="grid grid-cols-2 mt-4 gap-y-large gap-x-large">
         <Input
           {...form.register(path("address_1"), {
             required: required ? FormValidator.required("Address 1") : false,
@@ -110,61 +123,56 @@ const AddressForm = ({
           label="Address 2"
           errors={errors}
         />
-        <div className="grid grid-cols-[144px_1fr] gap-large">
-          <Input
-            {...form.register(path("postal_code"), {
-              required: required
-                ? FormValidator.required("Postal code")
-                : false,
-              pattern: FormValidator.whiteSpaceRule("Postal code"),
-            })}
-            placeholder="Postal code"
-            label="Postal code"
-            required={required}
-            autoComplete="off"
-            errors={errors}
-          />
-          <Input
-            placeholder="City"
-            label="City"
-            {...form.register(path("city"), {
-              required: required ? FormValidator.required("City") : false,
-              pattern: FormValidator.whiteSpaceRule("City"),
-            })}
-            required={required}
-            errors={errors}
-          />
-        </div>
-        <div className="grid grid-cols-2 gap-large">
-          <Input
-            {...form.register(path("province"), {
-              pattern: FormValidator.whiteSpaceRule("Province"),
-            })}
-            placeholder="Province"
-            label="Province"
-            errors={errors}
-          />
-          <Controller
-            control={control}
-            name={path("country_code")}
-            rules={{
-              required: required ? FormValidator.required("Country") : false,
-            }}
-            render={({ field: { value, onChange } }) => {
-              return (
-                <NextSelect
-                  label="Country"
-                  required={required}
-                  value={value}
-                  options={countryOptions}
-                  onChange={onChange}
-                  name={path("country_code")}
-                  errors={errors}
-                />
-              )
-            }}
-          />
-        </div>
+        <Input
+          {...form.register(path("postal_code"), {
+            required: required ? FormValidator.required("Postal code") : false,
+            pattern: FormValidator.whiteSpaceRule("Postal code"),
+          })}
+          placeholder="Postal code"
+          label="Postal code"
+          required={required}
+          autoComplete="off"
+          errors={errors}
+        />
+        <Input
+          placeholder="City"
+          label="City"
+          {...form.register(path("city"), {
+            required: required ? FormValidator.required("City") : false,
+            pattern: FormValidator.whiteSpaceRule("City"),
+          })}
+          required={required}
+          errors={errors}
+        />
+        <Input
+          {...form.register(path("province"), {
+            pattern: FormValidator.whiteSpaceRule("Province"),
+          })}
+          placeholder="Province"
+          label="Province"
+          errors={errors}
+        />
+        <Controller
+          control={control}
+          name={path("country_code")}
+          rules={{
+            required: required ? FormValidator.required("Country") : false,
+          }}
+          render={({ field: { value, onChange } }) => {
+            return (
+              <NextSelect
+                label="Country"
+                required={required}
+                value={value}
+                options={countryOptions}
+                onChange={onChange}
+                name={path("country_code")}
+                errors={errors}
+                isClearable={!required}
+              />
+            )
+          }}
+        />
       </div>
     </div>
   )
