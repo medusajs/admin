@@ -20,7 +20,8 @@
     "paths": {
       "gatsby": ["./src/compat/gatsby-compat.tsx"],
       "@reach/router": ["./src/compat/reach-router-compat.tsx"]
-    }
+    },
+    "noErrorTruncation": true
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }],
