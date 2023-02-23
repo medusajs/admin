@@ -1,6 +1,7 @@
 import { Order } from "@medusajs/medusa"
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table"
 import { FieldArrayWithId, useFieldArray } from "react-hook-form"
+import InputError from "../../../../components/atoms/input-error"
 import { NestedForm } from "../../../../utils/nested-form"
 import { ItemsToReceiveTable } from "./items-to-receive-table"
 import { useItemsToReceiveColumns } from "./use-items-to-receive-columns"
@@ -36,7 +37,11 @@ type Props = {
 }
 
 export const ItemsToReceiveForm = ({ form, order }: Props) => {
-  const { control, path } = form
+  const {
+    control,
+    path,
+    formState: { errors },
+  } = form
 
   const { fields } = useFieldArray({
     control,
@@ -58,7 +63,9 @@ export const ItemsToReceiveForm = ({ form, order }: Props) => {
   return (
     <div className="flex flex-col gap-y-xsmall">
       <h2 className="inter-base-semibold">Items to receive</h2>
+
       <ItemsToReceiveTable instance={tableInstance} />
+      <InputError errors={errors} name={path("items")} />
     </div>
   )
 }

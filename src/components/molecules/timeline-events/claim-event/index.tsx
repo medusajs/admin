@@ -7,6 +7,7 @@ import { Fragment } from "react"
 import CreateFulfillmentModal from "../../../../domain/orders/details/create-fulfillment"
 import { ReceiveReturnMenu } from "../../../../domain/orders/details/receive-return"
 import { orderReturnableFields } from "../../../../domain/orders/details/utils/order-returnable-fields"
+import useOrdersExpandParam from "../../../../domain/orders/details/utils/use-admin-expand-paramter"
 import { ClaimEvent } from "../../../../hooks/use-build-timeline"
 import useNotification from "../../../../hooks/use-notification"
 import useToggleState from "../../../../hooks/use-toggle-state"
@@ -45,9 +46,11 @@ const Claim = ({ event }: Props) => {
     close: closeFulfillMenu,
   } = useToggleState()
 
+  const { orderRelations } = useOrdersExpandParam()
   // Orders and returns aren't linked in `medusa-react` so we need to manually refetch the order
   const { refetch } = useAdminOrder(event.orderId, {
     fields: orderReturnableFields,
+    expand: orderRelations,
   })
 
   const notification = useNotification()

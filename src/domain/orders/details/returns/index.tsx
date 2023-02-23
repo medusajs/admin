@@ -300,6 +300,7 @@ const ReturnMenu: React.FC<ReturnMenuProps> = ({ order, onDismiss }) => {
                 type="submit"
                 size="small"
                 variant="primary"
+                disabled={Object.keys(toReturn).length === 0}
               >
                 Submit
               </Button>

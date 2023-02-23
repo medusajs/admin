@@ -13,6 +13,7 @@ import { RefundAmountFormType } from "../../components/refund-amount-form"
 import { ReceiveReturnSummary } from "../../components/rma-summaries/receive-return-summary"
 import { getDefaultReceiveReturnValues } from "../utils/get-default-values"
 import { orderReturnableFields } from "../utils/order-returnable-fields"
+import useOrdersExpandParam from "../utils/use-admin-expand-paramter"
 
 type Props = {
   order: Order
@@ -27,8 +28,10 @@ export type ReceiveReturnFormType = {
 
 export const ReceiveReturnMenu = ({ order, returnRequest, onClose }: Props) => {
   const { mutate, isLoading } = useAdminReceiveReturn(returnRequest.id)
+  const { orderRelations } = useOrdersExpandParam()
   const { refetch } = useAdminOrder(order.id, {
     fields: orderReturnableFields,
+    expand: orderRelations,
   })
 
   /**
@@ -65,6 +68,7 @@ export const ReceiveReturnMenu = ({ order, returnRequest, onClose }: Props) => {
   const {
     handleSubmit,
     reset,
+    setError,
     formState: { isDirty },
   } = form
 
@@ -75,6 +79,15 @@ export const ReceiveReturnMenu = ({ order, returnRequest, onClose }: Props) => {
   }, [order, returnRequest, reset])
 
   const onSubmit = handleSubmit((data) => {
+    if (data.receive_items.items.filter((it) => it.receive).length === 0) {
+      setError("receive_items.items", {
+        type: "manual",
+        message: "Please select at least one item to receive",
+      })
+
+      return
+    }
+
     let refundAmount: number | undefined = undefined
 
     /**
