@@ -6,10 +6,7 @@ import App from "./App"
 import "./assets/styles/global.css"
 import { LayeredModalProvider } from "./components/molecules/modal/layered-modal"
 import { SteppedProvider } from "./components/molecules/modal/stepped-modal"
-import { AccountProvider } from "./context/account"
-import { CacheProvider } from "./context/cache"
 import { FeatureFlagProvider } from "./context/feature-flag"
-import { InterfaceProvider } from "./context/interface"
 import { medusaUrl } from "./services/config"
 import queryClient from "./services/queryClient"
 
@@ -21,17 +18,11 @@ const Page = ({ children }: PropsWithChildren) => {
         client: queryClient,
       }}
     >
-      <CacheProvider>
-        <AccountProvider>
-          <FeatureFlagProvider>
-            <InterfaceProvider>
-              <SteppedProvider>
-                <LayeredModalProvider>{children}</LayeredModalProvider>
-              </SteppedProvider>
-            </InterfaceProvider>
-          </FeatureFlagProvider>
-        </AccountProvider>
-      </CacheProvider>
+      <FeatureFlagProvider>
+        <SteppedProvider>
+          <LayeredModalProvider>{children}</LayeredModalProvider>
+        </SteppedProvider>
+      </FeatureFlagProvider>
     </MedusaProvider>
   )
 }
