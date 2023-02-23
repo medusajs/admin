@@ -1,5 +1,6 @@
 import { useAdminStore } from "medusa-react"
 import React, { useState } from "react"
+
 import { useFeatureFlag } from "../../../context/feature-flag"
 import BuildingsIcon from "../../fundamentals/icons/buildings-icon"
 import CartIcon from "../../fundamentals/icons/cart-icon"
@@ -12,7 +13,6 @@ import SwatchIcon from "../../fundamentals/icons/swatch-icon"
 import UsersIcon from "../../fundamentals/icons/users-icon"
 import SidebarMenuItem from "../../molecules/sidebar-menu-item"
 import UserMenu from "../../molecules/user-menu"
-import { useFeatureFlag } from "../../../context/feature-flag"
 
 const ICON_SIZE = 20
 
@@ -32,8 +32,6 @@ const Sidebar: React.FC = () => {
   // We store the `id` counter on the function object, as a state creates
   // infinite updates, and we do not want the variable to be free floating.
   triggerHandler.id = 0
-
-  const { isFeatureEnabled } = useFeatureFlag()
 
   const inventoryEnabled =
     isFeatureEnabled("inventoryService") &&

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react"
 
 import { ProductCategory } from "@medusajs/medusa"
+import { useAdminUpdateProductCategory } from "medusa-react"
 
 import SideModal from "../../../components/molecules/modal/side-modal"
 import Button from "../../../components/fundamentals/button"
 import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
-import { useAdminUpdateProductCategory } from "../../../../../medusa/packages/medusa-react"
 import InputField from "../../../components/molecules/input"
 import Select from "../../../components/molecules/select"
 import useNotification from "../../../hooks/use-notification"

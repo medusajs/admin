@@ -1,13 +1,14 @@
 import React, { useState } from "react"
 
+import { ProductCategory } from "@medusajs/medusa"
+import { useAdminCreateProductCategory } from "medusa-react"
+
 import useNotification from "../../../hooks/use-notification"
-import { useAdminCreateProductCategory } from "../../../../../medusa/packages/medusa-react"
 import FocusModal from "../../../components/molecules/modal/focus-modal"
 import Button from "../../../components/fundamentals/button"
 import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
 import InputField from "../../../components/molecules/input"
 import Select from "../../../components/molecules/select"
-import { ProductCategory } from "@medusajs/medusa"
 
 const visibilityOptions = [
   {

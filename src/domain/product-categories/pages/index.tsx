@@ -1,12 +1,12 @@
 import { createContext, useState } from "react"
 
 import { ProductCategory } from "@medusajs/medusa"
+import { useAdminProductCategories } from "medusa-react"
 
 import useToggleState from "../../../hooks/use-toggle-state"
 import BodyCard from "../../../components/organisms/body-card"
 import CreateProductCategory from "../modals/add-product-category"
 import ProductCategoriesList from "../components/product-categories-list"
-import { useAdminProductCategories } from "../../../../../medusa/packages/medusa-react"
 import EditProductCategoriesSideModal from "../modals/edit-product-category"
 
 /**
