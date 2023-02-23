@@ -1,4 +1,3 @@
-import React from "react"
 import { DndProvider } from "react-dnd"
 import { HTML5Backend } from "react-dnd-html5-backend"
 import { useHotkeys } from "react-hotkeys-hook"
@@ -12,15 +11,15 @@ import Collections from "../domain/collections"
 import Customers from "../domain/customers"
 import Discounts from "../domain/discounts"
 import GiftCards from "../domain/gift-cards"
+import Inventory from "../domain/inventory"
 import Oauth from "../domain/oauth"
 import Orders from "../domain/orders"
 import DraftOrders from "../domain/orders/draft-orders"
 import Pricing from "../domain/pricing"
 import ProductsRoute from "../domain/products"
+import PublishableApiKeys from "../domain/publishable-api-keys"
 import SalesChannels from "../domain/sales-channels"
 import Settings from "../domain/settings"
-import PublishableApiKeys from "../domain/publishable-api-keys"
-import Inventory from "../domain/inventory"
 
 const IndexPage = () => {
   const navigate = useNavigate()

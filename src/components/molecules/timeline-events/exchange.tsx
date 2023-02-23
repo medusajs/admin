@@ -1,15 +1,16 @@
+import { ReturnItem } from "@medusajs/medusa"
 import {
   useAdminCancelReturn,
   useAdminCancelSwap,
   useAdminOrder,
-  useAdminReceiveReturn,
   useAdminStore,
 } from "medusa-react"
-import { ReturnItem } from "@medusajs/medusa"
 import React, { useEffect, useState } from "react"
 
 import CreateFulfillmentModal from "../../../domain/orders/details/create-fulfillment"
-import ReceiveMenu from "../../../domain/orders/details/returns/receive-menu"
+import { ReceiveReturnMenu } from "../../../domain/orders/details/receive-return"
+import { orderReturnableFields } from "../../../domain/orders/details/utils/order-returnable-fields"
+import useOrdersExpandParam from "../../../domain/orders/details/utils/use-admin-expand-paramter"
 import { ExchangeEvent } from "../../../hooks/use-build-timeline"
 import useNotification from "../../../hooks/use-notification"
 import Medusa from "../../../services/api"
@@ -41,7 +42,7 @@ const ExchangeStatus: React.FC<ExchangeStatusProps> = ({ event }) => {
   const divider = <div className="h-11 w-px bg-grey-20" />
 
   return (
-    <div className="flex items-center inter-small-regular gap-x-base">
+    <div className="inter-small-regular flex items-center gap-x-base">
       <div className="flex flex-col gap-y-2xsmall">
         <span className="text-grey-50">Payment:</span>
         <PaymentStatus paymentStatus={event.paymentStatus} />
@@ -75,9 +76,11 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
   >(undefined)
   const [payable, setPayable] = useState(true)
   const { store } = useAdminStore()
-  const { order } = useAdminOrder(event.orderId)
-
-  const { mutateAsync: receiveReturn } = useAdminReceiveReturn(event.returnId)
+  const { orderRelations } = useOrdersExpandParam()
+  const { order } = useAdminOrder(event.orderId, {
+    expand: orderRelations,
+    fields: orderReturnableFields,
+  })
 
   const notification = useNotification()
 
@@ -108,7 +111,12 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
         store.swap_link_template?.replace(/\{cart_id\}/, event.exchangeCartId)
       )
     }
-  }, [store?.swap_link_template, event.exchangeCartId, event.paymentStatus])
+  }, [
+    store?.swap_link_template,
+    event.exchangeCartId,
+    event.paymentStatus,
+    store,
+  ])
 
   const paymentLink = getPaymentLink(
     payable,
@@ -125,19 +133,6 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
   const handleCancelReturn = async () => {
     await cancelReturn.mutateAsync()
     refetch()
-  }
-
-  const handleReceiveReturn = async (
-    items: { item_id: string; quantity: number }[]
-  ) => {
-    await receiveReturn(
-      { items },
-      {
-        onSuccess: () => {
-          refetch()
-        },
-      }
-    )
   }
 
   const handleProcessSwapPayment = () => {
@@ -202,10 +197,10 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
     noNotification: event.noNotification,
     topNode: getActions(event, actions),
     children: [
-      <div className="flex flex-col gap-y-base">
+      <div className="flex flex-col gap-y-base" key={event.id}>
         {event.canceledAt && (
           <div>
-            <span className="mr-2 inter-small-semibold">Requested on:</span>
+            <span className="inter-small-semibold mr-2">Requested on:</span>
             <span className="text-grey-50">
               {new Date(event.time).toUTCString()}
             </span>
@@ -262,11 +257,10 @@ const Exchange: React.FC<ExchangeProps> = ({ event, refetch }) => {
         />
       )}
       {showReceiveReturn && order && (
-        <ReceiveMenu
+        <ReceiveReturnMenu
           order={order}
           returnRequest={event.raw.return_order}
-          onReceiveSwap={handleReceiveReturn}
-          onDismiss={() => setShowReceiveReturn(false)}
+          onClose={() => setShowReceiveReturn(false)}
         />
       )}
       {showCreateFulfillment && (
@@ -285,8 +279,8 @@ function getNewItems(event: ExchangeEvent) {
     <div className="flex flex-col gap-y-small">
       <span className="inter-small-regular text-grey-50">New Items</span>
       <div>
-        {event.newItems.map((i) => (
-          <EventItemContainer item={i} />
+        {event.newItems.map((i, index) => (
+          <EventItemContainer key={index} item={i} />
         ))}
       </div>
     </div>
@@ -300,7 +294,7 @@ function getPaymentLink(
   exchangeCartId: string | undefined
 ) {
   return payable ? (
-    <div className="inter-small-regular text-grey-50 flex flex-col gap-y-xsmall">
+    <div className="inter-small-regular flex flex-col gap-y-xsmall text-grey-50">
       <div className="flex items-center gap-x-xsmall">
         {paymentFormatWarning && <IconTooltip content={paymentFormatWarning} />}
         <span>Payment link:</span>
@@ -324,6 +318,7 @@ function getReturnItems(event: ExchangeEvent) {
           .filter((i) => !!i)
           .map((i: ReturnItem) => (
             <EventItemContainer
+              key={i.id}
               item={{ ...i, quantity: i.requestedQuantity }}
             />
           ))}

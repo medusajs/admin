@@ -1,22 +1,25 @@
-import React from "react"
 import * as RadixAvatar from "@radix-ui/react-avatar"
 import clsx from "clsx"
+import React from "react"
+import Spinner from "../spinner"
 
 type AvatarProps = {
   user?: {
     img?: string
     first_name?: string
     last_name?: string
-    email: string
+    email?: string
   }
   font?: string
   color?: string
+  isLoading?: boolean
 }
 
 const Avatar: React.FC<AvatarProps> = ({
   user,
   font = "inter-small-semibold",
   color = "bg-violet-60",
+  isLoading = false,
 }) => {
   let username: string
 
@@ -46,7 +49,11 @@ const Avatar: React.FC<AvatarProps> = ({
           font
         )}
       >
-        {username.slice(0, 1).toUpperCase()}
+        {isLoading ? (
+          <Spinner size="small" variant="primary" />
+        ) : (
+          username.slice(0, 1).toUpperCase()
+        )}
       </RadixAvatar.Fallback>
     </RadixAvatar.Root>
   )
