@@ -16,6 +16,7 @@ import TagIcon from "../../../components/fundamentals/icons/tag-icon"
 import MoreHorizontalIcon from "../../../components/fundamentals/icons/more-horizontal-icon"
 
 type ProductCategoryListItemDetailsProps = {
+  depth: number
   item: ProductCategory
   handler: React.ReactNode
   collapseIcon: React.ReactNode
@@ -49,8 +50,13 @@ function ProductCategoryListItemDetails(
 
   return (
     <div className="bg-white">
-      <div className="flex items-center h-[40px] gap-2">
-        {props.handler}
+      <div
+        style={{ marginLeft: props.depth * -8 }}
+        className="flex items-center h-[40px]"
+      >
+        <div className="w-[32px] flex justify-center items-center">
+          {props.handler}
+        </div>
 
         <div className="flex justify-between items-center w-full">
           <div className="flex items-center">
