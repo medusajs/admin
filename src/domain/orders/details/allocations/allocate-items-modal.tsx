@@ -26,6 +26,7 @@ type AllocateItemsModalProps = {
   reservationItemsMap: Record<string, ReservationItemDTO[]>
   close: () => void
 }
+
 const AllocateItemsModal: React.FC<AllocateItemsModalProps> = ({
   order,
   close,
@@ -43,10 +44,14 @@ const AllocateItemsModal: React.FC<AllocateItemsModalProps> = ({
 
   const selectedLocation = useWatch({ control, name: "location" })
 
-  // TODO handle missing sales channel correspondingly
-  const { stock_locations, isLoading } = useAdminStockLocations({
-    sales_channel_id: order.sales_channel_id || "",
-  })
+  // if not sales channel is present fetch all locations
+  const stockLocationsFilter: { sales_channel_id?: string } = {}
+  if (order.sales_channel_id) {
+    stockLocationsFilter.sales_channel_id = order.sales_channel_id
+  }
+
+  const { stock_locations, isLoading } =
+    useAdminStockLocations(stockLocationsFilter)
 
   const locationOptions = useMemo(() => {
     if (!stock_locations) {
