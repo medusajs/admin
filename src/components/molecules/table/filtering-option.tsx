@@ -73,13 +73,13 @@ const FilteringOptions: React.FC<FilteringOptionProps> = ({
               <div
                 className={clsx("ml-3 w-full flex justify-between", {
                   "ml-7": selected !== opt.title,
-                  "text-grey-30": opt.count < 1,
+                  "text-grey-30": (opt.count || 0) < 1,
                 })}
               >
                 {opt.title}
                 <span
                   className={clsx("inter-small-regular text-grey-40 ml-3", {
-                    "text-grey-30": opt.count < 1,
+                    "text-grey-30": (opt.count || 0) < 1,
                   })}
                 >
                   {opt.count}

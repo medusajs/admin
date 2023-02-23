@@ -1,8 +1,8 @@
 import React, { useState } from "react"
 import { createRoot } from "react-dom/client"
 import Button from "../components/fundamentals/button"
-import Modal from "../components/molecules/modal"
 import InputField from "../components/molecules/input"
+import Modal from "../components/molecules/modal"
 
 const DeleteDialog = ({
   open,
@@ -81,8 +81,8 @@ type ImperativeDialogProps =
           entityName: string
         }
       | {
-          extraConfirmation: undefined
-          entityName: undefined
+          extraConfirmation?: false
+          entityName?: never
         }
     )
 
@@ -94,7 +94,7 @@ const useImperativeDialog = () => {
     cancelText,
     extraConfirmation,
     entityName,
-  }: ImperativeDialogProps) => {
+  }: ImperativeDialogProps): Promise<boolean> => {
     // We want a promise here so we can "await" the user's action (either confirm or cancel)
     return new Promise((resolve) => {
       const mountRoot = createRoot(document.createElement("div"))

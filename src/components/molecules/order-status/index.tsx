@@ -97,6 +97,8 @@ const RefundStatus: React.FC<RefundStatusProps> = ({ refundStatus }) => {
       return <StatusIndicator title="Refunded" variant="default" />
     case "refunded":
       return <StatusIndicator title="Refunded" variant="success" />
+    case "canceled":
+      return <StatusIndicator title="Canceled" variant="danger" />
     default:
       return null
   }

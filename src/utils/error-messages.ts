@@ -1,4 +1,4 @@
-export const getErrorMessage = (error) => {
+export const getErrorMessage = (error: any) => {
   let msg = error?.response?.data?.message
   if (msg[0].message) {
     msg = msg[0].message

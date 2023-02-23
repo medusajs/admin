@@ -14,7 +14,12 @@
     "@typescript-eslint",
     "react-hooks"
   ],
-  "extends": ["eslint:recommended", "google", "eslint-config-prettier"],
+  "extends": [
+    "eslint:recommended",
+    "google",
+    "eslint-config-prettier",
+    "plugin:vitest-globals/recommended"
+  ],
   "globals": {
     "__MEDUSA_BACKEND_URL__": true
   },
@@ -55,7 +60,8 @@
   "env": {
     "browser": true,
     "node": true,
-    "es6": true
+    "es6": true,
+    "vitest-globals/env": true
   },
   "overrides": [
     {

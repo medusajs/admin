@@ -1,6 +1,6 @@
 import { ClaimItem, LineItem, Order } from "@medusajs/medusa"
 
-export const filterItems = (
+export const getAllReturnableItems = (
   order: Omit<Order, "beforeInserts">,
   isClaim: boolean
 ) => {
