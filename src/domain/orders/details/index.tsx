@@ -1,5 +1,5 @@
 import { Address, ClaimOrder, Fulfillment, Swap } from "@medusajs/medusa"
-import { capitalize, sum } from "lodash"
+import { capitalize } from "lodash"
 import {
   useAdminCancelOrder,
   useAdminCapturePayment,
@@ -8,14 +8,12 @@ import {
   useAdminUpdateOrder,
 } from "medusa-react"
 import moment from "moment"
-import React, { useMemo, useState } from "react"
+import React, { useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { useNavigate, useParams } from "react-router-dom"
 import Avatar from "../../../components/atoms/avatar"
-import CopyToClipboard from "../../../components/atoms/copy-to-clipboard"
 import Spinner from "../../../components/atoms/spinner"
 import Tooltip from "../../../components/atoms/tooltip"
-import Badge from "../../../components/fundamentals/badge"
 import Button from "../../../components/fundamentals/button"
 import DetailsIcon from "../../../components/fundamentals/details-icon"
 import CancelIcon from "../../../components/fundamentals/icons/cancel-icon"
@@ -46,9 +44,9 @@ import OrderEditProvider, { OrderEditContext } from "../edit/context"
 import OrderEditModal from "../edit/modal"
 import AddressModal from "./address-modal"
 import CreateFulfillmentModal from "./create-fulfillment"
+import SummaryCard from "./detail-cards/summary"
 import EmailModal from "./email-modal"
 import MarkShippedModal from "./mark-shipped"
-import OrderLine from "./order-line"
 import CreateRefundModal from "./refund"
 import {
   DisplayTotal,
@@ -57,7 +55,6 @@ import {
   FulfillmentStatusComponent,
   OrderStatusComponent,
   PaymentActionables,
-  PaymentDetails,
   PaymentStatusComponent,
 } from "./templates"
 
@@ -166,37 +163,6 @@ const OrderDetails = () => {
   // @ts-ignore
   useHotkeys("esc", () => navigate("/a/orders"))
   useHotkeys("command+i", handleCopy)
-
-  const { hasMovements, swapAmount, manualRefund, swapRefund, returnRefund } =
-    useMemo(() => {
-      let manualRefund = 0
-      let swapRefund = 0
-      let returnRefund = 0
-
-      const swapAmount = sum(order?.swaps.map((s) => s.difference_due) || [0])
-
-      if (order?.refunds?.length) {
-        order.refunds.forEach((ref) => {
-          if (ref.reason === "other" || ref.reason === "discount") {
-            manualRefund += ref.amount
-          }
-          if (ref.reason === "return") {
-            returnRefund += ref.amount
-          }
-          if (ref.reason === "swap") {
-            swapRefund += ref.amount
-          }
-        })
-      }
-      return {
-        hasMovements:
-          swapAmount + manualRefund + swapRefund + returnRefund !== 0,
-        swapAmount,
-        manualRefund,
-        swapRefund,
-        returnRefund,
-      }
-    }, [order])
 
   const handleDeleteOrder = async () => {
     const shouldDelete = await dialog({
@@ -350,101 +316,8 @@ const OrderDetails = () => {
                     </div>
                   </div>
                 </BodyCard>
-                <OrderEditContext.Consumer>
-                  {({ showModal }) => (
-                    <BodyCard
-                      className={"mb-4 h-auto min-h-0 w-full"}
-                      title="Summary"
-                      actionables={
-                        isFeatureEnabled("order_editing")
-                          ? [
-                              {
-                                label: "Edit Order",
-                                onClick: showModal,
-                              },
-                            ]
-                          : undefined
-                      }
-                    >
-                      <div className="mt-6">
-                        {order.items?.map((item, i) => (
-                          <OrderLine
-                            key={i}
-                            item={item}
-                            currencyCode={order.currency_code}
-                          />
-                        ))}
-                        <DisplayTotal
-                          currency={order.currency_code}
-                          totalAmount={order.subtotal}
-                          totalTitle={"Subtotal"}
-                        />
-                        {order?.discounts?.map((discount, index) => (
-                          <DisplayTotal
-                            key={index}
-                            currency={order.currency_code}
-                            totalAmount={-1 * order.discount_total}
-                            totalTitle={
-                              <div className="inter-small-regular flex items-center text-grey-90">
-                                Discount:{" "}
-                                <Badge className="ml-3" variant="default">
-                                  {discount.code}
-                                </Badge>
-                              </div>
-                            }
-                          />
-                        ))}
-                        {order?.gift_cards?.map((giftCard, index) => (
-                          <DisplayTotal
-                            key={index}
-                            currency={order.currency_code}
-                            totalAmount={-1 * order.gift_card_total}
-                            totalTitle={
-                              <div className="inter-small-regular flex items-center text-grey-90">
-                                Gift card:
-                                <Badge className="ml-3" variant="default">
-                                  {giftCard.code}
-                                </Badge>
-                                <div className="ml-2">
-                                  <CopyToClipboard
-                                    value={giftCard.code}
-                                    showValue={false}
-                                    iconSize={16}
-                                  />
-                                </div>
-                              </div>
-                            }
-                          />
-                        ))}
-                        <DisplayTotal
-                          currency={order.currency_code}
-                          totalAmount={order.shipping_total}
-                          totalTitle={"Shipping"}
-                        />
-                        <DisplayTotal
-                          currency={order.currency_code}
-                          totalAmount={order.tax_total}
-                          totalTitle={`Tax`}
-                        />
-                        <DisplayTotal
-                          variant={"large"}
-                          currency={order.currency_code}
-                          totalAmount={order.total}
-                          totalTitle={hasMovements ? "Original Total" : "Total"}
-                        />
-                        <PaymentDetails
-                          manualRefund={manualRefund}
-                          swapAmount={swapAmount}
-                          swapRefund={swapRefund}
-                          returnRefund={returnRefund}
-                          paidTotal={order.paid_total}
-                          refundedTotal={order.refunded_total}
-                          currency={order.currency_code}
-                        />
-                      </div>
-                    </BodyCard>
-                  )}
-                </OrderEditContext.Consumer>
+
+                <SummaryCard order={order} />
 
                 <BodyCard
                   className={"mb-4 h-auto min-h-0 w-full"}

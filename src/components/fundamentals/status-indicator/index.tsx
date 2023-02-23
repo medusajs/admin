@@ -3,7 +3,7 @@ import React from "react"
 
 type StatusIndicatorProps = {
   title?: string
-  variant: "primary" | "danger" | "warning" | "success" | "active" | "default"
+  variant?: "primary" | "danger" | "warning" | "success" | "active" | "default"
 } & React.HTMLAttributes<HTMLDivElement>
 
 const StatusIndicator: React.FC<StatusIndicatorProps> = ({
@@ -22,10 +22,10 @@ const StatusIndicator: React.FC<StatusIndicatorProps> = ({
   })
   return (
     <div
-      className={clsx("flex items-center inter-small-regular", className)}
+      className={clsx("inter-small-regular flex items-center", className)}
       {...props}
     >
-      <div className={clsx("w-1.5 h-1.5 self-center rounded-full", dotClass)} />
+      <div className={clsx("h-1.5 w-1.5 self-center rounded-full", dotClass)} />
       {title && <span className="ml-2">{title}</span>}
     </div>
   )
