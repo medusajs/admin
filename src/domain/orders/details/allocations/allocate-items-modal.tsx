@@ -36,7 +36,6 @@ const AllocateItemsModal: React.FC<AllocateItemsModalProps> = ({
   const form = useForm<AllocationModalFormData>({
     defaultValues: {
       items: [],
-      // reason: reasonOptions[initialReason === "other" ? 1 : 0],
     },
   })
 
@@ -77,6 +76,8 @@ const AllocateItemsModal: React.FC<AllocateItemsModalProps> = ({
         })
       })
     )
+
+    // TODO: handle errors and success
   }
 
   return (
@@ -188,6 +189,14 @@ const AllocationLineItem: React.FC<{
 
   const { register, path } = form
 
+  form.setValue(path("line_item_id"), item.id)
+
+  useEffect(() => {
+    if (variant?.inventory) {
+      form.setValue(path("inventory_item_id"), variant.inventory[0].id)
+    }
+  }, [variant, form, path])
+
   const { availableQuantity, inStockQuantity } = useMemo(() => {
     if (isLoading || !locationId || !variant) {
       return {}
@@ -208,13 +217,6 @@ const AllocationLineItem: React.FC<{
       inStockQuantity: locationInventory.stocked_quantity,
     }
   }, [variant, locationId, isLoading])
-
-  useEffect(() => {
-    if (variant?.inventory) {
-      form.setValue(path("inventory_item_id"), variant.inventory[0].id)
-    }
-  })
-  form.setValue(path("line_item_id"), item.id)
 
   const lineItemReservationCapacity = item.quantity - (reservedQuantity || 0)
 
