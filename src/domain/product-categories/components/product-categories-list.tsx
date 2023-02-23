@@ -35,8 +35,11 @@ function ProductCategoriesList(props: ProductCategoriesListProps) {
       const node = categoriesMap[active.id]
 
       node.category_children = node.category_children
-        .map((ch) => Object.assign(ch, categoriesMap[ch.id]))
         .sort((a, b) => a.name.localeCompare(b.name))
+        .map((ch) => {
+          visit(ch)
+          return Object.assign(ch, categoriesMap[ch.id])
+        })
 
       return node
     }
