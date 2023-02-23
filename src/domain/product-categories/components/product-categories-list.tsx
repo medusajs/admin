@@ -12,6 +12,7 @@ import TriangleMiniIcon from "../../../components/fundamentals/icons/triangle-mi
 import ProductCategoryListItemDetails from "./product-category-list-item-details"
 import ReorderIcon from "../../../components/fundamentals/icons/reorder-icon"
 import { useQueryClient } from "@tanstack/react-query"
+import useNotification from "../../../hooks/use-notification"
 
 type ProductCategoriesListProps = {
   categories: ProductCategory[]
@@ -23,6 +24,7 @@ type ProductCategoriesListProps = {
 function ProductCategoriesList(props: ProductCategoriesListProps) {
   const { client } = useMedusa()
   const queryClient = useQueryClient()
+  const notification = useNotification()
 
   const categories = useMemo(() => {
     /**
@@ -55,29 +57,27 @@ function ProductCategoriesList(props: ProductCategoriesListProps) {
     items: ProductCategory[]
     path: number[]
   }) => {
+    let parentId = null
     const { dragItem, items, targetPath } = params
 
-    if (targetPath.length === 1) {
-      await client.admin.productCategories.update(dragItem.id, {
-        parent_category_id: null,
-      })
-    } else {
-      const newParent = get(
-        items,
-        dropRight(
-          flatMap(targetPath.slice(0, -1), (item) => [
-            item,
-            "category_children",
-          ])
-        )
+    if (targetPath.length > 1) {
+      const path = dropRight(
+        flatMap(targetPath.slice(0, -1), (item) => [item, "category_children"])
       )
 
-      await client.admin.productCategories.update(dragItem.id, {
-        parent_category_id: newParent.id,
-      })
+      const newParent = get(items, path)
+      parentId = newParent.id
     }
 
-    await queryClient.invalidateQueries(adminProductCategoryKeys.lists())
+    try {
+      await client.admin.productCategories.update(dragItem.id, {
+        parent_category_id: parentId,
+      })
+      notification("Success", "New order saved", "success")
+      await queryClient.invalidateQueries(adminProductCategoryKeys.lists())
+    } catch (e) {
+      notification("Error", "Failed to save new order", "error")
+    }
   }
 
   return (
