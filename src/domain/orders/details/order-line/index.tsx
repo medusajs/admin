@@ -6,6 +6,7 @@ import Tooltip from "../../../../components/atoms/tooltip"
 import Button from "../../../../components/fundamentals/button"
 import CheckCircleFillIcon from "../../../../components/fundamentals/icons/check-circle-fill-icon"
 import CircleQuaterSolid from "../../../../components/fundamentals/icons/circle-quater-solid"
+import ExclamationCircleIcon from "../../../../components/fundamentals/icons/exclamation-circle-icon"
 import ImagePlaceholder from "../../../../components/fundamentals/image-placeholder"
 import { FeatureFlagContext } from "../../../../context/feature-flag"
 import { formatAmountWithSymbol } from "../../../../utils/prices"
@@ -86,6 +87,7 @@ const ReservationIndicator = ({
     id: reservations?.map((r) => r.location_id) || [],
   })
 
+  console.log(reservations)
   const [reservation, setReservation] =
     React.useState<ReservationItemDTO | null>(null)
 
@@ -93,12 +95,18 @@ const ReservationIndicator = ({
 
   const reservationsSum = sum(reservations?.map((r) => r.quantity) || [])
   const awaitingAllocation = lineItem.quantity - reservationsSum
+
   return (
     <div className={awaitingAllocation ? "text-rose-50" : "text-grey-40"}>
       <Tooltip
         content={
           <div className="inter-small-regular flex flex-col items-center px-1 pb-2 pt-1">
             <div className="grid grid-cols-1 gap-y-base divide-y">
+              {awaitingAllocation && (
+                <span className="flex w-full items-center">
+                  {awaitingAllocation} items await allocation
+                </span>
+              )}
               {reservations?.map((reservation) => (
                 <EditAllocationButton
                   locationName={locationMap.get(reservation.location_id)}
@@ -114,7 +122,11 @@ const ReservationIndicator = ({
         side="bottom"
       >
         {awaitingAllocation ? (
-          <CircleQuaterSolid size={20} />
+          reservationsSum ? (
+            <CircleQuaterSolid size={20} />
+          ) : (
+            <ExclamationCircleIcon size={20} />
+          )
         ) : (
           <CheckCircleFillIcon size={20} />
         )}
