@@ -15,10 +15,10 @@ import EditAllocationDrawer from "../allocations/edit-allocation-modal"
 type OrderLineProps = {
   item: LineItem
   currencyCode: string
-  reservation?: ReservationItemDTO[]
+  reservations?: ReservationItemDTO[]
 }
 
-const OrderLine = ({ item, currencyCode, reservation }: OrderLineProps) => {
+const OrderLine = ({ item, currencyCode, reservations }: OrderLineProps) => {
   const { isFeatureEnabled } = useContext(FeatureFlagContext)
   return (
     <div className="mx-[-5px] mb-1 flex h-[64px] justify-between rounded-rounded py-2 px-[5px] hover:bg-grey-5">
@@ -57,7 +57,7 @@ const OrderLine = ({ item, currencyCode, reservation }: OrderLineProps) => {
             x {item.quantity}
           </div>
           {isFeatureEnabled("inventoryService") && (
-            <ReservationIndicator reservations={reservation} lineItem={item} />
+            <ReservationIndicator reservations={reservations} lineItem={item} />
           )}
           <div className="inter-small-regular text-grey-90">
             {formatAmountWithSymbol({

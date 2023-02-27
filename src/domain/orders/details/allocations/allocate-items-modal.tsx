@@ -15,6 +15,7 @@ import InputField from "../../../../components/molecules/input"
 import { NestedForm, nestedForm } from "../../../../utils/nested-form"
 import { sum } from "lodash"
 import clsx from "clsx"
+import { getFulfillableQuantity } from "../create-fulfillment/item-table"
 
 type AllocationModalFormData = {
   location?: { label: string; value: string }
@@ -222,7 +223,8 @@ export const AllocationLineItem: React.FC<{
   }
   const { availableQuantity, inStockQuantity } = getAvailableQuantities(variant)
 
-  const lineItemReservationCapacity = item.quantity - (reservedQuantity || 0)
+  const lineItemReservationCapacity =
+    getFulfillableQuantity(item) - (reservedQuantity || 0)
 
   const inventoryItemReservationCapacity =
     typeof availableQuantity === "number" ? availableQuantity : 0

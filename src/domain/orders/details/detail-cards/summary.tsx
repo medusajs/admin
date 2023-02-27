@@ -129,7 +129,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
             key={i}
             item={item}
             currencyCode={order.currency_code}
-            reservation={reservationItemsMap[item.id]}
+            reservations={reservationItemsMap[item.id]}
           />
         ))}
         <DisplayTotal
