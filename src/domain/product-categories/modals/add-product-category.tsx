@@ -112,6 +112,7 @@ function CreateProductCategory(props: CreateProductCategoryProps) {
               <Select
                 label="Status"
                 options={statusOptions}
+                menuPortalStyles={{ zIndex: 300 }}
                 value={statusOptions[isActive ? 0 : 1]}
                 onChange={(o) => setIsActive(o.value === "active")}
               />
@@ -121,6 +122,7 @@ function CreateProductCategory(props: CreateProductCategoryProps) {
               <Select
                 label="Visibility"
                 options={visibilityOptions}
+                menuPortalStyles={{ zIndex: 300 }}
                 value={visibilityOptions[isPublic ? 0 : 1]}
                 onChange={(o) => setIsPublic(o.value === "public")}
               />
