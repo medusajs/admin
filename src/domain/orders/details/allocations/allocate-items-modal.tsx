@@ -15,6 +15,7 @@ import InputField from "../../../../components/molecules/input"
 import { NestedForm, nestedForm } from "../../../../utils/nested-form"
 import { sum } from "lodash"
 import clsx from "clsx"
+import { getFulfillableQuantity } from "../create-fulfillment/item-table"
 
 type AllocationModalFormData = {
   location?: { label: string; value: string }
@@ -161,7 +162,6 @@ const AllocateItemsModal: React.FC<AllocateItemsModalProps> = ({
                             (reservation) => reservation.quantity
                           ) || []
                         )}
-                        index={i}
                       />
                     )
                   })}
@@ -175,18 +175,17 @@ const AllocateItemsModal: React.FC<AllocateItemsModalProps> = ({
   )
 }
 
-type AllocationLineItemForm = {
+export type AllocationLineItemForm = {
   inventory_item_id: string
   line_item_id: string
   quantity: number
 }
 
-const AllocationLineItem: React.FC<{
+export const AllocationLineItem: React.FC<{
   form: NestedForm<AllocationLineItemForm>
   item: LineItem
   locationId?: string
   reservedQuantity?: number
-  index?: number
 }> = ({ form, item, locationId, reservedQuantity }) => {
   const { variant, isLoading } = useAdminVariantsInventory(
     item.variant_id as string
@@ -206,28 +205,29 @@ const AllocationLineItem: React.FC<{
     if (isLoading || !locationId || !variant) {
       return {}
     }
-
     const { inventory } = variant
-
     const locationInventory = inventory[0].location_levels?.find(
       (inv) => inv.location_id === locationId
     )
-
     if (!locationInventory) {
       return {}
     }
-
     return {
       availableQuantity: locationInventory.available_quantity,
       inStockQuantity: locationInventory.stocked_quantity,
     }
   }, [variant, locationId, isLoading])
 
-  const lineItemReservationCapacity = item.quantity - (reservedQuantity || 0)
+  const lineItemReservationCapacity =
+    getFulfillableQuantity(item) - (reservedQuantity || 0)
 
   const inventoryItemReservationCapacity =
     typeof availableQuantity === "number" ? availableQuantity : 0
 
+  const maxReservation = Math.min(
+    lineItemReservationCapacity,
+    inventoryItemReservationCapacity
+  )
   return (
     <div>
       <div className="mt-8 flex w-full items-center justify-between">
@@ -256,10 +256,12 @@ const AllocationLineItem: React.FC<{
             defaultValue={0}
             disabled={lineItemReservationCapacity === 0}
             min={0}
-            max={Math.min(
-              lineItemReservationCapacity,
-              inventoryItemReservationCapacity
-            )}
+            max={maxReservation}
+            suffix={
+              <span className="flex">
+                {"/"} <span className="ml-1">{maxReservation}</span>
+              </span>
+            }
           />
         </div>
       </div>
