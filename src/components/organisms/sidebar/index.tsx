@@ -68,7 +68,7 @@ const Sidebar: React.FC = () => {
             <SidebarMenuItem
               pageLink={"/a/product-categories"}
               icon={<SwatchIcon size={ICON_SIZE} />}
-              text={"Product Categories"}
+              text={"Categories"}
               triggerHandler={triggerHandler}
             />
           )}

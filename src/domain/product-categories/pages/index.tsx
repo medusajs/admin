@@ -60,7 +60,7 @@ function ProductCategoryPage() {
     },
   ]
 
-  const showList = !isLoading && categories?.length
+  const showPlaceholder = !isLoading && !categories?.length
 
   const editCategory = (category: ProductCategory) => {
     setActiveCategory(category)
@@ -89,10 +89,10 @@ function ProductCategoryPage() {
             footerMinHeight={40}
             setBorders
           >
-            {showList ? (
-              <ProductCategoriesList categories={categories!} />
-            ) : (
+            {showPlaceholder ? (
               <ProductCategoriesEmptyState />
+            ) : isLoading ? null : (
+              <ProductCategoriesList categories={categories!} />
             )}
           </BodyCard>
           {isCreateModalVisible && (
