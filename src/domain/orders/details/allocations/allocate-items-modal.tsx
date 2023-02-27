@@ -201,27 +201,22 @@ export const AllocationLineItem: React.FC<{
     }
   }, [variant, form, path])
 
-  const getAvailableQuantities = (variant) => {
+  const { availableQuantity, inStockQuantity } = useMemo(() => {
     if (isLoading || !locationId || !variant) {
       return {}
     }
-
     const { inventory } = variant
-
     const locationInventory = inventory[0].location_levels?.find(
       (inv) => inv.location_id === locationId
     )
-
     if (!locationInventory) {
       return {}
     }
-
     return {
       availableQuantity: locationInventory.available_quantity,
       inStockQuantity: locationInventory.stocked_quantity,
     }
-  }
-  const { availableQuantity, inStockQuantity } = getAvailableQuantities(variant)
+  }, [variant, locationId, isLoading])
 
   const lineItemReservationCapacity =
     getFulfillableQuantity(item) - (reservedQuantity || 0)
