@@ -285,12 +285,15 @@ export const AllocationLineItem: React.FC<{
             {...register(path(`quantity`), { valueAsNumber: true })}
             type="number"
             defaultValue={0}
-            disabled={lineItemReservationCapacity === 0}
+            disabled={lineItemReservationCapacity < 0}
             min={0}
-            max={maxReservation}
+            max={maxReservation > 0 ? maxReservation : 0}
             suffix={
               <span className="flex">
-                {"/"} <span className="ml-1">{maxReservation}</span>
+                {"/"}{" "}
+                <span className="ml-1">
+                  {maxReservation > 0 ? maxReservation : 0}
+                </span>
               </span>
             }
           />
