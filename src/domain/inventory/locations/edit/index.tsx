@@ -45,9 +45,7 @@ const LocationEditModal = ({ onClose, location }: LocationEditModalProps) => {
   const { isDirty, isValid } = formState
 
   const onSubmit = (data) => {
-    console.log(data)
     const payload = createPayload(data)
-    console.log(payload)
 
     updateStockLocation(payload, {
       onSuccess: () => {
