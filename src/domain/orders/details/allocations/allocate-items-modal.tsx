@@ -161,7 +161,6 @@ const AllocateItemsModal: React.FC<AllocateItemsModalProps> = ({
                             (reservation) => reservation.quantity
                           ) || []
                         )}
-                        index={i}
                       />
                     )
                   })}
@@ -175,18 +174,17 @@ const AllocateItemsModal: React.FC<AllocateItemsModalProps> = ({
   )
 }
 
-type AllocationLineItemForm = {
+export type AllocationLineItemForm = {
   inventory_item_id: string
   line_item_id: string
   quantity: number
 }
 
-const AllocationLineItem: React.FC<{
+export const AllocationLineItem: React.FC<{
   form: NestedForm<AllocationLineItemForm>
   item: LineItem
   locationId?: string
   reservedQuantity?: number
-  index?: number
 }> = ({ form, item, locationId, reservedQuantity }) => {
   const { variant, isLoading } = useAdminVariantsInventory(
     item.variant_id as string
@@ -202,7 +200,7 @@ const AllocationLineItem: React.FC<{
     }
   }, [variant, form, path])
 
-  const { availableQuantity, inStockQuantity } = useMemo(() => {
+  const getAvailableQuantities = (variant) => {
     if (isLoading || !locationId || !variant) {
       return {}
     }
@@ -221,7 +219,8 @@ const AllocationLineItem: React.FC<{
       availableQuantity: locationInventory.available_quantity,
       inStockQuantity: locationInventory.stocked_quantity,
     }
-  }, [variant, locationId, isLoading])
+  }
+  const { availableQuantity, inStockQuantity } = getAvailableQuantities(variant)
 
   const lineItemReservationCapacity = item.quantity - (reservedQuantity || 0)
 

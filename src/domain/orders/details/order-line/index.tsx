@@ -1,12 +1,15 @@
 import { LineItem, ReservationItemDTO } from "@medusajs/medusa"
 import { sum } from "lodash"
+import { useAdminStockLocations } from "medusa-react"
 import React, { useContext } from "react"
 import Tooltip from "../../../../components/atoms/tooltip"
+import Button from "../../../../components/fundamentals/button"
 import CheckCircleFillIcon from "../../../../components/fundamentals/icons/check-circle-fill-icon"
 import CircleQuaterSolid from "../../../../components/fundamentals/icons/circle-quater-solid"
 import ImagePlaceholder from "../../../../components/fundamentals/image-placeholder"
 import { FeatureFlagContext } from "../../../../context/feature-flag"
 import { formatAmountWithSymbol } from "../../../../utils/prices"
+import EditAllocationDrawer from "../allocations/edit-allocation-modal"
 
 type OrderLineProps = {
   item: LineItem
@@ -53,10 +56,7 @@ const OrderLine = ({ item, currencyCode, reservation }: OrderLineProps) => {
             x {item.quantity}
           </div>
           {isFeatureEnabled("inventoryService") && (
-            <ReservationIndicator
-              reservation={reservation}
-              lineItemQuantity={item.quantity}
-            />
+            <ReservationIndicator reservations={reservation} lineItem={item} />
           )}
           <div className="inter-small-regular text-grey-90">
             {formatAmountWithSymbol({
@@ -76,24 +76,40 @@ const OrderLine = ({ item, currencyCode, reservation }: OrderLineProps) => {
 }
 
 const ReservationIndicator = ({
-  reservation,
-  lineItemQuantity,
+  reservations,
+  lineItem,
 }: {
-  reservation?: ReservationItemDTO[]
-  lineItemQuantity: number
+  reservations?: ReservationItemDTO[]
+  lineItem: LineItem
 }) => {
-  // empty array sums to 0
-  const reservationsSum = sum(reservation?.map((r) => r.quantity) || [])
-  const awaitingAllocation = lineItemQuantity - reservationsSum
+  const { stock_locations } = useAdminStockLocations({
+    id: reservations?.map((r) => r.location_id) || [],
+  })
+
+  const [reservation, setReservation] =
+    React.useState<ReservationItemDTO | null>(null)
+
+  const locationMap = new Map(stock_locations?.map((l) => [l.id, l.name]) || [])
+
+  const reservationsSum = sum(reservations?.map((r) => r.quantity) || [])
+  const awaitingAllocation = lineItem.quantity - reservationsSum
   return (
     <div className={awaitingAllocation ? "text-rose-50" : "text-grey-40"}>
       <Tooltip
         content={
-          awaitingAllocation
-            ? `${awaitingAllocation} item${
-                awaitingAllocation > 1 ? "s" : ""
-              } awaits allocation`
-            : "All items are allocated"
+          <div className="inter-small-regular flex flex-col items-center px-1 pb-2 pt-1">
+            <div className="grid grid-cols-1 gap-y-base divide-y">
+              {reservations?.map((reservation) => (
+                <EditAllocationButton
+                  locationName={locationMap.get(reservation.location_id)}
+                  totalReservedQuantity={reservationsSum}
+                  reservation={reservation}
+                  lineItem={lineItem}
+                  onClick={() => setReservation(reservation)}
+                />
+              ))}
+            </div>
+          </div>
         }
         side="bottom"
       >
@@ -103,6 +119,41 @@ const ReservationIndicator = ({
           <CheckCircleFillIcon size={20} />
         )}
       </Tooltip>
+
+      {reservation && (
+        <EditAllocationDrawer
+          totalReservedQuantity={reservationsSum}
+          close={() => setReservation(null)}
+          reservation={reservation}
+          item={lineItem}
+        />
+      )}
+    </div>
+  )
+}
+
+const EditAllocationButton = ({
+  reservation,
+  locationName,
+  onClick,
+}: {
+  reservation: ReservationItemDTO
+  totalReservedQuantity: number
+  locationName?: string
+  lineItem: LineItem
+  onClick: () => void
+}) => {
+  return (
+    <div className="pt-base first:pt-0">
+      {`${reservation.quantity} item: ${locationName}`}
+      <Button
+        onClick={onClick}
+        variant="ghost"
+        size="small"
+        className="mt-2 w-full border"
+      >
+        Edit Allocation
+      </Button>
     </div>
   )
 }
