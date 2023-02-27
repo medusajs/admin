@@ -8,6 +8,7 @@ import {
   useAdminCreateReservation,
   useAdminStockLocations,
   useAdminVariantsInventory,
+  useMedusa,
 } from "medusa-react"
 import { Controller, useForm, useWatch } from "react-hook-form"
 import Thumbnail from "../../../../components/atoms/thumbnail"
@@ -16,6 +17,8 @@ import { NestedForm, nestedForm } from "../../../../utils/nested-form"
 import { sum } from "lodash"
 import clsx from "clsx"
 import { getFulfillableQuantity } from "../create-fulfillment/item-table"
+import useNotification from "../../../../hooks/use-notification"
+import { getErrorMessage } from "../../../../utils/error-messages"
 
 type AllocationModalFormData = {
   location?: { label: string; value: string }
@@ -33,7 +36,9 @@ const AllocateItemsModal: React.FC<AllocateItemsModalProps> = ({
   close,
   reservationItemsMap,
 }) => {
-  const { mutate: createReservation } = useAdminCreateReservation()
+  const { mutateAsync: createReservation } = useAdminCreateReservation()
+  const { client: medusaClient } = useMedusa()
+  const notification = useNotification()
 
   const form = useForm<AllocationModalFormData>({
     defaultValues: {
@@ -69,21 +74,47 @@ const AllocateItemsModal: React.FC<AllocateItemsModalProps> = ({
       return
     }
 
-    await Promise.all(
-      data.items.map(async (item) => {
-        if (!item.quantity) {
-          return
-        }
-        await createReservation({
-          quantity: item.quantity,
-          line_item_id: item.line_item_id,
-          inventory_item_id: item.inventory_item_id,
-          location_id: data.location!.value,
+    const results: { result?: ReservationItemDTO; error?: Error }[] =
+      await Promise.all(
+        data.items.map(async (item) => {
+          if (!item.quantity) {
+            return {}
+          }
+          return await createReservation({
+            quantity: item.quantity,
+            line_item_id: item.line_item_id,
+            inventory_item_id: item.inventory_item_id,
+            location_id: data.location!.value,
+          })
+            .then((result) => ({ result }))
+            .catch((error: Error) => ({ error }))
         })
-      })
-    )
+      )
 
-    // TODO: handle errors and success
+    if (results.some((r) => r.error)) {
+      await Promise.all(
+        results.map(async ({ result }) => {
+          if (result) {
+            await medusaClient.admin.reservations.delete(result.id)
+          }
+        })
+      )
+
+      const error = results
+        .filter(({ error }) => !!error)
+        .map(({ error }) => getErrorMessage(error))
+        .join(", ")
+
+      notification("Couldn't allocate items", error, "error")
+    } else {
+      notification(
+        "Items allocated",
+        "Items have been allocated successfully",
+        "success"
+      )
+
+      close()
+    }
   }
 
   return (

@@ -89,16 +89,10 @@ const EditAllocationDrawer = ({
       )
 
       if (defaultLocation) {
-        setValue(
-          "location",
-          {
-            value: defaultLocation?.id,
-            label: defaultLocation?.name,
-          },
-          {
-            shouldTouch: true,
-          }
-        )
+        setValue("location", {
+          value: defaultLocation?.id,
+          label: defaultLocation?.name,
+        })
       }
     }
   }, [stock_locations, reservation, setValue])
