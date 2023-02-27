@@ -87,7 +87,6 @@ const ReservationIndicator = ({
     id: reservations?.map((r) => r.location_id) || [],
   })
 
-  console.log(reservations)
   const [reservation, setReservation] =
     React.useState<ReservationItemDTO | null>(null)
 
@@ -102,7 +101,7 @@ const ReservationIndicator = ({
         content={
           <div className="inter-small-regular flex flex-col items-center px-1 pb-2 pt-1">
             <div className="grid grid-cols-1 gap-y-base divide-y">
-              {awaitingAllocation && (
+              {!!awaitingAllocation && (
                 <span className="flex w-full items-center">
                   {awaitingAllocation} items await allocation
                 </span>

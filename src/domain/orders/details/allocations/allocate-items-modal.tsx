@@ -227,6 +227,10 @@ export const AllocationLineItem: React.FC<{
   const inventoryItemReservationCapacity =
     typeof availableQuantity === "number" ? availableQuantity : 0
 
+  const maxReservation = Math.min(
+    lineItemReservationCapacity,
+    inventoryItemReservationCapacity
+  )
   return (
     <div>
       <div className="mt-8 flex w-full items-center justify-between">
@@ -255,10 +259,12 @@ export const AllocationLineItem: React.FC<{
             defaultValue={0}
             disabled={lineItemReservationCapacity === 0}
             min={0}
-            max={Math.min(
-              lineItemReservationCapacity,
-              inventoryItemReservationCapacity
-            )}
+            max={maxReservation}
+            suffix={
+              <span className="flex">
+                {"/"} <span className="ml-1">{maxReservation}</span>
+              </span>
+            }
           />
         </div>
       </div>
