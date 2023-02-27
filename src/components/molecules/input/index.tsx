@@ -21,6 +21,7 @@ export type InputProps = Omit<React.ComponentPropsWithRef<"input">, "prefix"> &
     onFocus?: FocusEventHandler<HTMLInputElement>
     errors?: { [x: string]: unknown }
     prefix?: React.ReactNode
+    suffix?: React.ReactNode
     props?: React.HTMLAttributes<HTMLDivElement>
   }
 
@@ -39,6 +40,7 @@ const InputField = React.forwardRef<HTMLInputElement, InputProps>(
       tooltipContent,
       tooltip,
       prefix,
+      suffix,
       errors,
       props,
       className,
@@ -89,20 +91,20 @@ const InputField = React.forwardRef<HTMLInputElement, InputProps>(
         )}
         <div
           className={clsx(
-            "w-full flex items-center bg-grey-5 border border-gray-20 px-small py-xsmall rounded-rounded focus-within:shadow-input focus-within:border-violet-60",
+            "border-gray-20 flex w-full items-center rounded-rounded border bg-grey-5 px-small py-xsmall focus-within:border-violet-60 focus-within:shadow-input",
             {
-              "border-rose-50 focus-within:shadow-cta focus-within:shadow-rose-60/10 focus-within:border-rose-50":
+              "border-rose-50 focus-within:border-rose-50 focus-within:shadow-cta focus-within:shadow-rose-60/10":
                 errors && name && errors[name],
             },
             small ? "h-8" : "h-10"
           )}
         >
           {prefix ? (
-            <span className="text-grey-40 mr-2xsmall">{prefix}</span>
+            <span className="mr-2xsmall text-grey-40">{prefix}</span>
           ) : null}
           <input
             className={clsx(
-              "bg-transparent outline-none outline-0 w-full remove-number-spinner leading-base text-grey-90 font-normal caret-violet-60 placeholder-grey-40",
+              "remove-number-spinner w-full bg-transparent font-normal leading-base text-grey-90 placeholder-grey-40 caret-violet-60 outline-none outline-0",
               { "text-small": small, "pt-[1px]": small }
             )}
             ref={inputRef}
@@ -114,11 +116,14 @@ const InputField = React.forwardRef<HTMLInputElement, InputProps>(
             required={required}
             {...fieldProps}
           />
+          {suffix ? (
+            <span className="mx-2xsmall text-grey-40">{suffix}</span>
+          ) : null}
 
           {deletable && (
             <button
               onClick={onDelete}
-              className="flex items-center justify-center w-4 h-4 pb-px ml-2 outline-none cursor-pointer text-grey-50 hover:bg-grey-10 focus:bg-grey-20 rounded-soft"
+              className="ml-2 flex h-4 w-4 cursor-pointer items-center justify-center rounded-soft pb-px text-grey-50 outline-none hover:bg-grey-10 focus:bg-grey-20"
               type="button"
             >
               &times;
@@ -126,11 +131,11 @@ const InputField = React.forwardRef<HTMLInputElement, InputProps>(
           )}
 
           {fieldProps.type === "number" && (
-            <div className="flex items-center self-end h-full">
+            <div className="flex h-full items-center self-end">
               <button
                 onClick={onNumberDecrement}
                 onMouseDown={(e) => e.preventDefault()}
-                className="w-4 h-4 mr-2 outline-none cursor-pointer text-grey-50 hover:bg-grey-10 focus:bg-grey-20 rounded-soft"
+                className="mr-2 h-4 w-4 cursor-pointer rounded-soft text-grey-50 outline-none hover:bg-grey-10 focus:bg-grey-20"
                 type="button"
               >
                 <MinusIcon size={16} />
@@ -138,7 +143,7 @@ const InputField = React.forwardRef<HTMLInputElement, InputProps>(
               <button
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={onNumberIncrement}
-                className="w-4 h-4 outline-none cursor-pointer text-grey-50 hover:bg-grey-10 focus:bg-grey-20 rounded-soft"
+                className="h-4 w-4 cursor-pointer rounded-soft text-grey-50 outline-none hover:bg-grey-10 focus:bg-grey-20"
                 type="button"
               >
                 <PlusIcon size={16} />
