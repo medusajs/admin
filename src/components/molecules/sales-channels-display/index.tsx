@@ -18,7 +18,7 @@ const SalesChannelsDisplay = ({ channels = [] }: Props) => {
         <div className="flex gap-x-1">
           <div className="flex gap-x-1 max-w-[600px] overflow-clip">
             {channels.slice(0, 3).map((sc) => (
-              <SalesChannelBadge channel={sc} />
+              <SalesChannelBadge key={sc.id} channel={sc} />
             ))}
           </div>
           {remainder > 0 && (
