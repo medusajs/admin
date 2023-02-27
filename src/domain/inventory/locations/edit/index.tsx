@@ -36,18 +36,15 @@ const LocationEditModal = ({ onClose, location }: LocationEditModalProps) => {
   })
   const notification = useNotification()
 
-  const { mutate: updateStockLocation } = useAdminUpdateStockLocation(
-    location.id
-  )
+  const { mutate } = useAdminUpdateStockLocation(location.id)
 
   const { handleSubmit, formState } = form
 
   const { isDirty, isValid } = formState
 
-  const onSubmit = (data) => {
+  const onSubmit = handleSubmit(async (data) => {
     const payload = createPayload(data)
-
-    updateStockLocation(payload, {
+    mutate(payload, {
       onSuccess: () => {
         onClose()
         notification("Success", "Location edited successfully", "success")
@@ -56,45 +53,44 @@ const LocationEditModal = ({ onClose, location }: LocationEditModalProps) => {
         notification("Error", getErrorMessage(err), "error")
       },
     })
-  }
+  })
 
   return (
     <Modal handleClose={onClose}>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Modal.Body className="top-20">
-          <Modal.Header handleClose={onClose}>
-            <h1 className="text-xl font-semibold">Edit Location Details</h1>
-          </Modal.Header>
-          <Modal.Content>
-            <form className="w-full">
-              <div className="mt-xlarge flex flex-col gap-y-xlarge">
-                <GeneralForm form={nestedForm(form, "general")} />
-                <AddressForm form={nestedForm(form, "address")} />
-              </div>
-            </form>
-          </Modal.Content>
-        </Modal.Body>
-        <Modal.Footer>
-          <div className="flex w-full justify-end space-x-2">
-            <Button
-              size="small"
-              variant="secondary"
-              type="button"
-              onClick={onClose}
-            >
-              Cancel
-            </Button>
-            <Button
-              size="small"
-              variant="primary"
-              type="submit"
-              disabled={!isDirty || !isValid}
-            >
-              Save and close
-            </Button>
-          </div>
-        </Modal.Footer>
-      </form>
+      <Modal.Body className="top-20">
+        <Modal.Header handleClose={onClose}>
+          <h1 className="text-xl font-semibold">Edit Location Details</h1>
+        </Modal.Header>
+        <Modal.Content>
+          <form className="w-full">
+            <div className="flex flex-col mt-xlarge gap-y-xlarge">
+              <GeneralForm form={nestedForm(form, "general")} />
+              <AddressForm form={nestedForm(form, "address")} />
+            </div>
+          </form>
+        </Modal.Content>
+      </Modal.Body>
+      <Modal.Footer>
+        <div className="flex justify-end w-full space-x-2">
+          <Button
+            size="small"
+            variant="secondary"
+            type="button"
+            onClick={onClose}
+          >
+            Cancel
+          </Button>
+          <Button
+            size="small"
+            variant="primary"
+            type="button"
+            disabled={!isDirty || !isValid}
+            onClick={onSubmit}
+          >
+            Save and close
+          </Button>
+        </div>
+      </Modal.Footer>
     </Modal>
   )
 }
