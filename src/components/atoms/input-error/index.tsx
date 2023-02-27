@@ -22,7 +22,7 @@ const InputError = ({ errors, name, className }: InputErrorProps) => {
       render={({ message, messages }) => {
         return (
           <div
-            className={clsx("text-rose-50 inter-small-regular mt-2", className)}
+            className={clsx("inter-small-regular mt-2 text-rose-50", className)}
           >
             {messages ? (
               <MultipleMessages messages={messages} />
@@ -43,12 +43,12 @@ const MultipleMessages = ({ messages }: { messages: MultipleFieldErrors }) => {
   const remainderErrors = errors.slice(1)
 
   return (
-    <div className="flex items-center gap-x-1 cursor-default">
+    <div className="flex cursor-default items-center gap-x-1">
       <p>{displayedError}</p>
       {remainderErrors?.length > 0 && (
         <Tooltip
           content={
-            <div className="text-rose-50 inter-small-regular">
+            <div className="inter-small-regular text-rose-50">
               {remainderErrors.map((e, i) => {
                 return (
                   <p key={i}>
