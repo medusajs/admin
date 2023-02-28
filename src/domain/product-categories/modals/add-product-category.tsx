@@ -1,7 +1,10 @@
 import React, { useState } from "react"
 
 import { ProductCategory } from "@medusajs/medusa"
-import { useAdminCreateProductCategory } from "medusa-react"
+import {
+  adminProductCategoryKeys,
+  useAdminCreateProductCategory,
+} from "medusa-react"
 
 import useNotification from "../../../hooks/use-notification"
 import FocusModal from "../../../components/molecules/modal/focus-modal"
@@ -9,6 +12,7 @@ import Button from "../../../components/fundamentals/button"
 import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
 import InputField from "../../../components/molecules/input"
 import Select from "../../../components/molecules/select"
+import { useQueryClient } from "@tanstack/react-query"
 
 const visibilityOptions = [
   {
@@ -34,6 +38,7 @@ type CreateProductCategoryProps = {
 function CreateProductCategory(props: CreateProductCategoryProps) {
   const { closeModal, parentCategory } = props
   const notification = useNotification()
+  const queryClient = useQueryClient()
 
   const [name, setName] = useState("")
   const [handle, setHandle] = useState("")
@@ -50,6 +55,8 @@ function CreateProductCategory(props: CreateProductCategoryProps) {
         is_internal: !isPublic,
         parent_category_id: parentCategory?.id ?? null,
       })
+      // TODO: temporary here, investigate why `useAdminCreateProductCategory` doesn't invalidate this
+      await queryClient.invalidateQueries(adminProductCategoryKeys.lists())
       closeModal()
       notification("Success", "Created a new product category", "success")
     } catch (e) {
@@ -60,11 +67,11 @@ function CreateProductCategory(props: CreateProductCategoryProps) {
   return (
     <FocusModal>
       <FocusModal.Header>
-        <div className="medium:w-8/12 w-full px-8 flex justify-between">
+        <div className="flex w-full justify-between px-8 medium:w-8/12">
           <Button size="small" variant="ghost" onClick={closeModal}>
             <CrossIcon size={20} />
           </Button>
-          <div className="gap-x-small flex">
+          <div className="flex gap-x-small">
             <Button
               size="small"
               variant="primary"
@@ -78,14 +85,14 @@ function CreateProductCategory(props: CreateProductCategoryProps) {
         </div>
       </FocusModal.Header>
 
-      <FocusModal.Main className="w-full no-scrollbar flex justify-center">
-        <div className="medium:w-7/12 large:w-6/12 small:w-4/5 max-w-[700px] my-16">
-          <h1 className="inter-xlarge-semibold text-grey-90 pb-8">
+      <FocusModal.Main className="no-scrollbar flex w-full justify-center">
+        <div className="my-16 max-w-[700px] small:w-4/5 medium:w-7/12 large:w-6/12">
+          <h1 className="inter-xlarge-semibold pb-8 text-grey-90">
             Add category {parentCategory && `to ${parentCategory.name}`}
           </h1>
-          <h4 className="inter-large-semibold text-grey-90 pb-1">Details</h4>
+          <h4 className="inter-large-semibold pb-1 text-grey-90">Details</h4>
 
-          <div className="flex justify-between gap-6 mb-8">
+          <div className="mb-8 flex justify-between gap-6">
             <InputField
               label="Name"
               type="string"
@@ -107,7 +114,7 @@ function CreateProductCategory(props: CreateProductCategoryProps) {
             />
           </div>
 
-          <div className="flex justify-between gap-6 mb-8">
+          <div className="mb-8 flex justify-between gap-6">
             <div className="flex-1">
               <Select
                 label="Status"
