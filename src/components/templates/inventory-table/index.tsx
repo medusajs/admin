@@ -43,7 +43,7 @@ const LocationDropdown = ({
   }
 
   return (
-    <div className="w-[200px] h-[40px]">
+    <div className="h-[40px] w-[200px]">
       <NextSelect
         isMulti={false}
         onChange={(loc) => {
@@ -94,18 +94,14 @@ const InventoryTable: React.FC<InventoryTableProps> = () => {
   const limit = parseInt(queryObject.limit)
 
   const [query, setQuery] = useState(queryObject.query)
-  const [numPages] = useState(0)
+  const [numPages, setNumPages] = useState(0)
 
   const clearFilters = () => {
     reset()
     setQuery("")
   }
 
-  const {
-    location_levels: inventory,
-    isLoading,
-    count,
-  } = useAdminInventoryItems(
+  const { inventory_items, isLoading, count } = useAdminInventoryItems(
     {
       ...queryObject,
     },
@@ -114,7 +110,10 @@ const InventoryTable: React.FC<InventoryTableProps> = () => {
     }
   )
 
-  console.log({ count })
+  useEffect(() => {
+    const controlledPageCount = Math.ceil(count! / queryObject.limit)
+    setNumPages(controlledPageCount)
+  }, [inventory_items])
 
   const updateUrlFromFilter = (obj = {}) => {
     const stringified = qs.stringify(obj)
@@ -153,8 +152,8 @@ const InventoryTable: React.FC<InventoryTableProps> = () => {
     state: { pageIndex },
   } = useTable(
     {
-      columns, // TODO: Possibly ignore this? idk
-      data: inventory || [],
+      columns,
+      data: inventory_items || [],
       manualPagination: true,
       initialState: {
         pageIndex: Math.floor(offs / limit),
@@ -201,7 +200,7 @@ const InventoryTable: React.FC<InventoryTableProps> = () => {
     <TableContainer
       hasPagination
       pagingState={{
-        count: inventory?.length ?? 0,
+        count,
         offset: offs,
         pageSize: offs + rows.length,
         title: "Inventory Items",
@@ -261,6 +260,7 @@ const InventoryTable: React.FC<InventoryTableProps> = () => {
         <Table.Body {...getTableBodyProps()}>
           {rows.map((row) => {
             prepareRow(row)
+            console.log(row)
             return <InventoryRow row={row} {...row.getRowProps()} />
           })}
         </Table.Body>
@@ -278,6 +278,7 @@ const InventoryRow = ({ row, ...rest }) => {
       color={"inherit"}
       linkTo={`/a/inventory/${inventory.id}`}
       actions={getActions()}
+      forceDropdown={true}
       {...rest}
     >
       {row.cells.map((cell, index) => {

@@ -1,35 +1,35 @@
 import React, { useMemo } from "react"
 import ImagePlaceholder from "../../fundamentals/image-placeholder"
 
-const useProductTableColumn = () => {
+const useInventoryTableColumn = () => {
   const columns = useMemo(
     () => [
       {
         Header: "Item",
-        accessor: "variant.product.title",
+        accessor: "title",
         Cell: ({ row: { original } }) => {
           return (
             <div className="flex items-center">
-              <div className="h-[40px] w-[30px] my-1.5 flex items-center mr-4">
-                {original.variant.product?.thumbnail ? (
+              <div className="my-1.5 mr-4 flex h-[40px] w-[30px] items-center">
+                {original.variants[0].product?.thumbnail ? (
                   <img
-                    src={original.variant.product.thumbnail}
-                    className="object-cover h-full rounded-soft"
+                    src={original.variants[0].product.thumbnail}
+                    className="h-full rounded-soft object-cover"
                   />
                 ) : (
                   <ImagePlaceholder />
                 )}
               </div>
-              {original.variant.product.title}
+              {original.variants[0].product.title}
             </div>
           )
         },
       },
       {
         Header: "Variant",
-        accessor: "variant.title", // accessor is the "key" in the data
+        accessor: "variant.title",
         Cell: ({ row: { original } }) => {
-          return <div>{original?.variant.title || "-"}</div>
+          return <div>{original?.variants[0].title || "-"}</div>
         },
       },
       {
@@ -39,7 +39,7 @@ const useProductTableColumn = () => {
       },
       {
         Header: "Incoming",
-        accessor: "location_levels.incoming_quantity",
+        accessor: "incoming_quantity",
         Cell: ({ row: { original } }) => (
           <div>
             {original.location_levels.reduce(
@@ -51,7 +51,7 @@ const useProductTableColumn = () => {
       },
       {
         Header: "In stock",
-        accessor: "location_levels.stocked_quantity",
+        accessor: "stocked_quantity",
         Cell: ({ row: { original } }) => (
           <div>
             {original.location_levels.reduce(
@@ -68,4 +68,4 @@ const useProductTableColumn = () => {
   return [columns] as const
 }
 
-export default useProductTableColumn
+export default useInventoryTableColumn
