@@ -63,14 +63,14 @@ const CreateFulfillmentModal: React.FC<CreateFulfillmentModalProps> = ({
     { key: "", value: "" },
   ])
 
-  const sc_id =
+  const salesChannelID =
     orderToFulfill["object"] === "order"
       ? (orderToFulfill as Order).sales_channel_id
       : (orderToFulfill as ClaimOrder | Swap)?.order?.sales_channel_id
 
   const filterableFields: { sales_channel_id?: string } = {}
-  if (sc_id) {
-    filterableFields.sales_channel_id = sc_id
+  if (salesChannelID) {
+    filterableFields.sales_channel_id = salesChannelID
   }
   const { stock_locations } = useAdminStockLocations(filterableFields)
 
