@@ -1,5 +1,8 @@
 import { Product, ProductVariant } from "@medusajs/medusa"
-import { useAdminVariantsInventory } from "medusa-react"
+import {
+  useAdminUpdateLocationLevel,
+  useAdminVariantsInventory,
+} from "medusa-react"
 import React, { useContext } from "react"
 import { useForm } from "react-hook-form"
 import Button from "../../../../../components/fundamentals/button"
@@ -29,19 +32,36 @@ const EditVariantInventoryModal = ({ onClose, product, variant }: Props) => {
     refetch,
   } = useAdminVariantsInventory(variant.id)
 
+  const itemId = variantInventory?.inventory[0]?.id
+
+  const { mutate: updateLocationLevel } = useAdminUpdateLocationLevel(
+    itemId || ""
+  )
   const handleClose = () => {
     onClose()
   }
 
   const { onUpdateVariant, updatingVariant } = useEditProductActions(product.id)
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const { location_levels } = data.stock
-    console.log({ location_levels })
+
+    await Promise.all(
+      location_levels.map(async (level) => {
+        await updateLocationLevel({
+          stockLocationId: level.location_id,
+          stocked_quantity: level.stocked_quantity,
+        })
+      })
+    )
     /// TODO: Call update location level with new values
     delete data.stock.location_levels
+
     // @ts-ignore
-    onUpdateVariant(variant.id, createUpdatePayload(data), handleClose)
+    onUpdateVariant(variant.id, createUpdatePayload(data), () => {
+      refetch()
+      handleClose()
+    })
   }
 
   return (
