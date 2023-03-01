@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom"
 import useImperativeDialog from "../../../../hooks/use-imperative-dialog"
 import useNotification from "../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../utils/error-messages"
+import { removeNullish } from "../../../../utils/remove-nullish"
 
 const useEditProductActions = (productId: string) => {
   const dialog = useImperativeDialog()
@@ -71,7 +72,7 @@ const useEditProductActions = (productId: string) => {
     console.log("****")
     updateVariant.mutate(
       // @ts-ignore - TODO fix type on request
-      { variant_id: id, ...payload },
+      { variant_id: id, ...removeNullish(payload) },
       {
         onSuccess: () => {
           notification("Success", successMessage, "success")

@@ -19,8 +19,6 @@ import Pricing from "../domain/pricing"
 import ProductsRoute from "../domain/products"
 import SalesChannels from "../domain/sales-channels"
 import Settings from "../domain/settings"
-import PublishableApiKeys from "../domain/publishable-api-keys"
-import Inventory from "../domain/inventory"
 
 const IndexPage = () => {
   const navigate = useNavigate()
