@@ -48,9 +48,8 @@ function ProductCategoryPage() {
 
   const { product_categories: categories, isLoading } =
     useAdminProductCategories({
-      expand: "category_children",
-      // TODO: doesn't work
-      // parent_category_id: null,
+      parent_category_id: "null",
+      include_descendants_tree: true,
     })
 
   const actions = [

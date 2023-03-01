@@ -25,32 +25,7 @@ function ProductCategoriesList(props: ProductCategoriesListProps) {
   const { client } = useMedusa()
   const queryClient = useQueryClient()
   const notification = useNotification()
-
-  const categories = useMemo(() => {
-    /**
-     * HACK - for now to properly reference nested children
-     */
-    const categoriesMap = {}
-    props.categories.forEach((c) => (categoriesMap[c.id] = c))
-
-    const visit = (active) => {
-      const node = categoriesMap[active.id]
-
-      node.category_children = node.category_children
-        .sort((a, b) => a.name.localeCompare(b.name))
-        .map((ch) => {
-          visit(ch)
-          return Object.assign(ch, categoriesMap[ch.id])
-        })
-
-      return node
-    }
-
-    return props.categories
-      .filter((c) => !c.parent_category_id)
-      .sort((a, b) => a.name.localeCompare(b.name))
-      .map((c) => visit(c))
-  }, [props.categories])
+  const { categories } = props
 
   const onItemDrop = async (params: {
     item: ProductCategory
@@ -59,6 +34,7 @@ function ProductCategoriesList(props: ProductCategoriesListProps) {
   }) => {
     let parentId = null
     const { dragItem, items, targetPath } = params
+    const [position] = targetPath.slice(-1)
 
     if (targetPath.length > 1) {
       const path = dropRight(
@@ -72,6 +48,7 @@ function ProductCategoriesList(props: ProductCategoriesListProps) {
     try {
       await client.admin.productCategories.update(dragItem.id, {
         parent_category_id: parentId,
+        position,
       })
       notification("Success", "New order saved", "success")
       await queryClient.invalidateQueries(adminProductCategoryKeys.lists())
