@@ -4,6 +4,8 @@ import {
   useAdminStore,
   useAdminStockLocations,
   useAdminInventoryItems,
+  useAdminVariant,
+  useAdminUpdateLocationLevel,
 } from "medusa-react"
 import qs from "qs"
 import React, { useEffect, useMemo, useState } from "react"
@@ -15,6 +17,16 @@ import { NextSelect } from "../../molecules/select/next-select"
 import useInventoryActions from "./use-inventory-actions"
 import useInventoryTableColumn from "./use-inventory-column"
 import { useInventoryFilters } from "./use-inventory-filters"
+import { InventoryItemDTO } from "@medusajs/medusa"
+import Modal from "../../molecules/modal"
+import useToggleState from "../../../hooks/use-toggle-state"
+import InputField from "../../molecules/input"
+import Button from "../../fundamentals/button"
+import InputHeader from "../../fundamentals/input-header"
+import ImagePlaceholder from "../../fundamentals/image-placeholder"
+import Spinner from "../../atoms/spinner"
+import useNotification from "../../../hooks/use-notification"
+import { getErrorMessage } from "../../../utils/error-messages"
 
 const DEFAULT_PAGE_SIZE = 15
 
@@ -261,7 +273,6 @@ const InventoryTable: React.FC<InventoryTableProps> = () => {
         <Table.Body {...getTableBodyProps()}>
           {rows.map((row) => {
             prepareRow(row)
-            console.log(row)
             return <InventoryRow row={row} {...row.getRowProps()} />
           })}
         </Table.Body>
@@ -274,11 +285,16 @@ const InventoryRow = ({ row, ...rest }) => {
   const inventory = row.original
   const { getActions } = useInventoryActions(inventory)
 
+  const {
+    state: isShowingAdjustAvailabilityModal,
+    open: showAdjustAvailabilityModal,
+    close: closeAdjustAvailabilityModal,
+  } = useToggleState()
   return (
     <Table.Row
       color={"inherit"}
-      linkTo={`/a/inventory/${inventory.id}`}
       actions={getActions()}
+      onClick={showAdjustAvailabilityModal}
       forceDropdown={true}
       {...rest}
     >
@@ -289,7 +305,133 @@ const InventoryRow = ({ row, ...rest }) => {
           </Table.Cell>
         )
       })}
+      {isShowingAdjustAvailabilityModal && (
+        <AdjustAvailabilityModal
+          inventory={inventory}
+          handleClose={closeAdjustAvailabilityModal}
+        />
+      )}
     </Table.Row>
+  )
+}
+
+const AdjustAvailabilityModal = ({
+  inventory,
+  handleClose,
+}: {
+  inventory: InventoryItemDTO
+  handleClose: () => void
+}) => {
+  const inventoryVariantId = inventory["variants"][0].id
+  const locationLevel = inventory["location_levels"]?.[0]
+  const { variant, isLoading } = useAdminVariant(inventoryVariantId)
+  const {
+    mutate: updateLocationLevelForInventoryItem,
+    isLoading: isSubmitting,
+  } = useAdminUpdateLocationLevel(inventory.id)
+
+  const notification = useNotification()
+
+  const [stockedQuantity, setStockedQuantity] = useState(
+    locationLevel?.stocked_quantity || 0
+  )
+
+  const disableSubmit =
+    stockedQuantity === (locationLevel.stocked_quantity || 0)
+
+  const onSubmit = () => {
+    updateLocationLevelForInventoryItem(
+      {
+        stockLocationId: locationLevel.location_id,
+        stocked_quantity: stockedQuantity,
+      },
+      {
+        onSuccess: () => {
+          notification(
+            "Success",
+            "Inventory item updated successfully",
+            "success"
+          )
+          handleClose()
+        },
+        onError: (error) => {
+          notification("Error", getErrorMessage(error), "error")
+        },
+      }
+    )
+  }
+  return (
+    <Modal handleClose={handleClose}>
+      <Modal.Body>
+        <Modal.Header handleClose={handleClose}>
+          <h1 className="inter-large-semibold">Adjust availability</h1>
+        </Modal.Header>
+        <Modal.Content>
+          {isLoading ? (
+            <Spinner />
+          ) : (
+            <div className="grid grid-cols-2">
+              <InputHeader label="Item" />
+              <InputHeader label="Quantity" />
+              <div className="flex flex-col">
+                <span className="pr-base">
+                  <div className="float-left my-1.5 mr-4 flex h-[40px] w-[30px] items-center">
+                    {variant?.product?.thumbnail ? (
+                      <img
+                        src={variant?.product?.thumbnail}
+                        className="h-full rounded-rounded object-cover"
+                      />
+                    ) : (
+                      <ImagePlaceholder />
+                    )}
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="truncate">
+                      {variant?.product?.title}
+                      <span className="truncate text-grey-50">
+                        ({inventory.sku})
+                      </span>
+                    </span>
+                    <span className="text-grey-50">
+                      {variant?.options?.map((o) => (
+                        <span>{o.value}</span>
+                      ))}
+                    </span>
+                  </div>
+                </span>
+              </div>
+              <InputField
+                onChange={(e) => setStockedQuantity(e.target.valueAsNumber)}
+                autoFocus
+                type="number"
+                value={stockedQuantity}
+              />
+            </div>
+          )}
+        </Modal.Content>
+      </Modal.Body>
+      <Modal.Footer>
+        <div className="flex w-full justify-end gap-x-xsmall">
+          <Button
+            size="small"
+            variant="ghost"
+            className="border"
+            onClick={handleClose}
+          >
+            Cancel
+          </Button>
+          <Button
+            size="small"
+            variant="primary"
+            disabled={disableSubmit}
+            loading={isSubmitting}
+            onClick={onSubmit}
+          >
+            Save and close
+          </Button>
+        </div>
+      </Modal.Footer>
+    </Modal>
   )
 }
 export default InventoryTable
