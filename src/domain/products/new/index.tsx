@@ -1,5 +1,5 @@
 import { AdminPostProductsReq } from "@medusajs/medusa"
-import { useAdminCreateProduct } from "medusa-react"
+import { useAdminCreateProduct, useMedusa } from "medusa-react"
 import { useEffect } from "react"
 import { useForm, useWatch } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
@@ -86,6 +86,10 @@ const NewProduct = ({ onClose }: Props) => {
     handleSubmit(async (data) => {
       console.log(data.variants)
 
+      // const variantToStockMap = new Map(data.variants.map(variant => {
+      //   return [variant., ]
+      // })
+
       const payload = createPayload(
         data,
         publish,
@@ -152,6 +156,39 @@ const NewProduct = ({ onClose }: Props) => {
         },
       })
     })
+
+  const { client } = useMedusa()
+  const createStockLocationsForVariant = async (
+    productRes,
+    stock_locations: { stocked_quantity: number; location_id: string }[]
+  ) => {
+    const { variants } = productRes
+
+    const pvMap = new Map(product.variants.map((v) => [v.id, true]))
+    const addedVariant = variants.find((variant) => !pvMap.get(variant.id))
+
+    await Promise.all(
+      variants.map(async (variant) => {
+        const inventory = await client.admin.variants.getInventory(
+          addedVariant.id
+        )
+        await Promise.all(
+          inventory.variant.inventory
+            .map(async (item) => {
+              return Promise.all(
+                stock_locations.map(async (stock_location) => {
+                  client.admin.inventoryItems.createLocationLevel(item.id!, {
+                    location_id: stock_location.location_id,
+                    stocked_quantity: stock_location.stocked_quantity,
+                  })
+                })
+              )
+            })
+            .flat()
+        )
+      })
+    )
+  }
 
   return (
     <form className="w-full">

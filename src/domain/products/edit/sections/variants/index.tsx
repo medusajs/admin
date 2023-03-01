@@ -42,7 +42,7 @@ const VariantsSection = ({ product }: Props) => {
     state: addVariantState,
     close: closeAddVariant,
     toggle: toggleAddVariant,
-  } = useToggleState(true)
+  } = useToggleState()
 
   const {
     state: editVariantsState,

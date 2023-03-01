@@ -138,7 +138,7 @@ const getDefaultValues = (product: Product): EditFlowVariantFormType => {
       upc: null,
       barcode: null,
       inventory_quantity: null,
-      manage_inventory: true, // TODO change to false
+      manage_inventory: false,
       allow_backorder: false,
       stock_location: [],
     },
