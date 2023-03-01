@@ -8,6 +8,8 @@ import TagInput from "../../../../components/molecules/tag-input"
 import { Option } from "../../../../types/shared"
 import { NestedForm } from "../../../../utils/nested-form"
 import useOrganizeData from "./use-organize-data"
+import NestedMultiselect from "../../../categories/components/multiselect"
+import InputHeader from "../../../../components/fundamentals/input-header"
 
 export type OrganizeFormType = {
   type: Option | null
@@ -38,7 +40,7 @@ const OrganizeForm = ({ form }: Props) => {
 
   return (
     <div>
-      <div className="grid grid-cols-2 gap-x-large mb-large">
+      <div className="mb-large grid grid-cols-2 gap-x-large">
         <Controller
           name={path("type")}
           control={control}
@@ -73,6 +75,19 @@ const OrganizeForm = ({ form }: Props) => {
           }}
         />
       </div>
+
+      <InputHeader label="Categories" className="mb-2" />
+
+      <Controller
+        name={path("categories")}
+        control={control}
+        render={({ field: { value, onChange } }) => {
+          return <NestedMultiselect />
+        }}
+      />
+
+      <div className="mb-large" />
+
       <Controller
         control={control}
         name={path("tags")}

@@ -18,6 +18,7 @@ import { getErrorMessage } from "../../../utils/error-messages"
 import ImportProducts from "../batch-job/import"
 import NewProduct from "../new"
 import { PollingContext } from "../../../context/polling"
+import CategoriesMultiselect from "../../categories/components/multiselect"
 
 const VIEWS = ["products", "collections"]
 
@@ -162,8 +163,8 @@ const Overview = () => {
 
   return (
     <>
-      <div className="flex flex-col grow h-full">
-        <div className="w-full flex flex-col grow">
+      <div className="flex h-full grow flex-col">
+        <div className="flex w-full grow flex-col">
           <BodyCard
             forceDropdown={false}
             customActionable={CurrentAction()}

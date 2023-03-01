@@ -96,7 +96,7 @@ const GeneralModal = ({ product, open, onClose }: Props) => {
             <DiscountableForm form={nestedForm(form, "discountable")} />
           </Modal.Content>
           <Modal.Footer>
-            <div className="flex gap-x-2 justify-end w-full">
+            <div className="flex w-full justify-end gap-x-2">
               <Button
                 size="small"
                 variant="secondary"
