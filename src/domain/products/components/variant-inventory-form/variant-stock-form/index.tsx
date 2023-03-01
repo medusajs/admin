@@ -5,7 +5,6 @@ import {
   useAdminCreateLocationLevel,
   useAdminDeleteLocationLevel,
   useAdminStockLocations,
-  useAdminUpdateLocationLevel,
 } from "medusa-react"
 import { InventoryLevelDTO, StockLocationDTO } from "@medusajs/medusa"
 import { Controller } from "react-hook-form"
@@ -44,15 +43,6 @@ const VariantStockForm = ({
 
   const { stock_locations: locations, isLoading } = useAdminStockLocations()
 
-  const [stockedQuantities, setStockedQuantities] = useState<
-    Record<string, number>
-  >(
-    locationLevels.reduce((quants, level) => {
-      return { ...quants, [level.location_id]: level.stocked_quantity }
-    }, {})
-  )
-
-  const updateLevel = useAdminUpdateLocationLevel(itemId)
   const deleteLevel = useAdminDeleteLocationLevel(itemId)
   const createLevel = useAdminCreateLocationLevel(itemId)
 
@@ -62,18 +52,6 @@ const VariantStockForm = ({
     register,
     formState: { errors },
   } = form
-
-  const handleUpdateInventory = async (value) => {
-    const locationId = value.locationId
-    const stockedQuantity = value.stockedQuantity
-
-    await updateLevel.mutateAsync({
-      stockLocationId: locationId,
-      stocked_quantity: stockedQuantity,
-    })
-
-    refetchInventory()
-  }
 
   const handleUpdateLocations = async (value) => {
     await Promise.all(
@@ -92,10 +70,6 @@ const VariantStockForm = ({
     )
 
     refetchInventory()
-  }
-
-  const updateStockedQuantity = (locationId: string, quantity: number) => {
-    setStockedQuantities({ ...stockedQuantities, [locationId]: quantity })
   }
 
   return (
@@ -195,12 +169,6 @@ const VariantStockForm = ({
                           path(`location_levels.${i}.stocked_quantity`),
                           { valueAsNumber: true }
                         )}
-                        // onChange={(e) =>
-                        //   updateStockedQuantity(
-                        //     level.location_id,
-                        //     parseInt(e.target.value)
-                        //   )
-                        // }
                       />
                     </div>
                   </div>
@@ -275,6 +243,18 @@ const ManageLocationsForm = ({
   const [selectedLocations, setSelectedLocations] =
     useState<string[]>(existingLocations)
 
+  const [isDirty, setIsDirty] = useState(false)
+
+  React.useEffect(() => {
+    const selectedIsExisting = selectedLocations.every((locationId) =>
+      existingLocations.includes(locationId)
+    )
+    setIsDirty(
+      !selectedIsExisting ||
+        selectedLocations.length !== existingLocations.length
+    )
+  }, [existingLocations, selectedLocations])
+
   const handleToggleLocation = (locationId: string) => {
     if (selectedLocations.includes(locationId)) {
       setSelectedLocations(selectedLocations.filter((id) => id !== locationId))
@@ -302,13 +282,30 @@ const ManageLocationsForm = ({
     })
   }
 
+  const handleSelectAll = (e) => {
+    e.preventDefault()
+
+    setSelectedLocations(locationOptions.map((l) => l.id))
+  }
+
   return (
     <div className="h-full w-full">
       <form onSubmit={handleSubmit}>
         <Modal.Content>
           <div>
-            <div className="flex items-center border-b border-grey-20 pb-base text-grey-50">
-              Select locations that stock the selected variant
+            <div className="flex w-full items-center justify-between border-b border-grey-20 pb-base text-grey-50">
+              <div className="">
+                <p>Select locations that stock the selected variant</p>
+                <p>{`(${selectedLocations.length} of ${locationOptions.length} selected)`}</p>
+              </div>
+              <Button
+                size="small"
+                variant="ghost"
+                className="border"
+                onClick={handleSelectAll}
+              >
+                Select all
+              </Button>
             </div>
             {locationOptions.map((loc) => {
               const existingLevel = selectedLocations.find((l) => l === loc.id)
@@ -346,11 +343,12 @@ const ManageLocationsForm = ({
             </Button>
             <Button
               variant="primary"
-              className="w-[112px]"
+              className="nowrap w-[134px]"
               size="small"
               type="submit"
+              disabled={!isDirty}
             >
-              Add
+              Save and go back
             </Button>
           </div>
         </Modal.Footer>
