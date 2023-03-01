@@ -200,7 +200,7 @@ const InventoryTable: React.FC<InventoryTableProps> = () => {
     <TableContainer
       hasPagination
       pagingState={{
-        count,
+        count: count || 0,
         offset: offs,
         pageSize: offs + rows.length,
         title: "Inventory Items",
@@ -229,6 +229,7 @@ const InventoryTable: React.FC<InventoryTableProps> = () => {
         }
         enableSearch
         handleSearch={setQuery}
+        searchValue={query}
         tableActions={
           <LocationDropdown
             selectedLocation={
