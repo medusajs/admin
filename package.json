@@ -7,7 +7,8 @@
   "resolutions": {
     "devcert": "1.2.1",
     "postcss": "^8.4.5",
-    "@types/react": "^18.0.21"
+    "@types/react": "^18.0.21",
+    "medusa-react": "portal:/Users/stephix/Work/new-core/packages/medusa-react"
   },
   "dependencies": {
     "@hookform/error-message": "^2.0.0",

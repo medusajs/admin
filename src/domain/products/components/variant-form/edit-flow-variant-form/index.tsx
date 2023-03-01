@@ -1,3 +1,4 @@
+import { AdminGetVariantsVariantInventoryRes } from "@medusajs/medusa"
 import React from "react"
 import { useFieldArray, UseFormReturn } from "react-hook-form"
 import IconTooltip from "../../../../../components/molecules/icon-tooltip"
@@ -32,6 +33,7 @@ export type EditFlowVariantFormType = {
 
 type Props = {
   form: UseFormReturn<EditFlowVariantFormType, any>
+  inventory?: AdminGetVariantsVariantInventoryRes["inventory"]
 }
 
 /**
@@ -65,7 +67,7 @@ const EditFlowVariantForm = ({ form }: Props) => {
         <div>
           <VariantGeneralForm form={nestedForm(form, "general")} />
           <div className="mt-xlarge">
-            <div className="flex items-center gap-x-2xsmall mb-base">
+            <div className="mb-base flex items-center gap-x-2xsmall">
               <h3 className="inter-base-semibold">Options</h3>
               <IconTooltip
                 type="info"
@@ -103,14 +105,14 @@ const EditFlowVariantForm = ({ form }: Props) => {
         </p>
         <div className="mt-large">
           <h3 className="inter-base-semibold mb-2xsmall">Dimensions</h3>
-          <p className="inter-base-regular text-grey-50 mb-large">
+          <p className="inter-base-regular mb-large text-grey-50">
             Configure to calculate the most accurate shipping rates.
           </p>
           <DimensionsForm form={nestedForm(form, "dimensions")} />
         </div>
         <div className="mt-xlarge">
           <h3 className="inter-base-semibold mb-2xsmall">Customs</h3>
-          <p className="inter-base-regular text-grey-50 mb-large">
+          <p className="inter-base-regular mb-large text-grey-50">
             Configure if you are shipping internationally.
           </p>
           <CustomsForm form={nestedForm(form, "customs")} />

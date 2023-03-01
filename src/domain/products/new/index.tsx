@@ -1,5 +1,5 @@
 import { AdminPostProductsReq } from "@medusajs/medusa"
-import { useAdminCreateProduct } from "medusa-react"
+import { useAdminCreateProduct, useMedusa } from "medusa-react"
 import { useEffect } from "react"
 import { useForm, useWatch } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
@@ -84,6 +84,12 @@ const NewProduct = ({ onClose }: Props) => {
 
   const onSubmit = (publish = true) =>
     handleSubmit(async (data) => {
+      console.log(data.variants)
+
+      // const variantToStockMap = new Map(data.variants.map(variant => {
+      //   return [variant., ]
+      // })
+
       const payload = createPayload(
         data,
         publish,
@@ -151,11 +157,44 @@ const NewProduct = ({ onClose }: Props) => {
       })
     })
 
+  const { client } = useMedusa()
+  const createStockLocationsForVariant = async (
+    productRes,
+    stock_locations: { stocked_quantity: number; location_id: string }[]
+  ) => {
+    const { variants } = productRes
+
+    const pvMap = new Map(product.variants.map((v) => [v.id, true]))
+    const addedVariant = variants.find((variant) => !pvMap.get(variant.id))
+
+    await Promise.all(
+      variants.map(async (variant) => {
+        const inventory = await client.admin.variants.getInventory(
+          addedVariant.id
+        )
+        await Promise.all(
+          inventory.variant.inventory
+            .map(async (item) => {
+              return Promise.all(
+                stock_locations.map(async (stock_location) => {
+                  client.admin.inventoryItems.createLocationLevel(item.id!, {
+                    location_id: stock_location.location_id,
+                    stocked_quantity: stock_location.stocked_quantity,
+                  })
+                })
+              )
+            })
+            .flat()
+        )
+      })
+    )
+  }
+
   return (
     <form className="w-full">
       <FocusModal>
         <FocusModal.Header>
-          <div className="flex justify-between w-full px-8 medium:w-8/12">
+          <div className="flex w-full justify-between px-8 medium:w-8/12">
             <Button
               size="small"
               variant="ghost"
@@ -186,8 +225,8 @@ const NewProduct = ({ onClose }: Props) => {
             </div>
           </div>
         </FocusModal.Header>
-        <FocusModal.Main className="flex justify-center w-full no-scrollbar">
-          <div className="medium:w-7/12 large:w-6/12 small:w-4/5 max-w-[700px] my-16">
+        <FocusModal.Main className="no-scrollbar flex w-full justify-center">
+          <div className="my-16 max-w-[700px] small:w-4/5 medium:w-7/12 large:w-6/12">
             <Accordion defaultValue={["general"]} type="multiple">
               <Accordion.Item
                 value={"general"}
@@ -226,7 +265,7 @@ const NewProduct = ({ onClose }: Props) => {
                 </div>
               </Accordion.Item>
               <Accordion.Item title="Variants" value="variants">
-                <p className="text-grey-50 inter-base-regular">
+                <p className="inter-base-regular text-grey-50">
                   Add variations of this product.
                   <br />
                   Offer your customers different options for color, format,
@@ -254,14 +293,14 @@ const NewProduct = ({ onClose }: Props) => {
                 </div>
               </Accordion.Item>
               <Accordion.Item title="Thumbnail" value="thumbnail">
-                <p className="inter-base-regular text-grey-50 mb-large">
+                <p className="inter-base-regular mb-large text-grey-50">
                   Used to represent your product during checkout, social sharing
                   and more.
                 </p>
                 <ThumbnailForm form={nestedForm(form, "thumbnail")} />
               </Accordion.Item>
               <Accordion.Item title="Media" value="media">
-                <p className="inter-base-regular text-grey-50 mb-large">
+                <p className="inter-base-regular mb-large text-grey-50">
                   Add images to your product.
                 </p>
                 <MediaForm form={nestedForm(form, "media")} />

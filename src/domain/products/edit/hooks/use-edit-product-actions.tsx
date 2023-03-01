@@ -47,14 +47,14 @@ const useEditProductActions = (productId: string) => {
 
   const onAddVariant = (
     payload: AdminPostProductsProductVariantsReq,
-    onSuccess: () => void,
+    onSuccess: (variantRes) => void,
     successMessage = "Variant was created successfully"
   ) => {
     addVariant.mutate(payload, {
-      onSuccess: () => {
+      onSuccess: (data) => {
         notification("Success", successMessage, "success")
         getProduct.refetch()
-        onSuccess()
+        onSuccess(data.product)
       },
       onError: (err) => {
         notification("Error", getErrorMessage(err), "error")
@@ -68,6 +68,7 @@ const useEditProductActions = (productId: string) => {
     onSuccess: () => void,
     successMessage = "Variant was updated successfully"
   ) => {
+    console.log("****")
     updateVariant.mutate(
       // @ts-ignore - TODO fix type on request
       { variant_id: id, ...payload },
