@@ -42,7 +42,7 @@ const VariantsSection = ({ product }: Props) => {
     state: addVariantState,
     close: closeAddVariant,
     toggle: toggleAddVariant,
-  } = useToggleState()
+  } = useToggleState(true)
 
   const {
     state: editVariantsState,
@@ -152,15 +152,15 @@ const ProductOptions = () => {
 
   if (status === "loading" || !options) {
     return (
-      <div className="grid grid-cols-3 mt-base gap-x-8">
+      <div className="mt-base grid grid-cols-3 gap-x-8">
         {Array.from(Array(2)).map((_, i) => {
           return (
             <div key={i}>
-              <div className="h-6 bg-grey-30 w-9 animate-pulse mb-xsmall"></div>
+              <div className="mb-xsmall h-6 w-9 animate-pulse bg-grey-30"></div>
               <ul className="flex flex-wrap items-center gap-1">
                 {Array.from(Array(3)).map((_, j) => (
                   <li key={j}>
-                    <div className="w-12 h-8 text-grey-50 bg-grey-10 animate-pulse rounded-rounded">
+                    <div className="h-8 w-12 animate-pulse rounded-rounded bg-grey-10 text-grey-50">
                       {j}
                     </div>
                   </li>
@@ -174,7 +174,7 @@ const ProductOptions = () => {
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-8 mt-base">
+    <div className="mt-base flex flex-wrap items-center gap-8">
       {options.map((option) => {
         return (
           <div key={option.id}>
@@ -185,7 +185,7 @@ const ProductOptions = () => {
                 .filter((v, index, self) => self.indexOf(v) === index)
                 .map((v, i) => (
                   <li key={i}>
-                    <div className="text-grey-50 bg-grey-10 inter-small-semibold px-3 py-[6px] rounded-rounded whitespace-nowrap">
+                    <div className="inter-small-semibold whitespace-nowrap rounded-rounded bg-grey-10 px-3 py-[6px] text-grey-50">
                       {v}
                     </div>
                   </li>

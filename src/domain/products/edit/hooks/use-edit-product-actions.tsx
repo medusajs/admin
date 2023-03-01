@@ -47,14 +47,14 @@ const useEditProductActions = (productId: string) => {
 
   const onAddVariant = (
     payload: AdminPostProductsProductVariantsReq,
-    onSuccess: () => void,
+    onSuccess: (variantRes) => void,
     successMessage = "Variant was created successfully"
   ) => {
     addVariant.mutate(payload, {
-      onSuccess: () => {
+      onSuccess: (data) => {
         notification("Success", successMessage, "success")
         getProduct.refetch()
-        onSuccess()
+        onSuccess(data.product)
       },
       onError: (err) => {
         notification("Error", getErrorMessage(err), "error")

@@ -198,7 +198,7 @@ const VariantStockForm = ({
   )
 }
 
-const ManageLocationsScreen = (
+export const ManageLocationsScreen = (
   pop: () => void,
   levels: InventoryLevelDTO[],
   locations: StockLocationDTO[],
