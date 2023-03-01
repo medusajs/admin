@@ -1,3 +1,4 @@
+import { InventoryLevelDTO } from "@medusajs/medusa"
 import React from "react"
 import { UseFormReturn } from "react-hook-form"
 import { nestedForm } from "../../../../../utils/nested-form"
@@ -9,13 +10,7 @@ export type EditFlowVariantFormType = {
 
 type Props = {
   form: UseFormReturn<EditFlowVariantFormType, any>
-  locationLevels: {
-    id: string
-    location_id: string
-    stocked_quantity: number
-    incoming_quantity: number
-    available_quantity: number
-  }[]
+  locationLevels: InventoryLevelDTO[]
   refetchInventory: () => void
   isLoading: boolean
   itemId: string

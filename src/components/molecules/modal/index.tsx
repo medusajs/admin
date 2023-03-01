@@ -109,7 +109,7 @@ Modal.Content = ({ children, className }) => {
     <div
       style={style}
       className={clsx(
-        "overflow-y-auto px-8 pt-5",
+        "overflow-y-auto px-8 pt-6",
         {
           ["w-largeModal pb-7"]: isLargeModal,
           ["pb-5"]: !isLargeModal,
@@ -125,7 +125,7 @@ Modal.Content = ({ children, className }) => {
 Modal.Header = ({ handleClose = undefined, children }) => {
   return (
     <div
-      className="flex w-full items-center px-8 pt-6"
+      className="flex w-full items-center border-b px-8 py-6"
       onClick={(e) => e.stopPropagation()}
     >
       <div className="flex flex-grow">{children}</div>

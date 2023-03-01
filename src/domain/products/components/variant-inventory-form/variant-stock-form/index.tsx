@@ -24,18 +24,12 @@ export type VariantStockFormType = {
   ean: string | null
   upc: string | null
   barcode: string | null
-  location_levels: any[] | null
+  location_levels: InventoryLevelDTO[] | null
 }
 
 type Props = {
   itemId: string
-  locationLevels: {
-    id: string
-    location_id: string
-    incoming_quantity: number
-    stocked_quantity: number
-    available_quantity: number
-  }[]
+  locationLevels: InventoryLevelDTO[]
   refetchInventory: () => void
   form: NestedForm<VariantStockFormType>
 }
@@ -106,9 +100,9 @@ const VariantStockForm = ({
 
   return (
     <div>
-      <div className="flex flex-col pt-large gap-y-xlarge">
-        <div className="flex flex-col gap-y-2xsmall">
-          <h3 className="inter-base-semibold mb-2xsmall">General</h3>
+      <div className="flex flex-col gap-y-xlarge">
+        <div className="flex flex-col gap-y-4">
+          <h3 className="inter-base-semibold">General</h3>
           <div className="grid grid-cols-2 gap-large">
             <InputField
               label="Stock keeping unit (SKU)"
@@ -164,11 +158,11 @@ const VariantStockForm = ({
             product being sold out
           </p>
         </div>
-        <div className="flex flex-col w-full text-base">
+        <div className="flex w-full flex-col text-base">
           <h3 className="inter-base-semibold mb-2xsmall">Quantity</h3>
           {!isLoading && locations && (
-            <div className="flex flex-col w-full">
-              <div className="flex justify-between py-3 inter-base-regular text-grey-50">
+            <div className="flex w-full flex-col">
+              <div className="inter-base-regular flex justify-between py-3 text-grey-50">
                 <div className="">Location</div>
                 <div className="">In Stock</div>
               </div>
@@ -178,15 +172,15 @@ const VariantStockForm = ({
                 )
 
                 return (
-                  <div className="flex items-center py-3">
-                    <div className="flex items-center font-bold">
+                  <div key={level.id} className="flex items-center py-3">
+                    <div className="inter-base-regular flex items-center">
                       <IconBadge className="mr-base">
                         <BuildingsIcon />
                       </IconBadge>
-                      {locationDetails!.name}
+                      {locationDetails?.name}
                     </div>
-                    <div className="flex ml-auto">
-                      <div className="flex flex-col mr-base text-small text-grey-50">
+                    <div className="ml-auto flex">
+                      <div className="mr-base flex flex-col text-small text-grey-50">
                         <span className="whitespace-nowrap">
                           {`${
                             level.stocked_quantity - level.available_quantity
@@ -219,9 +213,9 @@ const VariantStockForm = ({
           <Button
             variant="secondary"
             size="small"
+            type="button"
             className="w-full"
-            onClick={(e) => {
-              e.preventDefault()
+            onClick={() => {
               layeredModalContext.push(
                 // @ts-ignore
                 ManageLocationsScreen(
@@ -309,57 +303,59 @@ const ManageLocationsForm = ({
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Modal.Content>
-        <div>
-          <div className="flex items-center border-b border-grey-20 pb-base text-grey-50">
-            Select locations that stock the selected variant
-          </div>
-          {locationOptions.map((loc) => {
-            const existingLevel = selectedLocations.find((l) => l === loc.id)
+    <div className="h-full w-full">
+      <form onSubmit={handleSubmit}>
+        <Modal.Content>
+          <div>
+            <div className="flex items-center border-b border-grey-20 pb-base text-grey-50">
+              Select locations that stock the selected variant
+            </div>
+            {locationOptions.map((loc) => {
+              const existingLevel = selectedLocations.find((l) => l === loc.id)
 
-            return (
-              <div
-                className="flex items-center justify-between gap-6 border-b border-grey-20 py-base"
-                key={loc.id}
-              >
-                <div className="flex items-center">
-                  <IconBadge className="mr-base">
-                    <BuildingsIcon />
-                  </IconBadge>
-                  <h3>{loc.name}</h3>
+              return (
+                <div
+                  className="flex items-center justify-between gap-6 border-b border-grey-20 py-base"
+                  key={loc.id}
+                >
+                  <div className="flex items-center">
+                    <IconBadge className="mr-base">
+                      <BuildingsIcon />
+                    </IconBadge>
+                    <h3>{loc.name}</h3>
+                  </div>
+                  <Switch
+                    checked={!!existingLevel}
+                    onCheckedChange={() => handleToggleLocation(loc.id)}
+                  />
                 </div>
-                <Switch
-                  checked={!!existingLevel}
-                  onCheckedChange={() => handleToggleLocation(loc.id)}
-                />
-              </div>
-            )
-          })}
-        </div>
-      </Modal.Content>
-      <Modal.Footer>
-        <div className="flex justify-end w-full gap-x-xsmall">
-          <Button
-            variant="ghost"
-            size="small"
-            className="w-[112px]"
-            onClick={() => pop()}
-            type="button"
-          >
-            Back
-          </Button>
-          <Button
-            variant="primary"
-            className="w-[112px]"
-            size="small"
-            type="submit"
-          >
-            Add
-          </Button>
-        </div>
-      </Modal.Footer>
-    </form>
+              )
+            })}
+          </div>
+        </Modal.Content>
+        <Modal.Footer>
+          <div className="flex w-full justify-end gap-x-xsmall">
+            <Button
+              variant="ghost"
+              size="small"
+              className="w-[112px]"
+              onClick={() => pop()}
+              type="button"
+            >
+              Back
+            </Button>
+            <Button
+              variant="primary"
+              className="w-[112px]"
+              size="small"
+              type="submit"
+            >
+              Add
+            </Button>
+          </div>
+        </Modal.Footer>
+      </form>
+    </div>
   )
 }
 

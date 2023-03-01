@@ -79,7 +79,16 @@ const StockForm = ({
     formState: { isDirty },
     handleSubmit,
     reset,
+    watch,
   } = form
+
+  const locationLevels = watch("stock.location_levels")
+
+  const { location_levels } = variantInventory.inventory[0]
+
+  React.useEffect(() => {
+    form.setValue("stock.location_levels", location_levels)
+  }, [form, location_levels])
 
   const handleOnSubmit = handleSubmit((data) => {
     // @ts-ignore
@@ -87,7 +96,6 @@ const StockForm = ({
   })
 
   const itemId = variantInventory.inventory[0].id
-  const locationLevels = variantInventory.inventory[0].location_levels
 
   return (
     <form onSubmit={handleOnSubmit} noValidate>
@@ -95,13 +103,13 @@ const StockForm = ({
         <EditFlowVariantForm
           form={form}
           refetchInventory={refetchInventory}
-          locationLevels={locationLevels}
+          locationLevels={locationLevels || []}
           itemId={itemId}
           isLoading={isLoadingInventory}
         />
       </Modal.Content>
       <Modal.Footer>
-        <div className="flex items-center justify-end w-full gap-x-xsmall">
+        <div className="flex w-full items-center justify-end gap-x-xsmall">
           <Button
             variant="secondary"
             size="small"
