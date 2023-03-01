@@ -46,12 +46,7 @@ const VariantStockForm = ({
   const deleteLevel = useAdminDeleteLocationLevel(itemId)
   const createLevel = useAdminCreateLocationLevel(itemId)
 
-  const {
-    path,
-    control,
-    register,
-    formState: { errors },
-  } = form
+  const { path, control, register } = form
 
   const handleUpdateLocations = async (value) => {
     await Promise.all(
