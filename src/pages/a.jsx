@@ -20,8 +20,6 @@ import ProductsRoute from "../domain/products"
 import PublishableApiKeys from "../domain/publishable-api-keys"
 import SalesChannels from "../domain/sales-channels"
 import Settings from "../domain/settings"
-import PublishableApiKeys from "../domain/publishable-api-keys"
-import Inventory from "../domain/inventory"
 
 const IndexPage = () => {
   const navigate = useNavigate()
