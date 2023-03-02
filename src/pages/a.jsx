@@ -19,7 +19,6 @@ import Pricing from "../domain/pricing"
 import ProductsRoute from "../domain/products"
 import ProductCategories from "../domain/product-categories"
 import PublishableApiKeys from "../domain/publishable-api-keys"
-import ProductCategories from "../domain/product-categories"
 import SalesChannels from "../domain/sales-channels"
 import Settings from "../domain/settings"
 
