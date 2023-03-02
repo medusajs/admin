@@ -1,4 +1,4 @@
-import { AdminPostProductsReq } from "@medusajs/medusa"
+import { AdminPostProductsReq, ProductVariant } from "@medusajs/medusa"
 import { useAdminCreateProduct, useMedusa } from "medusa-react"
 import { useEffect } from "react"
 import { useForm, useWatch } from "react-hook-form"
@@ -86,9 +86,18 @@ const NewProduct = ({ onClose }: Props) => {
     handleSubmit(async (data) => {
       console.log(data.variants)
 
-      // const variantToStockMap = new Map(data.variants.map(variant => {
-      //   return [variant., ]
-      // })
+      const optionsToStockLocationsMap = new Map(
+        data.variants.entries.map((variant) => {
+          return [
+            variant.options
+              .map(({ option }) => option?.value || "")
+              .sort()
+              .join(","),
+            variant.stock.stock_location,
+          ]
+        })
+      )
+      console.log(optionsToStockLocationsMap)
 
       const payload = createPayload(
         data,
@@ -148,8 +157,13 @@ const NewProduct = ({ onClose }: Props) => {
 
       mutate(payload, {
         onSuccess: ({ product }) => {
-          closeAndReset()
-          navigate(`/a/products/${product.id}`)
+          createStockLocationsForVariants(
+            product.variants,
+            optionsToStockLocationsMap
+          ).then(() => {
+            closeAndReset()
+            navigate(`/a/products/${product.id}`)
+          })
         },
         onError: (err) => {
           notification("Error", getErrorMessage(err), "error")
@@ -158,35 +172,45 @@ const NewProduct = ({ onClose }: Props) => {
     })
 
   const { client } = useMedusa()
-  const createStockLocationsForVariant = async (
-    productRes,
-    stock_locations: { stocked_quantity: number; location_id: string }[]
+
+  const createStockLocationsForVariants = async (
+    variants: ProductVariant[],
+    stockLocationsMap: Map<
+      string,
+      { stocked_quantity: number; location_id: string }[] | undefined
+    >
   ) => {
-    const { variants } = productRes
-
-    const pvMap = new Map(product.variants.map((v) => [v.id, true]))
-    const addedVariant = variants.find((variant) => !pvMap.get(variant.id))
-
     await Promise.all(
-      variants.map(async (variant) => {
-        const inventory = await client.admin.variants.getInventory(
-          addedVariant.id
-        )
-        await Promise.all(
-          inventory.variant.inventory
-            .map(async (item) => {
-              return Promise.all(
-                stock_locations.map(async (stock_location) => {
-                  client.admin.inventoryItems.createLocationLevel(item.id!, {
-                    location_id: stock_location.location_id,
-                    stocked_quantity: stock_location.stocked_quantity,
+      variants
+        .map(async (variant) => {
+          const optionsKey = variant.options
+            .map((option) => option?.value || "")
+            .sort()
+            .join(",")
+
+          const stock_locations = stockLocationsMap.get(optionsKey)
+          if (!stock_locations?.length) {
+            return
+          }
+
+          const inventory = await client.admin.variants.getInventory(variant.id)
+
+          return await Promise.all(
+            inventory.variant.inventory
+              .map(async (item) => {
+                return Promise.all(
+                  stock_locations.map(async (stock_location) => {
+                    client.admin.inventoryItems.createLocationLevel(item.id!, {
+                      location_id: stock_location.location_id,
+                      stocked_quantity: stock_location.stocked_quantity,
+                    })
                   })
-                })
-              )
-            })
-            .flat()
-        )
-      })
+                )
+              })
+              .flat()
+          )
+        })
+        .flat()
     )
   }
 
