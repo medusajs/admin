@@ -8,13 +8,16 @@ import TagInput from "../../../../components/molecules/tag-input"
 import { Option } from "../../../../types/shared"
 import { NestedForm } from "../../../../utils/nested-form"
 import useOrganizeData from "./use-organize-data"
-import NestedMultiselect from "../../../categories/components/multiselect"
+import NestedMultiselect, {
+  NestedMultiselectOption,
+} from "../../../categories/components/multiselect"
 import InputHeader from "../../../../components/fundamentals/input-header"
 
 export type OrganizeFormType = {
   type: Option | null
   collection: Option | null
   tags: string[] | null
+  categories: NestedMultiselectOption[] | null
 }
 
 type Props = {
@@ -23,7 +26,8 @@ type Props = {
 
 const OrganizeForm = ({ form }: Props) => {
   const { control, path, setValue } = form
-  const { productTypeOptions, collectionOptions } = useOrganizeData()
+  const { productTypeOptions, collectionOptions, categoriesOptions } =
+    useOrganizeData()
 
   const typeOptions = productTypeOptions
 
@@ -82,7 +86,21 @@ const OrganizeForm = ({ form }: Props) => {
         name={path("categories")}
         control={control}
         render={({ field: { value, onChange } }) => {
-          return <NestedMultiselect />
+          if (!categoriesOptions) {
+            return null
+          }
+          console.log({ categoriesOptions, value })
+
+          return (
+            <NestedMultiselect
+              options={categoriesOptions}
+              onSelect={onChange}
+              initiallySelected={value.reduce((acc, val) => {
+                acc[val] = true
+                return acc
+              }, {})}
+            />
+          )
         }}
       />
 

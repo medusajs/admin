@@ -72,6 +72,8 @@ const GeneralModal = ({ product, open, onClose }: Props) => {
         tags: data.organize.tags
           ? data.organize.tags.map((t) => ({ value: t }))
           : null,
+
+        categories: data.organize.categories?.map((id) => ({ id })),
         discountable: data.discountable.value,
       },
       onReset
@@ -139,6 +141,7 @@ const getDefaultValues = (product: Product): GeneralFormWrapper => {
         ? { label: product.type.value, value: product.type.id }
         : null,
       tags: product.tags ? product.tags.map((t) => t.value) : null,
+      categories: product.categories.map((c) => c.id),
     },
     discountable: {
       value: product.discountable,

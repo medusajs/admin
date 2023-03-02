@@ -9,9 +9,9 @@ import ChevronRightIcon from "../../../../components/fundamentals/icons/chevron-
 import UTurnIcon from "../../../../components/fundamentals/icons/u-turn-icon"
 import CrossIcon from "../../../../components/fundamentals/icons/cross-icon"
 
-type NestedMultiselectOption = {
+export type NestedMultiselectOption = {
   value: string
-  name: React.ReactNode
+  label: React.ReactNode
   children?: NestedMultiselectOption[]
 }
 
@@ -83,7 +83,7 @@ type PopupItemProps = {
 function PopupItem(props: PopupItemProps) {
   const { option, isSelected, onOptionClick, onOptionCheckboxClick } = props
 
-  const hasChildren = option.children?.length
+  const hasChildren = !!option.children?.length
 
   const onClick = (e) => {
     e.stopPropagation()
@@ -109,7 +109,7 @@ function PopupItem(props: PopupItemProps) {
         >
           <Checkbox isSelected={isSelected} />
         </div>
-        {option.name}
+        {option.label}
       </div>
 
       {hasChildren && <ChevronRightIcon size={16} />}
@@ -145,7 +145,7 @@ function Popup(props: PopupProps) {
           className="mb-1 flex h-[50px] cursor-pointer items-center gap-2 border-b border-grey-20 px-3 hover:bg-grey-10"
         >
           <UTurnIcon size={16} />
-          <span className="font-medium">{activeOption.name}</span>
+          <span className="font-medium">{activeOption.label}</span>
         </div>
       )}
       {activeOption.children!.map((o) => (
@@ -164,18 +164,25 @@ function Popup(props: PopupProps) {
 type NestedMultiselectProps = {
   options: NestedMultiselectOption[]
   onSelect: (values: string[]) => void
+  initiallySelected?: Record<string, true>
 }
 
 function NestedMultiselect(props: NestedMultiselectProps) {
-  const { options = DUMMY_OPTIONS } = props
+  const { options, initiallySelected, onSelect } = props
   const [isOpen, openPopup, closePopup] = useToggleState(false)
 
   const rootRef = React.useRef<HTMLDivElement>(null)
   useOutsideClick(closePopup, rootRef, true)
 
-  const [activeOption, setActiveOption] =
-    useState<NestedMultiselectOption>(null)
-  const [selected, setSelected] = useState<Record<string, true>>({})
+  const [activeOption, setActiveOption] = useState<NestedMultiselectOption>({
+    value: null,
+    label: null,
+    children: options,
+  })
+
+  const [selected, setSelected] = useState<Record<string, true>>(
+    initiallySelected || {}
+  )
 
   const select = (option: NestedMultiselectOption) => {
     const nextState = { ...selected }
@@ -211,7 +218,7 @@ function NestedMultiselect(props: NestedMultiselectProps) {
       o.children?.forEach(find)
     }
 
-    find({ value: null, name: null, children: options })
+    find({ value: null, label: null, children: options })
 
     if (parent) {
       setActiveOption(parent)
@@ -224,8 +231,18 @@ function NestedMultiselect(props: NestedMultiselectProps) {
   }
 
   useEffect(() => {
-    setActiveOption(null)
+    if (!isOpen) {
+      setActiveOption({
+        value: null,
+        label: null,
+        children: options,
+      })
+    }
   }, [isOpen])
+
+  useEffect(() => {
+    onSelect(Object.keys(selected))
+  }, [selected])
 
   return (
     <div ref={rootRef} className=" h-[40px]">
@@ -238,10 +255,8 @@ function NestedMultiselect(props: NestedMultiselectProps) {
       {isOpen && (
         <Popup
           pop={pop}
-          activeOption={
-            activeOption || { value: null, name: null, children: options }
-          }
           selected={selected}
+          activeOption={activeOption}
           onOptionClick={onOptionClick}
           onOptionCheckboxClick={onOptionCheckboxClick}
         />
@@ -251,32 +266,3 @@ function NestedMultiselect(props: NestedMultiselectProps) {
 }
 
 export default NestedMultiselect
-
-const DUMMY_OPTIONS: NestedMultiselectOption = [
-  {
-    value: "pants",
-    name: "Pants",
-    children: [
-      {
-        value: "jeans",
-        name: "Jeans",
-        children: [
-          { value: "denim", name: "Denim" },
-          { value: "washed", name: "Washed" },
-        ],
-      },
-    ],
-  },
-  {
-    value: "socks",
-    name: "Socks",
-  },
-  {
-    value: "shirts",
-    name: "Shorts",
-    children: [
-      { value: "t-shirts", name: "t-Shirts" },
-      { value: "polo", name: "polo" },
-    ],
-  },
-]
