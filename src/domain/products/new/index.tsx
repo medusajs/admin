@@ -84,8 +84,6 @@ const NewProduct = ({ onClose }: Props) => {
 
   const onSubmit = (publish = true) =>
     handleSubmit(async (data) => {
-      console.log(data.variants)
-
       const optionsToStockLocationsMap = new Map(
         data.variants.entries.map((variant) => {
           return [
@@ -97,7 +95,6 @@ const NewProduct = ({ onClose }: Props) => {
           ]
         })
       )
-      console.log(optionsToStockLocationsMap)
 
       const payload = createPayload(
         data,
