@@ -155,7 +155,7 @@ const NewProduct = ({ onClose }: Props) => {
     <form className="w-full">
       <FocusModal>
         <FocusModal.Header>
-          <div className="flex justify-between w-full px-8 medium:w-8/12">
+          <div className="flex w-full justify-between px-8 medium:w-8/12">
             <Button
               size="small"
               variant="ghost"
@@ -186,8 +186,8 @@ const NewProduct = ({ onClose }: Props) => {
             </div>
           </div>
         </FocusModal.Header>
-        <FocusModal.Main className="flex justify-center w-full no-scrollbar">
-          <div className="medium:w-7/12 large:w-6/12 small:w-4/5 max-w-[700px] my-16">
+        <FocusModal.Main className="no-scrollbar flex w-full justify-center">
+          <div className="my-16 max-w-[700px] small:w-4/5 medium:w-7/12 large:w-6/12">
             <Accordion defaultValue={["general"]} type="multiple">
               <Accordion.Item
                 value={"general"}
@@ -197,7 +197,7 @@ const NewProduct = ({ onClose }: Props) => {
                 <p className="inter-base-regular text-grey-50">
                   To start selling, all you need is a name and a price.
                 </p>
-                <div className="flex flex-col mt-xlarge gap-y-xlarge">
+                <div className="mt-xlarge flex flex-col gap-y-xlarge">
                   <GeneralForm
                     form={nestedForm(form, "general")}
                     requireHandle={false}
@@ -209,7 +209,7 @@ const NewProduct = ({ onClose }: Props) => {
                 <p className="inter-base-regular text-grey-50">
                   To start selling, all you need is a name and a price.
                 </p>
-                <div className="flex flex-col mt-xlarge gap-y-xlarge pb-xsmall">
+                <div className="mt-xlarge flex flex-col gap-y-xlarge pb-xsmall">
                   <div>
                     <h3 className="inter-base-semibold mb-base">
                       Organize Product
@@ -226,7 +226,7 @@ const NewProduct = ({ onClose }: Props) => {
                 </div>
               </Accordion.Item>
               <Accordion.Item title="Variants" value="variants">
-                <p className="text-grey-50 inter-base-regular">
+                <p className="inter-base-regular text-grey-50">
                   Add variations of this product.
                   <br />
                   Offer your customers different options for color, format,
@@ -254,14 +254,14 @@ const NewProduct = ({ onClose }: Props) => {
                 </div>
               </Accordion.Item>
               <Accordion.Item title="Thumbnail" value="thumbnail">
-                <p className="inter-base-regular text-grey-50 mb-large">
+                <p className="inter-base-regular mb-large text-grey-50">
                   Used to represent your product during checkout, social sharing
                   and more.
                 </p>
                 <ThumbnailForm form={nestedForm(form, "thumbnail")} />
               </Accordion.Item>
               <Accordion.Item title="Media" value="media">
-                <p className="inter-base-regular text-grey-50 mb-large">
+                <p className="inter-base-regular mb-large text-grey-50">
                   Add images to your product.
                 </p>
                 <MediaForm form={nestedForm(form, "media")} />
@@ -304,6 +304,9 @@ const createPayload = (
       ? data.organize.tags.map((t) => ({
           value: t,
         }))
+      : undefined,
+    categories: data.organize.categories?.length
+      ? data.organize.categories.map((id) => ({ id }))
       : undefined,
     origin_country: data.customs.origin_country?.value || undefined,
     options: data.variants.options.map((o) => ({

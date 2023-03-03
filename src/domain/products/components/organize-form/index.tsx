@@ -89,16 +89,17 @@ const OrganizeForm = ({ form }: Props) => {
           if (!categoriesOptions) {
             return null
           }
-          console.log({ categoriesOptions, value })
+
+          const initiallySelected = (value || []).reduce((acc, val) => {
+            acc[val] = true
+            return acc
+          }, {})
 
           return (
             <NestedMultiselect
               options={categoriesOptions}
               onSelect={onChange}
-              initiallySelected={value.reduce((acc, val) => {
-                acc[val] = true
-                return acc
-              }, {})}
+              initiallySelected={initiallySelected}
             />
           )
         }}

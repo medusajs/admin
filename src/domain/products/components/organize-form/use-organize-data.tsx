@@ -16,7 +16,7 @@ const useOrganizeData = () => {
   })
   const { collections } = useAdminCollections()
   const { product_categories: categories } = useAdminProductCategories({
-    // parent_category_id: null, // TODO: check this instead of filtering on the frontend
+    parent_category_id: "null",
     include_descendants_tree: true,
   })
 
@@ -39,10 +39,7 @@ const useOrganizeData = () => {
   }, [collections])
 
   const categoriesOptions: NestedMultiselectOption = useMemo(
-    () =>
-      categories
-        ?.filter((c) => !c.parent_category_id)
-        .map(transformCategoryToNestedFormOptions),
+    () => categories?.map(transformCategoryToNestedFormOptions),
     [categories]
   )
 
