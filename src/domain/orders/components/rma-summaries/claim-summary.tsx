@@ -19,14 +19,12 @@ export const ClaimSummary = ({ form, order }: Props) => {
 
   const claimItems = useWatch({
     control: control,
-    name: "return_items",
-    defaultValue: {
-      items: [],
-    },
+    name: "return_items.items",
+    defaultValue: [],
   })
 
   const selectedClaimItems = useMemo(() => {
-    return claimItems.items.filter((item) => item.return)
+    return claimItems.filter((item) => item.return)
   }, [claimItems])
 
   const claimItemShipping = useWatch({
@@ -70,7 +68,7 @@ export const ClaimSummary = ({ form, order }: Props) => {
     }
   }, [selectedClaimItems, order.currency_code])
 
-  if (!(selectedClaimItems.length > 0 || replacementItems.length > 0)) {
+  if (!(selectedClaimItems?.length > 0 || replacementItems?.length > 0)) {
     return null
   }
 
@@ -88,6 +86,7 @@ export const ClaimSummary = ({ form, order }: Props) => {
                     currencyCode={order.currency_code}
                     productTitle={item.product_title}
                     quantity={item.quantity}
+                    sku={item.sku}
                     price={item.total / item.original_quantity}
                     total={
                       (item.total / item.original_quantity) * item.quantity
@@ -127,6 +126,7 @@ export const ClaimSummary = ({ form, order }: Props) => {
                     currencyCode={order.currency_code}
                     productTitle={item.product_title}
                     quantity={item.quantity}
+                    sku={item.sku}
                     price={item.price}
                     total={item.price * item.quantity}
                     variantTitle={item.variant_title}

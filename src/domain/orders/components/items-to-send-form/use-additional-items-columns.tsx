@@ -1,5 +1,6 @@
 import { createColumnHelper } from "@tanstack/react-table"
 import { useCallback, useMemo } from "react"
+import CopyToClipboard from "../../../../components/atoms/copy-to-clipboard"
 import Thumbnail from "../../../../components/atoms/thumbnail"
 import Tooltip from "../../../../components/atoms/tooltip"
 import Button from "../../../../components/fundamentals/button"
@@ -47,12 +48,22 @@ export const useAdditionalItemsColumns = ({
           return (
             <div className="flex items-center gap-base">
               <Thumbnail src={thumbnail} />
-              <div>
-                <p>
-                  {product_title}{" "}
-                  <span className="text-grey-50">({variant_title})</span>
-                </p>
-                {sku && <p className="text-grey-50">{sku}</p>}
+              <div className="inter-small-regular">
+                <div className="flex items-center gap-x-2xsmall">
+                  <p>{product_title}</p>
+                  {variant_title && (
+                    <p className="text-grey-50">({variant_title})</p>
+                  )}
+                </div>
+                {sku && (
+                  <span>
+                    <CopyToClipboard
+                      value={sku}
+                      displayValue={sku}
+                      iconSize={14}
+                    />
+                  </span>
+                )}
               </div>
             </div>
           )
