@@ -51,6 +51,7 @@ function CreateProductCategory(props: CreateProductCategoryProps) {
     try {
       await createProductCategory({
         name,
+        handle,
         is_active: isActive,
         is_internal: !isPublic,
         parent_category_id: parentCategory?.id ?? null,
