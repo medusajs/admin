@@ -34,7 +34,7 @@ function ProductCategoriesList(props: ProductCategoriesListProps) {
   }) => {
     let parentId = null
     const { dragItem, items, targetPath } = params
-    const [position] = targetPath.slice(-1)
+    const [rank] = targetPath.slice(-1)
 
     if (targetPath.length > 1) {
       const path = dropRight(
@@ -48,7 +48,7 @@ function ProductCategoriesList(props: ProductCategoriesListProps) {
     try {
       await client.admin.productCategories.update(dragItem.id, {
         parent_category_id: parentId,
-        position,
+        rank,
       })
       notification("Success", "New order saved", "success")
       await queryClient.invalidateQueries(adminProductCategoryKeys.lists())
