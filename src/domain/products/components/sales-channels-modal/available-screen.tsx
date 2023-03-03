@@ -1,11 +1,12 @@
 import React, { useState } from "react"
-import { usePagination, useRowSelect, useTable } from "react-table"
-import Modal from "../../../../components/molecules/modal"
-import { useDebounce } from "../../../../hooks/use-debounce"
 import SalesChannelTable, {
   SalesChannelTableActions,
   useSalesChannelsTableColumns,
 } from "./table"
+import { usePagination, useRowSelect, useTable } from "react-table"
+
+import Modal from "../../../../components/molecules/modal"
+import { useDebounce } from "../../../../hooks/use-debounce"
 import { useSalesChannelsModal } from "./use-sales-channels-modal"
 
 const LIMIT = 15
@@ -75,7 +76,7 @@ const AvailableScreen = () => {
           />
         }
         setSelectedRowIds={setSelectedRowIds}
-        limit={15}
+        limit={12}
         offset={offset}
         setOffset={setOffset}
         setQuery={setQuery}

@@ -1,13 +1,11 @@
-import clsx from "clsx"
-import React from "react"
-import { useNavigate } from "react-router-dom"
-import Spinner from "../../atoms/spinner"
-import ArrowLeftIcon from "../../fundamentals/icons/arrow-left-icon"
-import ArrowRightIcon from "../../fundamentals/icons/arrow-right-icon"
-import SortingIcon from "../../fundamentals/icons/sorting-icon"
 import Actionables, { ActionType } from "../../molecules/actionables"
 import FilteringOptions, { FilteringOptionProps } from "./filtering-option"
+
+import React from "react"
+import SortingIcon from "../../fundamentals/icons/sorting-icon"
 import TableSearch from "./table-search"
+import clsx from "clsx"
+import { useNavigate } from "react-router-dom"
 
 type TableRowProps = React.HTMLAttributes<HTMLTableRowElement> & {
   forceDropdown?: boolean
@@ -73,9 +71,9 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
 
     return (
       <div className={`flex flex-col ${containerClassName}`}>
-        <div className="w-full flex justify-between mb-2">
+        <div className="mb-2 flex w-full justify-between">
           {filteringOptions ? (
-            <div className="flex mb-2 self-end">
+            <div className="mb-2 flex self-end">
               {Array.isArray(filteringOptions)
                 ? filteringOptions.map((fo) => <FilteringOptions {...fo} />)
                 : filteringOptions}
@@ -84,7 +82,7 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
             <span aria-hidden />
           )}
           <div className="flex items-center">
-            {tableActions && <div>{tableActions}</div>}
+            {tableActions && <div className="mr-4">{tableActions}</div>}
             {enableSearch && (
               <TableSearch
                 autoFocus={immediateSearchFocus}
@@ -116,7 +114,7 @@ Table.Head = React.forwardRef<
   <thead
     ref={ref}
     className={clsx(
-      "whitespace-nowrap inter-small-semibold text-grey-50 border-t border-b border-grey-20",
+      "inter-small-semibold whitespace-nowrap border-t border-b border-grey-20 text-grey-50",
       className
     )}
     {...props}
@@ -138,7 +136,7 @@ Table.HeadCell = React.forwardRef<
   HTMLTableCellElement,
   React.HTMLAttributes<HTMLTableCellElement>
 >(({ className, children, ...props }, ref) => (
-  <th ref={ref} className={clsx("text-left h-[40px]", className)} {...props}>
+  <th ref={ref} className={clsx("h-[40px] text-left", className)} {...props}>
     {children}
   </th>
 ))
@@ -159,9 +157,9 @@ Table.SortingHeadCell = React.forwardRef<
     ref
   ) => {
     return (
-      <th ref={ref} className={clsx("text-left py-2.5", className)} {...props}>
+      <th ref={ref} className={clsx("py-2.5 text-left", className)} {...props}>
         <div
-          className="flex items-center cursor-pointer select-none"
+          className="flex cursor-pointer select-none items-center"
           onClick={(e) => {
             e.preventDefault()
             if (!sortDirection) {
