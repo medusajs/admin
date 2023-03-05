@@ -12,6 +12,7 @@ import NestedMultiselect, {
   NestedMultiselectOption,
 } from "../../../categories/components/multiselect"
 import InputHeader from "../../../../components/fundamentals/input-header"
+import { FeatureFlag, useFeatureFlag } from "../../../../context/feature-flag"
 
 export type OrganizeFormType = {
   type: Option | null
@@ -28,6 +29,8 @@ const OrganizeForm = ({ form }: Props) => {
   const { control, path, setValue } = form
   const { productTypeOptions, collectionOptions, categoriesOptions } =
     useOrganizeData()
+
+  const { isFeatureEnabled } = useFeatureFlag()
 
   const typeOptions = productTypeOptions
 
@@ -80,30 +83,33 @@ const OrganizeForm = ({ form }: Props) => {
         />
       </div>
 
-      <InputHeader label="Categories" className="mb-2" />
+      {isFeatureEnabled(FeatureFlag.PRODUCT_CATEGORIES) && (
+        <>
+          <InputHeader label="Categories" className="mb-2" />
+          <Controller
+            name={path("categories")}
+            control={control}
+            render={({ field: { value, onChange } }) => {
+              if (!categoriesOptions) {
+                return null
+              }
 
-      <Controller
-        name={path("categories")}
-        control={control}
-        render={({ field: { value, onChange } }) => {
-          if (!categoriesOptions) {
-            return null
-          }
+              const initiallySelected = (value || []).reduce((acc, val) => {
+                acc[val] = true
+                return acc
+              }, {})
 
-          const initiallySelected = (value || []).reduce((acc, val) => {
-            acc[val] = true
-            return acc
-          }, {})
-
-          return (
-            <NestedMultiselect
-              options={categoriesOptions}
-              onSelect={onChange}
-              initiallySelected={initiallySelected}
-            />
-          )
-        }}
-      />
+              return (
+                <NestedMultiselect
+                  options={categoriesOptions}
+                  onSelect={onChange}
+                  initiallySelected={initiallySelected}
+                />
+              )
+            }}
+          />
+        </>
+      )}
 
       <div className="mb-large" />
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import clsx from "clsx"
 
 import useToggleState from "../../../../hooks/use-toggle-state"
@@ -8,22 +8,50 @@ import ChevronDownIcon from "../../../../components/fundamentals/icons/chevron-d
 import ChevronRightIcon from "../../../../components/fundamentals/icons/chevron-right-icon"
 import UTurnIcon from "../../../../components/fundamentals/icons/u-turn-icon"
 import CrossIcon from "../../../../components/fundamentals/icons/cross-icon"
+import Tooltip from "../../../../components/atoms/tooltip"
+import { sum } from "lodash"
 
 export type NestedMultiselectOption = {
   value: string
-  label: React.ReactNode
+  label: string
   children?: NestedMultiselectOption[]
 }
 
 type InputProps = {
   isOpen: boolean
-  selectedCount: number
+  selected: Record<string, true>
+  options: NestedMultiselectOption[]
   openPopup: () => void
   resetSelected: () => void
 }
 
+const ToolTipContent = (props: { list: string[] }) => {
+  return (
+    <div className="flex flex-col">
+      {props.list.map((listItem) => (
+        <span key={listItem}>{listItem}</span>
+      ))}
+    </div>
+  )
+}
+
 function Input(props: InputProps) {
-  const { isOpen, selectedCount, openPopup, resetSelected } = props
+  const { isOpen, selected, openPopup, resetSelected, options } = props
+  const selectedCount = Object.keys(selected).length
+
+  const selectedOption = useMemo(() => {
+    const ret: string[] = []
+
+    const visit = (option: NestedMultiselectOption) => {
+      if (selected[option.value]) {
+        ret.push(option.label)
+      }
+      option.children?.forEach(visit)
+    }
+
+    options.forEach(visit)
+    return ret
+  }, [selected, options])
 
   return (
     <div
@@ -32,14 +60,20 @@ function Input(props: InputProps) {
     >
       <div className="flex items-center gap-1">
         {!!selectedCount && (
-          <span className="flex h-[28px] items-center gap-2 rounded-rounded border bg-grey-10 px-2 text-small font-medium text-gray-500">
-            {selectedCount}
-            <CrossIcon
-              className="cursor-pointer"
-              onClick={resetSelected}
-              size={16}
-            />
-          </span>
+          <Tooltip
+            side="top"
+            delayDuration={1500}
+            content={<ToolTipContent list={selectedOption} />}
+          >
+            <span className="flex h-[28px] items-center gap-2 rounded-rounded border bg-grey-10 px-2 text-small font-medium text-gray-500">
+              {selectedCount}
+              <CrossIcon
+                className="cursor-pointer"
+                onClick={resetSelected}
+                size={16}
+              />
+            </span>
+          </Tooltip>
         )}
         <span>Categories</span>
       </div>
@@ -76,12 +110,19 @@ const Checkbox = ({ isSelected }: CheckboxProps) => {
 type PopupItemProps = {
   isSelected: boolean
   option: NestedMultiselectOption
+  selectedSubcategoriesCount: number
   onOptionClick: (option: NestedMultiselectOption) => void
   onOptionCheckboxClick: (option: NestedMultiselectOption) => void
 }
 
 function PopupItem(props: PopupItemProps) {
-  const { option, isSelected, onOptionClick, onOptionCheckboxClick } = props
+  const {
+    option,
+    isSelected,
+    onOptionClick,
+    onOptionCheckboxClick,
+    selectedSubcategoriesCount,
+  } = props
 
   const hasChildren = !!option.children?.length
 
@@ -112,7 +153,16 @@ function PopupItem(props: PopupItemProps) {
         {option.label}
       </div>
 
-      {hasChildren && <ChevronRightIcon size={16} />}
+      {hasChildren && (
+        <div className="flex items-center gap-2">
+          {!!selectedSubcategoriesCount && (
+            <span className="text-small text-gray-400">
+              {selectedSubcategoriesCount} selected
+            </span>
+          )}
+          <ChevronRightIcon size={16} />
+        </div>
+      )}
     </div>
   )
 }
@@ -121,13 +171,20 @@ type PopupProps = {
   pop: () => void
   selected: Record<string, true>
   activeOption: NestedMultiselectOption
+  selectedSubcategoriesCount: Record<string, number>
   onOptionClick: (option: NestedMultiselectOption) => void
   onOptionCheckboxClick: (option: NestedMultiselectOption) => void
 }
 
 function Popup(props: PopupProps) {
-  const { activeOption, onOptionClick, onOptionCheckboxClick, pop, selected } =
-    props
+  const {
+    activeOption,
+    onOptionClick,
+    onOptionCheckboxClick,
+    pop,
+    selected,
+    selectedSubcategoriesCount,
+  } = props
 
   const showBack = !!activeOption.value
 
@@ -154,6 +211,7 @@ function Popup(props: PopupProps) {
           isSelected={selected[o.value]}
           onOptionClick={onOptionClick}
           onOptionCheckboxClick={onOptionCheckboxClick}
+          selectedSubcategoriesCount={selectedSubcategoriesCount[o.value]}
           key={o.value}
         />
       ))}
@@ -244,13 +302,31 @@ function NestedMultiselect(props: NestedMultiselectProps) {
     onSelect(Object.keys(selected))
   }, [selected])
 
+  const selectedSubcategoriesCount = useMemo(() => {
+    const counts = {}
+
+    const visit = (option: NestedMultiselectOption) => {
+      const numOfSelectedDescendants = sum(option.children?.map(visit))
+
+      counts[option.value] = numOfSelectedDescendants
+      return selected[option.value]
+        ? numOfSelectedDescendants + 1
+        : numOfSelectedDescendants
+    }
+
+    options.forEach(visit)
+
+    return counts
+  }, [selected, options])
+
   return (
     <div ref={rootRef} className=" h-[40px]">
       <Input
         isOpen={isOpen}
         openPopup={openPopup}
         resetSelected={resetSelected}
-        selectedCount={Object.keys(selected).length}
+        selected={selected}
+        options={options}
       />
       {isOpen && (
         <Popup
@@ -259,6 +335,7 @@ function NestedMultiselect(props: NestedMultiselectProps) {
           activeOption={activeOption}
           onOptionClick={onOptionClick}
           onOptionCheckboxClick={onOptionCheckboxClick}
+          selectedSubcategoriesCount={selectedSubcategoriesCount}
         />
       )}
     </div>

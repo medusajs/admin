@@ -6,10 +6,7 @@ type DelimitedListProps = {
   delimit?: number
 }
 
-const DelimitedList: React.FC<DelimitedListProps> = ({
-  list,
-  delimit = 1,
-}) => {
+const DelimitedList: React.FC<DelimitedListProps> = ({ list, delimit = 1 }) => {
   if (!list.length) {
     return <></>
   }
@@ -29,12 +26,15 @@ const DelimitedList: React.FC<DelimitedListProps> = ({
   }
 
   return (
-    <span className="inter-small-regular">
+    <span className="inter-base-regular text-grey-50">
       {itemsToDisplay}
 
       {showExtraItemsInTooltip && (
         <Tooltip content={<ToolTipContent />}>
-          <span className="text-grey-40"> + {extraItemsInToolTipCount} more</span>
+          <span className="text-grey-40">
+            {" "}
+            + {extraItemsInToolTipCount} more
+          </span>
         </Tooltip>
       )}
     </span>

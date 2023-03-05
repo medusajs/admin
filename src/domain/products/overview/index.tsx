@@ -18,7 +18,6 @@ import { getErrorMessage } from "../../../utils/error-messages"
 import ImportProducts from "../batch-job/import"
 import NewProduct from "../new"
 import { PollingContext } from "../../../context/polling"
-import CategoriesMultiselect from "../../categories/components/multiselect"
 
 const VIEWS = ["products", "collections"]
 
