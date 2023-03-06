@@ -3,7 +3,7 @@ import {
   useAdminGetDiscountByCode,
   useAdminShippingOptions,
 } from "medusa-react"
-import React, { useContext, useEffect, useMemo, useState } from "react"
+import { useContext, useEffect, useMemo, useState } from "react"
 import { useWatch } from "react-hook-form"
 import Avatar from "../../../../components/atoms/avatar"
 import Button from "../../../../components/fundamentals/button"
@@ -64,9 +64,12 @@ const Summary = () => {
     name: "custom_shipping_price",
   })
 
-  const { discount, status } = useAdminGetDiscountByCode(discountCode!, {
-    enabled: !!discountCode,
-  })
+  const { discount, status, isFetching } = useAdminGetDiscountByCode(
+    discountCode!,
+    {
+      enabled: !!discountCode,
+    }
+  )
 
   const { shipping_options } = useAdminShippingOptions(
     { region_id: region?.value },
@@ -126,7 +129,7 @@ const Summary = () => {
       <SummarySection title={"Items"} editIndex={1}>
         <Table>
           <Table.Head>
-            <Table.HeadRow className="text-grey-50 border-t inter-small-semibold">
+            <Table.HeadRow className="inter-small-semibold border-t text-grey-50">
               <Table.HeadCell>Details</Table.HeadCell>
               <Table.HeadCell className="text-right">Quantity</Table.HeadCell>
               <Table.HeadCell className="text-right">
@@ -145,18 +148,18 @@ const Summary = () => {
                     className={clsx("border-b-grey-0 hover:bg-grey-0")}
                   >
                     <Table.Cell>
-                      <div className="min-w-[240px] flex py-2">
-                        <div className="w-[30px] h-[40px] ">
+                      <div className="flex min-w-[240px] py-2">
+                        <div className="h-[40px] w-[30px] ">
                           {item.thumbnail ? (
                             <img
-                              className="h-full w-full object-cover rounded"
+                              className="h-full w-full rounded object-cover"
                               src={item.thumbnail}
                             />
                           ) : (
                             <ImagePlaceholder />
                           )}
                         </div>
-                        <div className="inter-small-regular text-grey-50 flex flex-col ml-4">
+                        <div className="inter-small-regular ml-4 flex flex-col text-grey-50">
                           <span>
                             <span className="text-grey-90">
                               {item.product_title}
@@ -178,11 +181,11 @@ const Summary = () => {
           </Table.Body>
         </Table>
         {!showAddDiscount && !discount?.rule && (
-          <div className="w-full flex justify-end">
+          <div className="flex w-full justify-end">
             <Button
               variant="ghost"
               size="small"
-              className="border border-grey-20 inter-small-semibold"
+              className="inter-small-semibold border border-grey-20"
               onClick={() => setShowAddDiscount(true)}
             >
               <PlusIcon size={20} />
@@ -203,7 +206,7 @@ const Summary = () => {
                 />
                 <Button
                   variant="ghost"
-                  className="text-grey-40 w-8 h-8"
+                  className="h-8 w-8 text-grey-40"
                   size="small"
                   type="button"
                   onClick={() => setShowAddDiscount(false)}
@@ -211,18 +214,17 @@ const Summary = () => {
                   <CrossIcon size={20} />
                 </Button>
               </div>
-              {discError && (
-                <div className="pt-2">
-                  <span className="text-rose-50">{discError}</span>
-                </div>
-              )}
             </div>
-            <div className="w-full flex justify-end mt-4 ">
+
+            <div className="space-between mt-4 flex w-full justify-between ">
+              <div className="pt-2">
+                {discError && <span className="text-rose-50">{discError}</span>}
+              </div>
               <Button
-                className="border h-full border-grey-20"
+                className="h-full border border-grey-20"
                 variant="ghost"
                 size="small"
-                loading={status === "loading"}
+                loading={isFetching}
                 onClick={() => handleAddDiscount()}
               >
                 <PlusIcon size={20} />
@@ -232,17 +234,17 @@ const Summary = () => {
           </>
         )}
         {discount && regionObj && (
-          <div className="flex flex-col w-full border-b border-t border-grey-20 pt-4 mt-4 last:border-b-0 inter-small-regular ">
-            <div className="flex w-full justify-between inter-base-semibold mb-4">
+          <div className="inter-small-regular mt-4 flex w-full flex-col border-b border-t border-grey-20 pt-4 last:border-b-0 ">
+            <div className="inter-base-semibold mb-4 flex w-full justify-between">
               <span>
                 Discount
-                <span className="inter-base-regular text-grey-50 ml-0.5">
+                <span className="inter-base-regular ml-0.5 text-grey-50">
                   (Code: {discount.code})
                 </span>
               </span>
               <span
                 onClick={() => onDiscountRemove()}
-                className="inter-small-semibold text-violet-60 cursor-pointer"
+                className="inter-small-semibold cursor-pointer text-violet-60"
               >
                 <CrossIcon size={20} />
               </span>
@@ -257,20 +259,20 @@ const Summary = () => {
                 <span>
                   {discount.rule.type !== "free_shipping"
                     ? `${discount.rule.type
-                      .charAt(0)
-                      .toUpperCase()}${discount.rule.type.slice(1)}`
+                        .charAt(0)
+                        .toUpperCase()}${discount.rule.type.slice(1)}`
                     : "Free Shipping"}
                 </span>
               </div>
               {discount.rule.type !== "free_shipping" && (
-                <div className="pl-6 flex flex-col">
+                <div className="flex flex-col pl-6">
                   <span className="text-grey-50">Value</span>
                   <span>
                     {discount.rule.type === "fixed"
                       ? `${displayAmount(
-                        regionObj.currency_code,
-                        discount.rule.value
-                      )} ${regionObj.currency_code.toUpperCase()}`
+                          regionObj.currency_code,
+                          discount.rule.value
+                        )} ${regionObj.currency_code.toUpperCase()}`
                       : `${discount.rule.value} %`}
                   </span>
                 </div>
@@ -281,7 +283,7 @@ const Summary = () => {
       </SummarySection>
       <SummarySection title={"Customer"} editIndex={3}>
         <div className="flex items-center">
-          <div className="w-5 h-5 mr-3">
+          <div className="mr-3 h-5 w-5">
             <Avatar
               color="bg-fuschia-40"
               user={{
@@ -298,9 +300,9 @@ const Summary = () => {
 
       {selectedShippingOption && (
         <SummarySection title={"Shipping details"} editIndex={2}>
-          <div className="grid grid-cols-2 gap-x-6 w-full">
+          <div className="grid w-full grid-cols-2 gap-x-6">
             {!isNullishObject(shipping) && shipping && (
-              <div className="border-r flex flex-col border-grey-20 pr-6">
+              <div className="flex flex-col border-r border-grey-20 pr-6">
                 <span className="text-grey-50">Address</span>
                 <span>
                   {shipping.address_1}, {shipping.address_2}
@@ -318,7 +320,7 @@ const Summary = () => {
                   {selectedShippingOption.name} -{" "}
                   {customShippingPrice && regionObj ? (
                     <p>
-                      <span className="line-through mr-2 text-grey-40">
+                      <span className="mr-2 text-grey-40 line-through">
                         {extractOptionPrice(shippingOptionPrice, regionObj)}
                       </span>
                       {displayAmount(
@@ -356,12 +358,12 @@ const Summary = () => {
 const SummarySection = ({ title, editIndex, children }) => {
   const { setPage } = useContext(SteppedContext)
   return (
-    <div className="flex flex-col w-full border-b border-grey-20 mt-4 pb-8 last:border-b-0 inter-small-regular ">
-      <div className="flex w-full justify-between inter-base-semibold mb-4">
+    <div className="inter-small-regular mt-4 flex w-full flex-col border-b border-grey-20 pb-8 last:border-b-0 ">
+      <div className="inter-base-semibold mb-4 flex w-full justify-between">
         {title}
         <span
           onClick={() => setPage(editIndex)}
-          className="inter-small-semibold text-violet-60 cursor-pointer"
+          className="inter-small-semibold cursor-pointer text-violet-60"
         >
           Edit
         </span>
