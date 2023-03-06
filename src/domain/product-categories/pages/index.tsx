@@ -14,7 +14,7 @@ import EditProductCategoriesSideModal from "../modals/edit-product-category"
  */
 function ProductCategoriesEmptyState() {
   return (
-    <div className="flex items-center justify-center min-h-[600px]">
+    <div className="flex min-h-[600px] items-center justify-center">
       <p className="text-grey-40">
         No product categories yet, use the above button to create your first
         category.
@@ -78,8 +78,8 @@ function ProductCategoryPage() {
 
   return (
     <ProductCategoriesContext.Provider value={context}>
-      <div className="flex flex-col grow h-full">
-        <div className="w-full flex flex-col grow">
+      <div className="flex h-full grow flex-col">
+        <div className="flex w-full grow flex-col">
           <BodyCard
             className="h-full"
             title="Product Categories"

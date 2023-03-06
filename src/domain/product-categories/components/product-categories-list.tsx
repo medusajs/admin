@@ -1,4 +1,4 @@
-import React, { useMemo } from "react"
+import React from "react"
 import Nestable from "react-nestable"
 import { dropRight, get, flatMap } from "lodash"
 
@@ -88,4 +88,4 @@ function ProductCategoriesList(props: ProductCategoriesListProps) {
   )
 }
 
-export default ProductCategoriesList
+export default React.memo(ProductCategoriesList) // Memo prevents list flicker on reorder
