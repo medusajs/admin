@@ -14,6 +14,7 @@ import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import FolderOpenIcon from "../../../components/fundamentals/icons/folder-open-icon"
 import TagIcon from "../../../components/fundamentals/icons/tag-icon"
 import MoreHorizontalIcon from "../../../components/fundamentals/icons/more-horizontal-icon"
+import useNotification from "../../../hooks/use-notification"
 
 type ProductCategoryListItemDetailsProps = {
   depth: number
@@ -26,6 +27,7 @@ function ProductCategoryListItemDetails(
   props: ProductCategoryListItemDetailsProps
 ) {
   const { item } = props
+  const notification = useNotification()
 
   const hasChildren = !!item.category_children?.length
 
@@ -42,7 +44,14 @@ function ProductCategoryListItemDetails(
     {
       label: "Delete",
       variant: "danger",
-      onClick: deleteCategory,
+      onClick: async () => {
+        try {
+          await deleteCategory()
+          notification("Success", "Category deleted", "success")
+        } catch (e) {
+          notification("Error", "Category deletion failed", "error")
+        }
+      },
       icon: <TrashIcon size={20} />,
       disabled: !!item.category_children.length,
     },
@@ -52,33 +61,33 @@ function ProductCategoryListItemDetails(
     <div className="bg-white">
       <div
         style={{ marginLeft: props.depth * -8 }}
-        className="flex items-center h-[40px]"
+        className="flex h-[40px] items-center"
       >
-        <div className="w-[32px] flex justify-center items-center">
+        <div className="flex w-[32px] items-center justify-center">
           {props.handler}
         </div>
 
-        <div className="flex justify-between items-center w-full">
+        <div className="flex w-full items-center justify-between">
           <div className="flex items-center">
             {hasChildren && (
-              <div className="w-[32px] flex justify-center items-center">
+              <div className="flex w-[32px] items-center justify-center">
                 {props.collapseIcon}
               </div>
             )}
-            <div className="w-[32px] flex justify-center items-center">
+            <div className="flex w-[32px] items-center justify-center">
               {hasChildren && <FolderOpenIcon color="#889096" size={18} />}
               {!hasChildren && <TagIcon color="#889096" size={18} />}
             </div>
             <span
-              className={clsx("select-none font-medium text-xs ml-2", {
-                "text-gray-400 font-normal": !hasChildren,
+              className={clsx("ml-2 select-none text-xs font-medium", {
+                "font-normal text-gray-400": !hasChildren,
               })}
             >
               {item.name}
             </span>
           </div>
 
-          <div className="flex gap-2 items-center">
+          <div className="flex items-center gap-2">
             <Tooltip
               style={{ zIndex: 1 }}
               content={
@@ -107,7 +116,7 @@ function ProductCategoryListItemDetails(
                 <Button
                   size="small"
                   variant="ghost"
-                  className="w-xlarge h-xlarge focus-visible:outline-none focus-visible:shadow-input focus-visible:border-violet-60 focus:shadow-none"
+                  className="h-xlarge w-xlarge focus:shadow-none focus-visible:border-violet-60 focus-visible:shadow-input focus-visible:outline-none"
                 >
                   <MoreHorizontalIcon color="#687076" size={20} />
                 </Button>
