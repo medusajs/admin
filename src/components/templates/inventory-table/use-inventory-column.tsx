@@ -1,4 +1,5 @@
 import React, { useMemo } from "react"
+
 import ImagePlaceholder from "../../fundamentals/image-placeholder"
 
 const useInventoryTableColumn = () => {
@@ -11,7 +12,7 @@ const useInventoryTableColumn = () => {
           return (
             <div className="flex items-center">
               <div className="my-1.5 mr-4 flex h-[40px] w-[30px] items-center">
-                {original.variants[0].product?.thumbnail ? (
+                {original.variants[0]?.product?.thumbnail ? (
                   <img
                     src={original.variants[0].product.thumbnail}
                     className="h-full rounded-soft object-cover"
@@ -20,16 +21,15 @@ const useInventoryTableColumn = () => {
                   <ImagePlaceholder />
                 )}
               </div>
-              {original.variants[0].product.title}
+              {original.variants[0]?.product?.title || ""}
             </div>
           )
         },
       },
       {
         Header: "Variant",
-        accessor: "variant.title",
         Cell: ({ row: { original } }) => {
-          return <div>{original?.variants[0].title || "-"}</div>
+          return <div>{original?.variants[0]?.title || "-"}</div>
         },
       },
       {
