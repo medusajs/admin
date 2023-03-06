@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useCallback, useMemo, useState } from "react"
 import Nestable from "react-nestable"
 import { dropRight, get, flatMap } from "lodash"
 
@@ -25,66 +25,102 @@ function ProductCategoriesList(props: ProductCategoriesListProps) {
   const { client } = useMedusa()
   const queryClient = useQueryClient()
   const notification = useNotification()
+  const [isUpdating, setIsUpdating] = useState(false)
+
   const { categories } = props
 
-  const onItemDrop = async (params: {
-    item: ProductCategory
-    items: ProductCategory[]
-    path: number[]
-  }) => {
-    let parentId = null
-    const { dragItem, items, targetPath } = params
-    const [rank] = targetPath.slice(-1)
+  const onItemDrop = useCallback(
+    async (params: {
+      item: ProductCategory
+      items: ProductCategory[]
+      path: number[]
+    }) => {
+      setIsUpdating(true)
+      let parentId = null
+      const { dragItem, items, targetPath } = params
+      const [rank] = targetPath.slice(-1)
 
-    if (targetPath.length > 1) {
-      const path = dropRight(
-        flatMap(targetPath.slice(0, -1), (item) => [item, "category_children"])
-      )
+      if (targetPath.length > 1) {
+        const path = dropRight(
+          flatMap(targetPath.slice(0, -1), (item) => [
+            item,
+            "category_children",
+          ])
+        )
 
-      const newParent = get(items, path)
-      parentId = newParent.id
-    }
+        const newParent = get(items, path)
+        parentId = newParent.id
+      }
 
-    try {
-      await client.admin.productCategories.update(dragItem.id, {
-        parent_category_id: parentId,
-        rank,
-      })
-      notification("Success", "New order saved", "success")
-      await queryClient.invalidateQueries(adminProductCategoryKeys.lists())
-    } catch (e) {
-      notification("Error", "Failed to save new order", "error")
-    }
-  }
+      try {
+        await client.admin.productCategories.update(dragItem.id, {
+          parent_category_id: parentId,
+          rank,
+        })
+        notification("Success", "New order saved", "success")
+        await queryClient.invalidateQueries(adminProductCategoryKeys.lists())
+      } catch (e) {
+        notification("Error", "Failed to save new order", "error")
+      } finally {
+        setIsUpdating(false)
+      }
+    },
+    []
+  )
+
+  const NestableList = useMemo(
+    () => (
+      <Nestable
+        collapsed
+        items={categories}
+        onChange={onItemDrop}
+        childrenProp="category_children"
+        renderItem={({ item, depth, handler, collapseIcon }) => (
+          <ProductCategoryListItemDetails
+            item={item}
+            depth={depth}
+            handler={handler}
+            collapseIcon={collapseIcon}
+          />
+        )}
+        handler={<ReorderIcon className="cursor-grab" color="#889096" />}
+        renderCollapseIcon={({ isCollapsed }) => (
+          <TriangleMiniIcon
+            style={{
+              top: -2,
+              width: 32,
+              left: -12,
+              transform: !isCollapsed ? "" : "rotate(270deg)",
+            }}
+            color="#889096"
+            size={18}
+          />
+        )}
+      />
+    ),
+    [categories]
+  )
 
   return (
-    <Nestable
-      collapsed
-      items={categories}
-      onChange={onItemDrop}
-      childrenProp="category_children"
-      renderItem={({ item, depth, handler, collapseIcon }) => (
-        <ProductCategoryListItemDetails
-          item={item}
-          depth={depth}
-          handler={handler}
-          collapseIcon={collapseIcon}
-        />
-      )}
-      handler={<ReorderIcon className="cursor-grab" color="#889096" />}
-      renderCollapseIcon={({ isCollapsed }) => (
-        <TriangleMiniIcon
+    <div
+      style={{
+        pointerEvents: isUpdating ? "none" : "initial",
+        position: "relative",
+      }}
+    >
+      {NestableList}
+      {isUpdating && (
+        <div
           style={{
-            top: -2,
-            width: 32,
-            left: -12,
-            transform: !isCollapsed ? "" : "rotate(270deg)",
+            top: 0,
+            bottom: 0,
+            width: "100%",
+            cursor: "progress",
+            position: "absolute",
           }}
-          color="#889096"
-          size={18}
         />
       )}
-    />
+    </div>
   )
 }
 
