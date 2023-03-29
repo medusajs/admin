@@ -8,7 +8,6 @@ import GearIcon from "../../fundamentals/icons/gear-icon"
 import GiftIcon from "../../fundamentals/icons/gift-icon"
 import SaleIcon from "../../fundamentals/icons/sale-icon"
 import TagIcon from "../../fundamentals/icons/tag-icon"
-import SwatchIcon from "../../fundamentals/icons/swatch-icon"
 import UsersIcon from "../../fundamentals/icons/users-icon"
 import SidebarMenuItem from "../../molecules/sidebar-menu-item"
 import UserMenu from "../../molecules/user-menu"
@@ -18,7 +17,6 @@ const ICON_SIZE = 20
 const Sidebar: React.FC = () => {
   const [currentlyOpen, setCurrentlyOpen] = useState(-1)
 
-  const { isFeatureEnabled } = useFeatureFlag()
   const { store } = useAdminStore()
 
   const triggerHandler = () => {
@@ -31,6 +29,8 @@ const Sidebar: React.FC = () => {
   // We store the `id` counter on the function object, as a state creates
   // infinite updates, and we do not want the variable to be free floating.
   triggerHandler.id = 0
+
+  const { isFeatureEnabled } = useFeatureFlag()
 
   const inventoryEnabled =
     isFeatureEnabled("inventoryService") &&
@@ -63,14 +63,6 @@ const Sidebar: React.FC = () => {
             text={"Products"}
             triggerHandler={triggerHandler}
           />
-          {isFeatureEnabled("product_categories") && (
-            <SidebarMenuItem
-              pageLink={"/a/product-categories"}
-              icon={<SwatchIcon size={ICON_SIZE} />}
-              text={"Product Categories"}
-              triggerHandler={triggerHandler}
-            />
-          )}
           <SidebarMenuItem
             pageLink={"/a/customers"}
             icon={<UsersIcon size={ICON_SIZE} />}
