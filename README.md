@@ -1,7 +1,7 @@
 ## Important update
 This repository is currently in maintainance mode, so we are only fixing bugs. In 1.8 (coming out start April 2023), we have moved Medusa Admin to our core repository to centralise our projects and ship it as a plugin through `npm` - similar to all other packages. You'll find the admin in package [`admin-ui`](https://github.com/medusajs/medusa/tree/develop/packages/admin-ui).
 
-If you are curious to try out the new admin, follow the guide in our release notes for the https://github.com/medusajs/medusa/releases/tag/v1.8.0-rc.0.
+If you are curious to try out the new admin, follow the guide in our [1.8 Release Candidate](https://github.com/medusajs/medusa/releases/tag/v1.8.0-rc.0.).
 
 If you continue using this project and you find bugs, we'd appreciate, if you could file them in both repositories.
 
