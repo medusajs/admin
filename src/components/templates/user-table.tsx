@@ -42,6 +42,7 @@ const UserTable: React.FC<UserTableProps> = ({
   const [selectedInvite, setSelectedInvite] = useState<Invite | null>(null)
   const notification = useNotification()
   const { store, isLoading } = useAdminStore()
+  const [query, setQuery] = useState("")
 
   useEffect(() => {
     setElements([
@@ -261,6 +262,7 @@ const UserTable: React.FC<UserTableProps> = ({
   ]
 
   const handleUserSearch = (term: string) => {
+    setQuery(term)
     setShownElements(
       elements.filter(
         (e) =>
@@ -278,6 +280,7 @@ const UserTable: React.FC<UserTableProps> = ({
         filteringOptions={filteringOptions}
         enableSearch
         handleSearch={handleUserSearch}
+        searchValue={query}
       >
         <Table.Head>
           <Table.HeadRow>
