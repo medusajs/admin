@@ -156,6 +156,7 @@ const getReturnableItemsValues = (order: Order) => {
       thumbnail: item.thumbnail,
       refundable: item.refundable || 0,
       product_title: item.variant.product.title,
+      sku: item.variant.sku,
       variant_title: item.variant.title,
       quantity: returnableQuantity,
       original_quantity: item.quantity,
@@ -214,28 +215,6 @@ const getReceiveableItemsValues = (
 
   return returnItems
 }
-
-// export const getDefaultSwapValues = (
-//   order: Order
-// ): Subset<CreateSwapFormType> => {
-//   return {
-//     return_items: getReturnableItemsValues(order, false),
-//     additional_items: getDefaultAdditionalItemsValues(),
-//     notification: getDefaultSendNotificationValues(),
-//     return_shipping: getDefaultShippingValues(),
-//   }
-// }
-
-// export const getDefaultRequestReturnValues = (
-//   order: Order
-// ): Subset<RequestReturnFormType> => {
-//   return {
-//     return_items: getReturnableItemsValues(order, false),
-//     notification: getDefaultSendNotificationValues(),
-//     receive: getDefaultReceiveVaues(),
-//     return_shipping: getDefaultShippingValues(),
-//   }
-// }
 
 export const getDefaultReceiveReturnValues = (
   order: Order,
