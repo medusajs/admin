@@ -78,7 +78,7 @@ const DiscountForm = ({ closeForm }: DiscountFormProps) => {
           </Button>
           <div className="gap-x-small flex">
             <Button
-              onClick={handleSubmit(submitGhost)}
+              onClick={() => handleSubmit(submitGhost)}
               size="small"
               variant="ghost"
               className="border rounded-rounded"
@@ -88,7 +88,7 @@ const DiscountForm = ({ closeForm }: DiscountFormProps) => {
             <Button
               size="small"
               variant="primary"
-              onClick={handleSubmit(submitCTA)}
+              onClick={() => handleSubmit(submitCTA)}
               className="rounded-rounded"
             >
               Publish discount

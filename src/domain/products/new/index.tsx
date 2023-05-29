@@ -170,7 +170,7 @@ const NewProduct = ({ onClose }: Props) => {
                 variant="secondary"
                 type="button"
                 disabled={!isDirty}
-                onClick={onSubmit(false)}
+                onClick={() => onSubmit(false)}
               >
                 Save as draft
               </Button>
@@ -179,7 +179,7 @@ const NewProduct = ({ onClose }: Props) => {
                 variant="primary"
                 type="button"
                 disabled={!isDirty}
-                onClick={onSubmit(true)}
+                onClick={() => onSubmit(true)}
               >
                 Publish product
               </Button>
